@@ -7,11 +7,11 @@ export async function generateId(name: string): Promise<string> {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-")
 }
 
-async function getAuthorizedUrl(url: string): Promise<string> {
+async function getAuthorizedUrl(url: string, type: 'audio' | 'cover' = 'audio'): Promise<string> {
   // Convert direct B2 URL to a relative API route
   const fileName = url.split('/file/cannonball-music/')[1]
   if (!fileName) return url
-  return `/api/audio/${encodeURIComponent(fileName)}`
+  return `/${type === 'audio' ? 'api/audio' : 'api/cover'}/${encodeURIComponent(fileName)}`
 }
 
 async function normalizeAlbum(album: any): Promise<Album> {
@@ -25,9 +25,9 @@ async function normalizeAlbum(album: any): Promise<Album> {
     notes: album.notes,
     tracks: await Promise.all(album.tracks.map(async (track: any) => ({
       id: track.id || `track-${Math.random().toString(36).slice(2)}`,
-      title: track.title || track.url.split('/').pop()?.replace(/\.\w+$/, '') || 'Untitled Track',
+      title: track.title || track.audioUrl?.split('/').pop()?.replace(/\.\w+$/, '') || 'Untitled Track',
       duration: track.duration || '0:00',
-      audioUrl: await getAuthorizedUrl(track.url)
+      audioUrl: await getAuthorizedUrl(track.audioUrl)
     }))),
     gallery: album.gallery || [],
     comments: album.comments || [],

@@ -68,11 +68,12 @@ export function AlbumCard({ album }: AlbumCardProps) {
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 transition-shadow hover:shadow-md">
       <div className="relative aspect-square">
         <Image
-          src={coverImage || "/placeholder.svg"}
+          src={coverImage || '/images/placeholder-album.jpg'}
           alt={album.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
+          // Images are now local, so we can use Next.js optimization
         />
         <div className="absolute bottom-2 right-2">
           <input

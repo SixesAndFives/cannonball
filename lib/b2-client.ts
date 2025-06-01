@@ -1,13 +1,14 @@
 import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
-import { parseBuffer } from 'music-metadata';
+import { parseBuffer, IAudioMetadata, ICommonTagsResult } from 'music-metadata';
 import { Album, Track } from './types.js';
+import { fileURLToPath } from 'url';
 
-const keyID = process.env.B2_APPLICATION_KEY_ID!;
-const applicationKey = process.env.B2_APPLICATION_KEY!;
-const bucketName = process.env.B2_BUCKET_NAME!;
-const bucketId = process.env.B2_BUCKET_ID!;
+const keyID = '004b14fc428245a0000000004';
+const applicationKey = 'K004XVtx2YqASONarnOJmDZ8Y+uT6xg';
+const bucketName = 'cannonball-music';
+const bucketId = '3b31f47f3c6472889264051a';
 
 interface B2AuthResponse {
   authorizationToken: string;
@@ -105,7 +106,7 @@ export async function listFiles(prefix: string = '', delimiter: string = '/') {
   }
 }
 
-async function getFolders(): Promise<string[]> {
+export async function getFolders(): Promise<string[]> {
   const response = await listFiles('', '/');
   
   // Get unique folder names from file paths
@@ -120,18 +121,45 @@ async function getFolders(): Promise<string[]> {
   return Array.from(folders);
 }
 
+async function downloadCoverImage(fileName: string, albumId: string): Promise<string> {
+  const { downloadUrl, authToken } = await authorize();
+  const b2Url = `${downloadUrl}/file/cannonball-music/${fileName}`;
+  
+  console.log('Downloading cover image:', b2Url);
+  const response = await fetch(b2Url, {
+    headers: {
+      'Authorization': authToken
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to download cover image: ${response.statusText}`);
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  const localPath = `public/images/${albumId}-cover.jpg`;
+  await fs.writeFile(localPath, buffer);
+  console.log('Saved cover image to:', localPath);
+  
+  return `/images/${albumId}-cover.jpg`;
+}
+
 export async function getTracksFromB2(albumName: string): Promise<{ tracks: Track[], coverImage?: string }> {
   console.log('Getting tracks for album:', albumName);
   const response = await listFiles(albumName + '/');
   console.log('Files found:', response.files.map(f => f.fileName));
   
   // Find cover image
-  const coverFile = response.files.find(file => 
-    file.fileName.toLowerCase().endsWith('/cover.jpg')
-  );
-  const coverImage = coverFile 
-    ? `${downloadUrl}/file/${bucketName}/${coverFile.fileName}`
-    : undefined;
+  const coverFile = response.files.find(file => file.fileName.toLowerCase().endsWith('/cover.jpg'));
+  let coverImage: string | undefined;
+  if (coverFile) {
+    try {
+      const albumId = albumName.toLowerCase().replace(/\s+/g, '-');
+      coverImage = await downloadCoverImage(coverFile.fileName, albumId);
+    } catch (error) {
+      console.error('Error downloading cover image:', error);
+    }
+  }
 
   // Get audio files
   console.log('Looking for MP3 files in response:', response);
@@ -169,7 +197,34 @@ async function fetchAndParseMetadata(url: string) {
       Authorization: authToken!
     }
   });
-  return await parseBuffer(response.data);
+
+  try {
+    return await parseBuffer(response.data);
+  } catch (error) {
+    console.error('Error parsing metadata with music-metadata:', error);
+    
+    // For WAV files, try to parse duration from header
+    if (url.toLowerCase().endsWith('.wav')) {
+      const buffer = Buffer.from(response.data);
+      // WAV header: bytes 40-43 contain sample length
+      if (buffer.length >= 44) {
+        const sampleLength = buffer.readUInt32LE(40);
+        const sampleRate = buffer.readUInt32LE(24);
+        const duration = sampleLength / sampleRate;
+        return {
+          format: {
+            duration,
+            bitrate: 1152000,
+            sampleRate: 48000,
+            numberOfChannels: 1,
+            lossless: true
+          },
+          common: {}
+        };
+      }
+    }
+    throw error;
+  }
 }
 
 export async function formatTracks(files: { fileName: string, url: string }[]): Promise<Track[]> {
@@ -177,22 +232,22 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
 
   for (const file of files) {
     try {
-      const metadata = await fetchAndParseMetadata(file.url);
+      const metadata = await fetchAndParseMetadata(file.url) as IAudioMetadata;
       const fileName = file.fileName.split('/').pop() || '';
-      const title = metadata.common.title || fileName.replace('.mp3', '');
+      const title = metadata.common?.title || fileName.replace(/\.(mp3|wav|m4a)$/, '');
       
       tracks.push({
         id: title.toLowerCase().replace(/\s+/g, '-'),
         title,
         duration: metadata.format.duration || 0,
         audioUrl: file.url,
-        artist: metadata.common.artist,
-        album: metadata.common.album,
-        year: metadata.common.year,
-        trackNumber: metadata.common.track.no || undefined,
-        genre: metadata.common.genre?.[0],
-        comment: metadata.common.comment?.[0]?.text,
-        composer: metadata.common.composer?.[0],
+        artist: metadata.common?.artist || 'Cannonball',
+        album: metadata.common?.album || fileName.split('/')[0],
+        year: metadata.common?.year || new Date().getFullYear(),
+        trackNumber: metadata.common?.track?.no || undefined,
+        genre: metadata.common?.genre?.[0],
+        comment: metadata.common?.comment?.[0]?.text,
+        composer: metadata.common?.composer?.[0],
         bitrate: metadata.format.bitrate,
         sampleRate: metadata.format.sampleRate,
         channels: metadata.format.numberOfChannels,
@@ -201,12 +256,21 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
     } catch (error) {
       console.error(`Error processing metadata for ${file.fileName}:`, error);
       const fileName = file.fileName.split('/').pop() || '';
-      const title = fileName.replace('.mp3', '');
+      const title = fileName.replace(/\.(mp3|wav|m4a)$/, '');
+      
+      // Set default metadata based on file name and album
       tracks.push({
         id: title.toLowerCase().replace(/\s+/g, '-'),
         title,
         duration: 0,
-        audioUrl: file.url
+        audioUrl: file.url,
+        artist: 'Cannonball',
+        album: file.fileName.split('/')[0] || '',
+        year: new Date().getFullYear(),
+        bitrate: file.fileName.endsWith('.wav') ? 1152000 : undefined,
+        sampleRate: file.fileName.endsWith('.wav') ? 48000 : 44100,
+        channels: 1,
+        lossless: file.fileName.endsWith('.wav')
       });
     }
   }
@@ -225,6 +289,7 @@ export async function getAlbumFiles(albumName: string): Promise<{ tracks: Track[
 }
 
 export async function syncAlbums(): Promise<void> {
+  console.log('Starting album sync...');
   try {
     // Get the current albums.json content
     const albumsPath = path.join(process.cwd(), 'lib', 'albums.json');
@@ -288,4 +353,10 @@ export async function syncAlbums(): Promise<void> {
     console.error('Error syncing albums:', error);
     throw error;
   }
+}
+
+// Run syncAlbums if this file is executed directly
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  console.log('Running sync directly...');
+  syncAlbums().catch(console.error);
 }

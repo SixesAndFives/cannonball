@@ -1,8 +1,9 @@
 import { SearchBar } from "@/components/search-bar"
 import { AlbumGrid } from "@/components/album-grid"
-import { albums } from "@/lib/data"
+import { getAllAlbums } from "@/lib/album-service"
 
-export default function Home() {
+export default async function Home() {
+  const albums = await getAllAlbums();
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="border-b border-gray-200 bg-white">

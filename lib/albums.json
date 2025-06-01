@@ -1,6 +1,412 @@
 {
   "albums": [
     {
+      "id": "all-of-me",
+      "originalAlbumName": "All Of Me",
+      "title": "All Of Me",
+      "tracks": [
+        {
+          "id": "03.06.02-practice-full",
+          "title": "03.06.02 Practice Full",
+          "duration": 2699.1893333333333,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Practice 3.6.2 (1).wav",
+          "artist": "Cannonball",
+          "album": "All Of Me",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "03.06.02-practice-complete",
+          "title": "03.06.02 Practice Complete",
+          "duration": 2699.1893333333333,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Practice 3.6.2.wav",
+          "artist": "Cannonball",
+          "album": "All Of Me",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "03.06.02-side-by-side",
+          "title": "03.06.02 Side By Side",
+          "duration": 223.85985416666668,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Side by side by two.wav",
+          "artist": "Cannonball",
+          "album": "All Of Me",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "03.02.18-turtlehead",
+          "title": "03.02.18 Turtlehead",
+          "duration": 250.96102083333332,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Turtlehead 3.2.18.wav",
+          "artist": "Cannonball",
+          "album": "All Of Me",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "03.06.18-set-one",
+          "title": "03.06.18 Set One",
+          "duration": 4267.866666666667,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/practice 3.6  (1).wav",
+          "artist": "Cannonball",
+          "album": "All Of Me",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "03.06.18-full-practice",
+          "title": "03.06.18 Full Practice",
+          "duration": 4267.866666666667,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/practice 3.6 .wav",
+          "artist": "Cannonball",
+          "album": "All Of Me",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        }
+      ],
+      "coverImage": "/images/all-of-me-cover.jpg"
+    },
+    {
+      "id": "autumn-wind",
+      "originalAlbumName": "Autumn Wind",
+      "title": "Autumn Wind",
+      "tracks": [
+        {
+          "id": "09.12.18-full-practice",
+          "title": "09.12.18 Full Practice",
+          "duration": 4314.986666666667,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/2018-09-12 18.13.25.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.2018-full-practice",
+          "title": "09.21.2018 Full Practice",
+          "duration": 1680.9173333333333,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/2018-09-21 18.05.02.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.01.18-full-practice",
+          "title": "09.01.18 Full Practice",
+          "duration": 550.7893333333334,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.1.18 .wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-practice-set-1",
+          "title": "09.21.18 Practice Set 1",
+          "duration": 2126.9333333333334,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.1 .wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.28.18-set-two",
+          "title": "09.28.18 Set Two",
+          "duration": 1923.536,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.2.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.28.18-full-practice",
+          "title": "09.28.18 Full Practice",
+          "duration": 2427.5146666666665,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.3.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-break-it-down",
+          "title": "09.21.18 Break It Down",
+          "duration": 340.0858125,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Break it down 9.21.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-dwynm-->-blackhearted",
+          "title": "09.21.18 DWYNM -> Blackhearted",
+          "duration": 507.99685416666665,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/DWYNM BLACKHEART 9.21.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-ezra",
+          "title": "09.21.18 Ezra",
+          "duration": 485.61797916666666,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Ezra 9.21.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.28.18-mother-of-pearl",
+          "title": "09.28.18 Mother of Pearl",
+          "duration": 445.9029791666667,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Mother of pearl (1).wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-mother-of-pearl",
+          "title": "09.21.18 Mother of Pearl",
+          "duration": 431.32377083333336,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Mother of pearl.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-selena",
+          "title": "09.21.18 Selena",
+          "duration": 100.75733333333334,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/New Selena 2.m4a",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 65139.556426000425,
+          "sampleRate": 48000,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "09.28.18-jam-->-in-memory",
+          "title": "09.28.18 Jam -> In Memory",
+          "duration": 562.4274791666667,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Spontaneous jam into in memory of my memory.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-turtlehead-selena",
+          "title": "09.21.18 Turtlehead Selena",
+          "duration": 316.30410416666666,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Turtlehead with lyrics.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-west-la-fadeaway",
+          "title": "09.21.18 West LA Fadeaway",
+          "duration": 409.530375,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/West LA 9.21 (1).wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-west-la-fadeaway",
+          "title": "09.21.18 West La Fadeaway",
+          "duration": 409.530375,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/West LA 9.21.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.01.18-autumn-wind",
+          "title": "09.01.18 Autumn Wind",
+          "duration": 385.04864583333335,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/autumn wind cannonball 9.1.18.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-eleven-jam",
+          "title": "09.21.18 Eleven Jam",
+          "duration": 327.817,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/eleven.12 jam.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.01.18-festival-queen",
+          "title": "09.01.18 Festival Queen",
+          "duration": 400.674375,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/festival queen 9.1.18.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-festival-queen",
+          "title": "09.21.18 Festival Queen",
+          "duration": 497.5992708333333,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/festival queen 9.21 stirball.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.01.18-lifeguard-->-attenboroughs",
+          "title": "09.01.18 Lifeguard -> Attenboroughs",
+          "duration": 1016.6638958333333,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/lifegaurd attenboroughs 9.1.18.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.01.18-mexicana",
+          "title": "09.01.18 Mexicana",
+          "duration": 600.4040833333333,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/mexicana 9.1.18.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.01.18-smoke",
+          "title": "09.01.18 Smoke",
+          "duration": 447.185125,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/smoke 9.1.18.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        },
+        {
+          "id": "09.21.18-tenth",
+          "title": "09.21.18 Tenth",
+          "duration": 332.9260625,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/tenth 9.21.wav",
+          "artist": "Cannonball",
+          "album": "Autumn Wind",
+          "year": 2018,
+          "bitrate": 1152000,
+          "sampleRate": 48000,
+          "channels": 1,
+          "lossless": true
+        }
+      ],
+      "coverImage": "/images/autumn-wind-cover.jpg"
+    },
+    {
       "id": "bighorn-studios",
       "originalAlbumName": "Bighorn Studios",
       "title": "Bighorn Studios",
@@ -300,203 +706,7 @@
           "lossless": false
         }
       ],
-      "coverImage": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/cover.jpg"
-    },
-    {
-      "id": "all-of-me",
-      "originalAlbumName": "All Of Me",
-      "title": "All Of Me",
-      "tracks": [
-        {
-          "id": "practice-3.6.2-(1).wav",
-          "title": "Practice 3.6.2 (1).wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Practice 3.6.2 (1).wav"
-        },
-        {
-          "id": "practice-3.6.2.wav",
-          "title": "Practice 3.6.2.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Practice 3.6.2.wav"
-        },
-        {
-          "id": "side-by-side-by-two.wav",
-          "title": "Side by side by two.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Side by side by two.wav"
-        },
-        {
-          "id": "turtlehead-3.2.18.wav",
-          "title": "Turtlehead 3.2.18.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Turtlehead 3.2.18.wav"
-        },
-        {
-          "id": "practice-3.6-(1).wav",
-          "title": "practice 3.6  (1).wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/practice 3.6  (1).wav"
-        },
-        {
-          "id": "practice-3.6-.wav",
-          "title": "practice 3.6 .wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/practice 3.6 .wav"
-        }
-      ],
-      "coverImage": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/cover.jpg"
-    },
-    {
-      "id": "autumn-wind",
-      "originalAlbumName": "Autumn Wind",
-      "title": "Autumn Wind",
-      "tracks": [
-        {
-          "id": "2018-09-12-18.13.25.wav",
-          "title": "2018-09-12 18.13.25.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/2018-09-12 18.13.25.wav"
-        },
-        {
-          "id": "2018-09-21-18.05.02.wav",
-          "title": "2018-09-21 18.05.02.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/2018-09-21 18.05.02.wav"
-        },
-        {
-          "id": "9.1.18-.wav",
-          "title": "9.1.18 .wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.1.18 .wav"
-        },
-        {
-          "id": "9.28.18.1-.wav",
-          "title": "9.28.18.1 .wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.1 .wav"
-        },
-        {
-          "id": "9.28.18.2.wav",
-          "title": "9.28.18.2.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.2.wav"
-        },
-        {
-          "id": "9.28.18.3.wav",
-          "title": "9.28.18.3.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.3.wav"
-        },
-        {
-          "id": "break-it-down-9.21.wav",
-          "title": "Break it down 9.21.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Break it down 9.21.wav"
-        },
-        {
-          "id": "dwynm-blackheart-9.21.wav",
-          "title": "DWYNM BLACKHEART 9.21.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/DWYNM BLACKHEART 9.21.wav"
-        },
-        {
-          "id": "ezra-9.21.wav",
-          "title": "Ezra 9.21.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Ezra 9.21.wav"
-        },
-        {
-          "id": "mother-of-pearl-(1).wav",
-          "title": "Mother of pearl (1).wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Mother of pearl (1).wav"
-        },
-        {
-          "id": "mother-of-pearl.wav",
-          "title": "Mother of pearl.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Mother of pearl.wav"
-        },
-        {
-          "id": "new-selena-2.m4a",
-          "title": "New Selena 2.m4a",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/New Selena 2.m4a"
-        },
-        {
-          "id": "spontaneous-jam-into-in-memory-of-my-memory.wav",
-          "title": "Spontaneous jam into in memory of my memory.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Spontaneous jam into in memory of my memory.wav"
-        },
-        {
-          "id": "turtlehead-with-lyrics.wav",
-          "title": "Turtlehead with lyrics.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Turtlehead with lyrics.wav"
-        },
-        {
-          "id": "west-la-9.21-(1).wav",
-          "title": "West LA 9.21 (1).wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/West LA 9.21 (1).wav"
-        },
-        {
-          "id": "west-la-9.21.wav",
-          "title": "West LA 9.21.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/West LA 9.21.wav"
-        },
-        {
-          "id": "autumn-wind-cannonball-9.1.18.wav",
-          "title": "autumn wind cannonball 9.1.18.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/autumn wind cannonball 9.1.18.wav"
-        },
-        {
-          "id": "eleven.12-jam.wav",
-          "title": "eleven.12 jam.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/eleven.12 jam.wav"
-        },
-        {
-          "id": "festival-queen-9.1.18.wav",
-          "title": "festival queen 9.1.18.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/festival queen 9.1.18.wav"
-        },
-        {
-          "id": "festival-queen-9.21-stirball.wav",
-          "title": "festival queen 9.21 stirball.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/festival queen 9.21 stirball.wav"
-        },
-        {
-          "id": "lifegaurd-attenboroughs-9.1.18.wav",
-          "title": "lifegaurd attenboroughs 9.1.18.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/lifegaurd attenboroughs 9.1.18.wav"
-        },
-        {
-          "id": "mexicana-9.1.18.wav",
-          "title": "mexicana 9.1.18.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/mexicana 9.1.18.wav"
-        },
-        {
-          "id": "smoke-9.1.18.wav",
-          "title": "smoke 9.1.18.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/smoke 9.1.18.wav"
-        },
-        {
-          "id": "tenth-9.21.wav",
-          "title": "tenth 9.21.wav",
-          "duration": 0,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/tenth 9.21.wav"
-        }
-      ],
-      "coverImage": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/cover.jpg"
+      "coverImage": "/images/bighorn-studios-cover.jpg"
     }
   ]
 }
