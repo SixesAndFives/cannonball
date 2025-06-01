@@ -39,7 +39,9 @@ export interface GalleryItem {
 
 export interface Comment {
   id: string;
-  author: string;
+  author: string;  // Will be replaced by userName when auth is added
   content: string;
   timestamp: string;
+  // These will be used later when we add authentication
+  userId?: string;
 }

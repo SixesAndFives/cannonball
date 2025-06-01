@@ -20,6 +20,16 @@ export function AlbumDetailClient({ initialAlbum }: { initialAlbum: Album | null
   const [editedNotes, setEditedNotes] = useState(initialAlbum?.notes || "")
   const [isPending, startTransition] = useTransition()
 
+  const handleDeleteTrack = (trackId: string) => {
+    if (!album) return
+
+    const updatedAlbum = {
+      ...album,
+      tracks: album.tracks.filter(track => track.id !== trackId)
+    }
+    setAlbum(updatedAlbum)
+  }
+
   const handleSaveNotes = () => {
     if (!album) return
 
@@ -152,9 +162,11 @@ export function AlbumDetailClient({ initialAlbum }: { initialAlbum: Album | null
                     Download All
                   </Button>
                 </div>
-                <TrackList 
-                  tracks={album.tracks} 
+                <TrackList
+                  tracks={album.tracks}
+                  albumId={album.id}
                   onUpdateTrack={handleUpdateTrack}
+                  onDeleteTrack={handleDeleteTrack}
                 />
               </TabsContent>
 

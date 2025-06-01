@@ -1,0 +1,54 @@
+import { NextResponse } from 'next/server'
+import { promises as fs } from 'fs'
+import path from 'path'
+import albumsData from '@/lib/albums.json'
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string; trackId: string } }
+) {
+  console.log('Deleting track:', params)
+  try {
+    const albumId = decodeURIComponent(params.id)
+    const trackId = decodeURIComponent(params.trackId)
+    
+    // Find the album
+    console.log('Looking for album:', albumId)
+    const albumIndex = albumsData.albums.findIndex(album => {
+      console.log('Checking album:', album.id)
+      return album.id === albumId
+    })
+    if (albumIndex === -1) {
+      return NextResponse.json({ error: 'Album not found' }, { status: 404 })
+    }
+    
+    // Find and remove the track
+    const album = albumsData.albums[albumIndex]
+    console.log('Found album:', album.title)
+    console.log('Looking for track:', trackId)
+    const trackIndex = album.tracks.findIndex(track => {
+      console.log('Checking track:', track.id)
+      return track.id === trackId
+    })
+    if (trackIndex === -1) {
+      return NextResponse.json({ error: 'Track not found' }, { status: 404 })
+    }
+    
+    // Remove the track
+    album.tracks.splice(trackIndex, 1)
+    
+    // Save the updated albums.json
+    const albumsPath = path.join(process.cwd(), 'lib', 'albums.json')
+    console.log('Writing to:', albumsPath)
+    await fs.writeFile(albumsPath, JSON.stringify(albumsData, null, 2))
+    console.log('Successfully deleted track')
+    
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting track:', error)
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+    return NextResponse.json({ error: 'Failed to delete track' }, { status: 500 })
+  }
+}

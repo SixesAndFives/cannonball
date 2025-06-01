@@ -21,7 +21,7 @@ async function normalizeAlbum(album: any): Promise<Album> {
     originalAlbumName: album.originalAlbumName,
     title: album.title || album.originalAlbumName,
     coverImage: album.coverImage,
-    year: album.year,
+    year: album.year || (album.tracks?.[0]?.year) || 'Unknown',
     notes: album.notes,
     tracks: await Promise.all(album.tracks.map(async (track: any) => ({
       id: track.id || `track-${Math.random().toString(36).slice(2)}`,
@@ -37,10 +37,19 @@ async function normalizeAlbum(album: any): Promise<Album> {
 
 export async function getAlbumById(id: string): Promise<Album | null> {
   try {
-    const album = albumsData.albums.find(async album => {
-      const albumId = album.id || await generateId(album.originalAlbumName)
-      return albumId === id
-    })
+    // First try to find by direct ID match
+    let album = albumsData.albums.find(album => album.id === id)
+    
+    // If not found, try matching by generated ID
+    if (!album) {
+      for (const a of albumsData.albums) {
+        const albumId = await generateId(a.originalAlbumName)
+        if (albumId === id) {
+          album = a
+          break
+        }
+      }
+    }
     
     return album ? await normalizeAlbum(album) : null
   } catch (error) {

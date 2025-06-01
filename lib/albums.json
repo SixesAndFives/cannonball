@@ -19,19 +19,6 @@
           "lossless": true
         },
         {
-          "id": "03.06.02-practice-complete",
-          "title": "03.06.02 Practice Complete",
-          "duration": 2699.1893333333333,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Practice 3.6.2.wav",
-          "artist": "Cannonball",
-          "album": "All Of Me",
-          "year": 2018,
-          "bitrate": 1152000,
-          "sampleRate": 48000,
-          "channels": 1,
-          "lossless": true
-        },
-        {
           "id": "03.06.02-side-by-side",
           "title": "03.06.02 Side By Side",
           "duration": 223.85985416666668,
@@ -49,19 +36,6 @@
           "title": "03.02.18 Turtlehead",
           "duration": 250.96102083333332,
           "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Turtlehead 3.2.18.wav",
-          "artist": "Cannonball",
-          "album": "All Of Me",
-          "year": 2018,
-          "bitrate": 1152000,
-          "sampleRate": 48000,
-          "channels": 1,
-          "lossless": true
-        },
-        {
-          "id": "03.06.18-set-one",
-          "title": "03.06.18 Set One",
-          "duration": 4267.866666666667,
-          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/practice 3.6  (1).wav",
           "artist": "Cannonball",
           "album": "All Of Me",
           "year": 2018,
