@@ -1,0 +1,502 @@
+{
+  "albums": [
+    {
+      "id": "bighorn-studios",
+      "originalAlbumName": "Bighorn Studios",
+      "title": "Bighorn Studios",
+      "tracks": [
+        {
+          "id": "all-in-your-head",
+          "title": "All In Your Head",
+          "duration": 308.97632653061225,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/All In Your Head.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 12,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "break-it-down",
+          "title": "Break It Down",
+          "duration": 388.3624489795918,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Break It Down.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 20,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "cannonball",
+          "title": "Cannonball",
+          "duration": 279.53632653061226,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Cannonball.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 11,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "cold-iron-shackles-jam",
+          "title": "Cold Iron Shackles Jam",
+          "duration": 439.5885714285714,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Cold Iron Shackles Jam.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 19,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "desert-mountain",
+          "title": "Desert Mountain",
+          "duration": 267.93795918367346,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Desert Mountain.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 13,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "ezra",
+          "title": "Ezra",
+          "duration": 229.4073469387755,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Ezra.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 3,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "i-don't-think-so",
+          "title": "I Don't Think So",
+          "duration": 238.31510204081633,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/I Don't Think So.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 8,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "into-a-dream",
+          "title": "Into A Dream",
+          "duration": 279.4057142857143,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Into A Dream.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 18,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "morning-song",
+          "title": "Morning Song",
+          "duration": 392.33306122448977,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Morning Song.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 14,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "palouse-sunset",
+          "title": "Palouse Sunset",
+          "duration": 207.17714285714285,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Palouse Sunset.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 17,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "selena",
+          "title": "Selena",
+          "duration": 268.9044897959184,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Selena.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 5,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "silver-dagger",
+          "title": "Silver Dagger",
+          "duration": 281.18204081632655,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Silver Dagger.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 10,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "silver-headed-cane",
+          "title": "Silver Headed Cane",
+          "duration": 328.22857142857146,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Silver Headed Cane.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 4,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "sinner-man",
+          "title": "Sinner Man",
+          "duration": 305.4236734693878,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Sinner Man.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 21,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "snow-goose",
+          "title": "Snow Goose",
+          "duration": 208.9012244897959,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Snow Goose.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 7,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "sweet-lips",
+          "title": "Sweet Lips",
+          "duration": 299.7289795918367,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Sweet Lips.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 2,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "tiger's-mask",
+          "title": "Tiger's Mask",
+          "duration": 365.2179591836735,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Tiger's Mask.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 16,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "up-all-night",
+          "title": "Up All Night",
+          "duration": 338.25959183673467,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Up All Night.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 1,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "where-did-you-go",
+          "title": "Where Did You Go",
+          "duration": 366.0016326530612,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Where Did You Go.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 22,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "whipping-post",
+          "title": "Whipping Post",
+          "duration": 371.04326530612246,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Whipping Post.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 15,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        },
+        {
+          "id": "wicked-rain",
+          "title": "Wicked Rain",
+          "duration": 188.99591836734695,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/Wicked Rain.mp3",
+          "artist": "Cannonball",
+          "album": "Live from Bighorn Studios",
+          "year": 2011,
+          "trackNumber": 6,
+          "bitrate": 320000,
+          "sampleRate": 44100,
+          "channels": 2,
+          "lossless": false
+        }
+      ],
+      "coverImage": "https://f004.backblazeb2.com/file/cannonball-music/Bighorn Studios/cover.jpg"
+    },
+    {
+      "id": "all-of-me",
+      "originalAlbumName": "All Of Me",
+      "title": "All Of Me",
+      "tracks": [
+        {
+          "id": "practice-3.6.2-(1).wav",
+          "title": "Practice 3.6.2 (1).wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Practice 3.6.2 (1).wav"
+        },
+        {
+          "id": "practice-3.6.2.wav",
+          "title": "Practice 3.6.2.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Practice 3.6.2.wav"
+        },
+        {
+          "id": "side-by-side-by-two.wav",
+          "title": "Side by side by two.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Side by side by two.wav"
+        },
+        {
+          "id": "turtlehead-3.2.18.wav",
+          "title": "Turtlehead 3.2.18.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/Turtlehead 3.2.18.wav"
+        },
+        {
+          "id": "practice-3.6-(1).wav",
+          "title": "practice 3.6  (1).wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/practice 3.6  (1).wav"
+        },
+        {
+          "id": "practice-3.6-.wav",
+          "title": "practice 3.6 .wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/practice 3.6 .wav"
+        }
+      ],
+      "coverImage": "https://f004.backblazeb2.com/file/cannonball-music/All Of Me/cover.jpg"
+    },
+    {
+      "id": "autumn-wind",
+      "originalAlbumName": "Autumn Wind",
+      "title": "Autumn Wind",
+      "tracks": [
+        {
+          "id": "2018-09-12-18.13.25.wav",
+          "title": "2018-09-12 18.13.25.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/2018-09-12 18.13.25.wav"
+        },
+        {
+          "id": "2018-09-21-18.05.02.wav",
+          "title": "2018-09-21 18.05.02.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/2018-09-21 18.05.02.wav"
+        },
+        {
+          "id": "9.1.18-.wav",
+          "title": "9.1.18 .wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.1.18 .wav"
+        },
+        {
+          "id": "9.28.18.1-.wav",
+          "title": "9.28.18.1 .wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.1 .wav"
+        },
+        {
+          "id": "9.28.18.2.wav",
+          "title": "9.28.18.2.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.2.wav"
+        },
+        {
+          "id": "9.28.18.3.wav",
+          "title": "9.28.18.3.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/9.28.18.3.wav"
+        },
+        {
+          "id": "break-it-down-9.21.wav",
+          "title": "Break it down 9.21.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Break it down 9.21.wav"
+        },
+        {
+          "id": "dwynm-blackheart-9.21.wav",
+          "title": "DWYNM BLACKHEART 9.21.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/DWYNM BLACKHEART 9.21.wav"
+        },
+        {
+          "id": "ezra-9.21.wav",
+          "title": "Ezra 9.21.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Ezra 9.21.wav"
+        },
+        {
+          "id": "mother-of-pearl-(1).wav",
+          "title": "Mother of pearl (1).wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Mother of pearl (1).wav"
+        },
+        {
+          "id": "mother-of-pearl.wav",
+          "title": "Mother of pearl.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Mother of pearl.wav"
+        },
+        {
+          "id": "new-selena-2.m4a",
+          "title": "New Selena 2.m4a",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/New Selena 2.m4a"
+        },
+        {
+          "id": "spontaneous-jam-into-in-memory-of-my-memory.wav",
+          "title": "Spontaneous jam into in memory of my memory.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Spontaneous jam into in memory of my memory.wav"
+        },
+        {
+          "id": "turtlehead-with-lyrics.wav",
+          "title": "Turtlehead with lyrics.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/Turtlehead with lyrics.wav"
+        },
+        {
+          "id": "west-la-9.21-(1).wav",
+          "title": "West LA 9.21 (1).wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/West LA 9.21 (1).wav"
+        },
+        {
+          "id": "west-la-9.21.wav",
+          "title": "West LA 9.21.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/West LA 9.21.wav"
+        },
+        {
+          "id": "autumn-wind-cannonball-9.1.18.wav",
+          "title": "autumn wind cannonball 9.1.18.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/autumn wind cannonball 9.1.18.wav"
+        },
+        {
+          "id": "eleven.12-jam.wav",
+          "title": "eleven.12 jam.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/eleven.12 jam.wav"
+        },
+        {
+          "id": "festival-queen-9.1.18.wav",
+          "title": "festival queen 9.1.18.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/festival queen 9.1.18.wav"
+        },
+        {
+          "id": "festival-queen-9.21-stirball.wav",
+          "title": "festival queen 9.21 stirball.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/festival queen 9.21 stirball.wav"
+        },
+        {
+          "id": "lifegaurd-attenboroughs-9.1.18.wav",
+          "title": "lifegaurd attenboroughs 9.1.18.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/lifegaurd attenboroughs 9.1.18.wav"
+        },
+        {
+          "id": "mexicana-9.1.18.wav",
+          "title": "mexicana 9.1.18.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/mexicana 9.1.18.wav"
+        },
+        {
+          "id": "smoke-9.1.18.wav",
+          "title": "smoke 9.1.18.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/smoke 9.1.18.wav"
+        },
+        {
+          "id": "tenth-9.21.wav",
+          "title": "tenth 9.21.wav",
+          "duration": 0,
+          "audioUrl": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/tenth 9.21.wav"
+        }
+      ],
+      "coverImage": "https://f004.backblazeb2.com/file/cannonball-music/Autumn Wind/cover.jpg"
+    }
+  ]
+}
