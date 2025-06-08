@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Play, Pause, SkipBack, SkipForward } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
+import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
 
 interface AudioPlayerProps {
@@ -12,21 +13,36 @@ interface AudioPlayerProps {
   onNext?: () => void
   onPrevious?: () => void
   className?: string
+  autoPlay?: boolean
 }
 
-export function AudioPlayer({ src, title, onNext, onPrevious, className }: AudioPlayerProps) {
+export function AudioPlayer({ src, title, onNext, onPrevious, className, autoPlay }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingProgress, setLoadingProgress] = useState(0)
 
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
 
+    if (autoPlay) {
+      audio.play().catch(() => {
+        // Autoplay might be blocked by browser policy
+        setError('Autoplay blocked. Click play to start.')
+      })
+      setIsPlaying(true)
+    }
+
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
-    const handleLoadedMetadata = () => setDuration(audio.duration)
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration)
+      setIsLoading(false)
+      setLoadingProgress(100)
+    }
     const handleEnded = () => {
       setIsPlaying(false)
       if (onNext) onNext()
@@ -37,13 +53,23 @@ export function AudioPlayer({ src, title, onNext, onPrevious, className }: Audio
     }
 
     audio.addEventListener('timeupdate', handleTimeUpdate)
+    const handleProgress = () => {
+      if (audio.buffered.length > 0) {
+        const bufferedEnd = audio.buffered.end(audio.buffered.length - 1)
+        const progress = (bufferedEnd / audio.duration) * 100
+        setLoadingProgress(progress)
+      }
+    }
+
     audio.addEventListener('loadedmetadata', handleLoadedMetadata)
+    audio.addEventListener('progress', handleProgress)
     audio.addEventListener('ended', handleEnded)
     audio.addEventListener('error', handleError)
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate)
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
+    audio.removeEventListener('progress', handleProgress)
       audio.removeEventListener('ended', handleEnded)
       audio.removeEventListener('error', handleError)
     }
@@ -87,7 +113,16 @@ export function AudioPlayer({ src, title, onNext, onPrevious, className }: Audio
   }
 
   return (
-    <div className={cn('flex flex-col gap-2 p-4 bg-white rounded-lg shadow', className)}>
+    <div className={cn("bg-white p-4 rounded-lg shadow-sm border border-gray-200", className)}>
+      {isLoading && (
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-2 text-sm text-gray-500">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Loading audio...</span>
+          </div>
+          <Progress value={loadingProgress} className="h-1" />
+        </div>
+      )}
       <audio ref={audioRef} src={src} preload="metadata" />
       
       <div className="flex items-center justify-between">

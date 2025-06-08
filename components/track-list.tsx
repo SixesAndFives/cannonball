@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, forwardRef, useImperativeHandle } from "react"
 import { Pencil, Play, Pause, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,7 +17,14 @@ interface TrackListProps {
   onDeleteTrack?: (trackId: string) => void
 }
 
-export function TrackList({ tracks, albumId, onUpdateTrack, onDeleteTrack }: TrackListProps) {
+export interface TrackListRef {
+  playTrack: (index: number, autoPlay?: boolean) => void
+}
+
+export const TrackList = forwardRef<TrackListRef, TrackListProps>(function TrackList(
+  { tracks, albumId, onUpdateTrack, onDeleteTrack },
+  ref
+) {
   const [editingTrackId, setEditingTrackId] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState("")
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null)
@@ -65,8 +72,25 @@ export function TrackList({ tracks, albumId, onUpdateTrack, onDeleteTrack }: Tra
     setEditedTitle("")
   }
 
-  const handlePlayTrack = (index: number) => {
-    setCurrentTrackIndex(index === currentTrackIndex ? null : index)
+  const playTrack = (index: number, autoPlay: boolean = false) => {
+    if (index === currentTrackIndex && !autoPlay) {
+      setCurrentTrackIndex(null)
+    } else {
+      setCurrentTrackIndex(index)
+    }
+  }
+
+  // Expose playTrack method via ref
+  useImperativeHandle(ref, () => ({
+    playTrack
+  }))
+
+  const handlePlayTrack = (index: number, autoPlay: boolean = false) => {
+    if (index === currentTrackIndex && !autoPlay) {
+      setCurrentTrackIndex(null)
+    } else {
+      setCurrentTrackIndex(index)
+    }
   }
 
   const handleNextTrack = () => {
@@ -80,7 +104,7 @@ export function TrackList({ tracks, albumId, onUpdateTrack, onDeleteTrack }: Tra
   }
 
   return (
-    <div className="space-y-4">
+    <div className="track-list space-y-4">
       {currentTrackIndex !== null && tracks[currentTrackIndex]?.audioUrl && (
         <div className="sticky top-4 z-10">
           <AudioPlayer
@@ -88,6 +112,7 @@ export function TrackList({ tracks, albumId, onUpdateTrack, onDeleteTrack }: Tra
             title={tracks[currentTrackIndex].title}
             onNext={currentTrackIndex < tracks.length - 1 ? handleNextTrack : undefined}
             onPrevious={currentTrackIndex > 0 ? handlePreviousTrack : undefined}
+            autoPlay={true}
           />
         </div>
       )}
@@ -147,7 +172,8 @@ export function TrackList({ tracks, albumId, onUpdateTrack, onDeleteTrack }: Tra
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePlayTrack(index)}
+                      onClick={() => handlePlayTrack(index, true)}
+                      data-track-index={index}
                     >
                       {currentTrackIndex === index ? (
                         <>
@@ -178,4 +204,4 @@ export function TrackList({ tracks, albumId, onUpdateTrack, onDeleteTrack }: Tra
       />
     </div>
   )
-}
+})

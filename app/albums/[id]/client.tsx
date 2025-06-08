@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useRef } from "react"
 import Link from "next/link"
-import { ArrowLeft, Download, Edit, Plus, Save, X } from "lucide-react"
+import { ArrowLeft, Download, Edit, Play, Plus, Save, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { AlbumHeader } from "@/components/album-header"
-import { TrackList } from "@/components/track-list"
+import { TrackList, TrackListRef } from "@/components/track-list"
 import { AlbumGallery } from "@/components/album-gallery"
 import { useToast } from "@/hooks/use-toast"
 import { updateAlbum } from "@/lib/album-client"
@@ -15,6 +15,7 @@ import type { Album, Track } from "@/lib/types"
 
 export function AlbumDetailClient({ initialAlbum }: { initialAlbum: Album | null }) {
   const { toast } = useToast()
+  const trackListRef = useRef<TrackListRef>(null)
   const [album, setAlbum] = useState<Album | null>(initialAlbum)
   const [isEditingNotes, setIsEditingNotes] = useState(false)
   const [editedNotes, setEditedNotes] = useState(initialAlbum?.notes || "")
@@ -157,12 +158,32 @@ export function AlbumDetailClient({ initialAlbum }: { initialAlbum: Album | null
               <TabsContent value="tracks" className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-medium text-gray-800">Tracks</h2>
-                  <Button onClick={handleDownloadAlbum}>
-                    <Download className="h-4 w-4 mr-1" />
-                    Download All
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button onClick={handleDownloadAlbum}>
+                      <Download className="h-4 w-4 mr-1" />
+                      Download All
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (album.tracks.length === 0) {
+                          toast({
+                            title: "No tracks",
+                            description: "This album has no tracks to play.",
+                            variant: "destructive",
+                          })
+                          return
+                        }
+                        // Start playing the first track with autoPlay
+                        trackListRef.current?.playTrack(0, true)
+                      }}
+                    >
+                      <Play className="h-4 w-4 mr-1" />
+                      Play Full Album
+                    </Button>
+                  </div>
                 </div>
                 <TrackList
+                  ref={trackListRef}
                   tracks={album.tracks}
                   albumId={album.id}
                   onUpdateTrack={handleUpdateTrack}
