@@ -127,7 +127,7 @@ export function FooterPlayer({
   return (
     <div 
       className={cn(
-        "fixed bottom-0 left-0 right-0 bg-blue-50/95 backdrop-blur-md border-t border-blue-200 transition-all duration-300 ease-in-out",
+        "fixed bottom-0 left-0 right-0 bg-blue-50/95 backdrop-blur-md border-t border-blue-200 transition-all duration-300 ease-in-out z-50",
         isExpanded ? "h-24" : "h-12",
         className
       )}

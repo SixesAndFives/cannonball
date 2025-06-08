@@ -5,8 +5,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { FooterPlayer } from "@/components/footer-player"
-import { TrackList } from "@/components/track-list"
+import { FooterPlayer } from '@/components/footer-player'
+import { TrackList } from '@/components/track-list'
+import { usePlayer } from '@/contexts/player-context'
 import { AlbumGallery } from "@/components/album-gallery"
 import { AlbumHeader } from "@/components/album-header"
 import { useToast } from "@/hooks/use-toast"
@@ -19,7 +20,8 @@ export function AlbumDetailClient({ initialAlbum }: { initialAlbum: Album | null
   const [isEditingNotes, setIsEditingNotes] = useState(false)
   const [editedNotes, setEditedNotes] = useState(initialAlbum?.notes || "")
   const [isPending, startTransition] = useTransition()
-  const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null)
+  const { playTrack, currentTrack } = usePlayer()
+  const currentTrackIndex = currentTrack.trackIndex
 
   const handleDeleteTrack = (trackId: string) => {
     if (!album) return
@@ -174,8 +176,20 @@ export function AlbumDetailClient({ initialAlbum }: { initialAlbum: Album | null
                   albumId={album.id}
                   onUpdateTrack={handleUpdateTrack}
                   onDeleteTrack={handleDeleteTrack}
-                  onPlayTrack={(index) => setCurrentTrackIndex(index)}
-                  currentTrackIndex={currentTrackIndex}
+                  onPlayTrack={(index) => {
+                    const track = album.tracks[index]
+                    if (track.audioUrl) {
+                      playTrack(
+                        { ...track, audioUrl: track.audioUrl },
+                        album.id,
+                        album.title,
+                        album.coverImage || null,
+                        index,
+                        album.tracks.filter(t => t.audioUrl).map(t => ({ ...t, audioUrl: t.audioUrl! }))
+                      )
+                    }
+                  }}
+                  currentTrackIndex={currentTrack.albumId === album.id ? currentTrack.trackIndex : null}
                 />
               </TabsContent>
 
@@ -237,19 +251,7 @@ export function AlbumDetailClient({ initialAlbum }: { initialAlbum: Album | null
         </main>
       </div>
 
-      {currentTrackIndex !== null && album.tracks[currentTrackIndex]?.audioUrl && (
-        <div className="fixed bottom-0 left-0 right-0">
-          <FooterPlayer
-            src={album.tracks[currentTrackIndex].audioUrl}
-            title={album.tracks[currentTrackIndex].title || ''}
-            albumTitle={album.title}
-            coverImage={album.coverImage}
-            onNext={currentTrackIndex < album.tracks.length - 1 ? () => setCurrentTrackIndex(currentTrackIndex + 1) : undefined}
-            onPrevious={currentTrackIndex > 0 ? () => setCurrentTrackIndex(currentTrackIndex - 1) : undefined}
-            autoPlay={true}
-          />
-        </div>
-      )}
+      {/* FooterPlayer is now rendered by PlayerProvider */}
     </div>
   )
 }
