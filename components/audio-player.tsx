@@ -81,6 +81,8 @@ export function AudioPlayer({ src, title, onNext, onPrevious, className, autoPla
     setDuration(0)
     setIsPlaying(false)
     setError(null)
+    setIsLoading(true)
+    setLoadingProgress(0)
   }, [src])
 
   const togglePlayPause = async () => {
@@ -134,22 +136,21 @@ export function AudioPlayer({ src, title, onNext, onPrevious, className, autoPla
         )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-500 w-10">
-          {formatTime(currentTime)}
-        </span>
-        
-        <Slider
-          value={[currentTime]}
-          max={duration || 100}
-          step={1}
-          onValueChange={handleSeek}
-          className="flex-1"
-        />
-        
-        <span className="text-xs text-gray-500 w-10">
-          {formatTime(duration)}
-        </span>
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 mb-2">
+          <span className="text-sm text-gray-500 w-12">{formatTime(currentTime)}</span>
+          <div className="flex-1">
+            <Slider
+              value={[currentTime]}
+              min={0}
+              max={duration || 100}
+              step={1}
+              onValueChange={handleSeek}
+              className="cursor-pointer"
+            />
+          </div>
+          <span className="text-sm text-gray-500 w-12">{formatTime(duration)}</span>
+        </div>
       </div>
 
       <div className="flex items-center justify-center gap-2">

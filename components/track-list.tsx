@@ -170,16 +170,13 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
-                      variant="outline"
+                      variant={currentTrackIndex === index ? "default" : "outline"}
                       size="sm"
                       onClick={() => handlePlayTrack(index, true)}
                       data-track-index={index}
                     >
                       {currentTrackIndex === index ? (
-                        <>
-                          <Pause className="h-4 w-4 mr-2" />
-                          Pause Track
-                        </>
+                        "Now Playing"
                       ) : (
                         <>
                           <Play className="h-4 w-4 mr-2" />
