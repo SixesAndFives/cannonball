@@ -46,12 +46,12 @@ export function AlbumHeader({ album, onUpdate }: AlbumHeaderProps) {
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
-      <div className="relative aspect-square">
+      <div className="relative w-full max-w-[300px] mx-auto aspect-square">
         <Image
           src={album.coverImage || "/placeholder.svg"}
           alt={album.title}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
           className="object-cover"
         />
       </div>

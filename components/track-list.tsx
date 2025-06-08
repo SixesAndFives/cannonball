@@ -13,8 +13,10 @@ import { ConfirmDialog } from "@/components/confirm-dialog"
 interface TrackListProps {
   tracks: Track[]
   albumId: string
-  onUpdateTrack?: (trackId: string, updatedTrack: Track) => void
-  onDeleteTrack?: (trackId: string) => void
+  onUpdateTrack: (trackId: string, updatedTrack: Track) => Promise<void>
+  onDeleteTrack: (trackId: string) => void
+  onPlayTrack: (index: number) => void
+  currentTrackIndex: number | null
 }
 
 export interface TrackListRef {
@@ -22,12 +24,11 @@ export interface TrackListRef {
 }
 
 export const TrackList = forwardRef<TrackListRef, TrackListProps>(function TrackList(
-  { tracks, albumId, onUpdateTrack, onDeleteTrack },
+  { tracks, albumId, onUpdateTrack, onDeleteTrack, onPlayTrack, currentTrackIndex },
   ref
 ) {
   const [editingTrackId, setEditingTrackId] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState("")
-  const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null)
   const [deleteTrackId, setDeleteTrackId] = useState<string | null>(null)
 
   const handleDeleteClick = async (trackId: string) => {
@@ -72,51 +73,30 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
     setEditedTitle("")
   }
 
-  const playTrack = (index: number, autoPlay: boolean = false) => {
-    if (index === currentTrackIndex && !autoPlay) {
-      setCurrentTrackIndex(null)
-    } else {
-      setCurrentTrackIndex(index)
-    }
-  }
-
-  // Expose playTrack method via ref
   useImperativeHandle(ref, () => ({
-    playTrack
+    playTrack: (index: number) => onPlayTrack(index)
   }))
 
-  const handlePlayTrack = (index: number, autoPlay: boolean = false) => {
-    if (index === currentTrackIndex && !autoPlay) {
-      setCurrentTrackIndex(null)
-    } else {
-      setCurrentTrackIndex(index)
-    }
+  const handlePlayClick = (index: number) => {
+    onPlayTrack(index)
   }
 
   const handleNextTrack = () => {
-    if (currentTrackIndex === null || currentTrackIndex >= tracks.length - 1) return
-    setCurrentTrackIndex(currentTrackIndex + 1)
+    if (currentTrackIndex === null || currentTrackIndex >= tracks.length - 1) {
+      return
+    }
+    onPlayTrack(currentTrackIndex + 1)
   }
 
   const handlePreviousTrack = () => {
-    if (currentTrackIndex === null || currentTrackIndex <= 0) return
-    setCurrentTrackIndex(currentTrackIndex - 1)
+    if (currentTrackIndex === null || currentTrackIndex <= 0) {
+      return
+    }
+    onPlayTrack(currentTrackIndex - 1)
   }
 
   return (
     <div className="track-list space-y-4">
-      {currentTrackIndex !== null && tracks[currentTrackIndex]?.audioUrl && (
-        <div className="sticky top-4 z-10">
-          <AudioPlayer
-            src={tracks[currentTrackIndex].audioUrl}
-            title={tracks[currentTrackIndex].title}
-            onNext={currentTrackIndex < tracks.length - 1 ? handleNextTrack : undefined}
-            onPrevious={currentTrackIndex > 0 ? handlePreviousTrack : undefined}
-            autoPlay={true}
-          />
-        </div>
-      )}
-
       <div className="bg-white shadow rounded-lg divide-y">
         {tracks.map((track, index) => (
           <div
@@ -146,33 +126,31 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
               ) : (
                 <div className="flex items-center justify-between flex-1">
                   <div className="flex items-center gap-2">
-                    {onUpdateTrack && (
-                      <>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEditClick(track)}
-                          className="h-8 w-8"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeleteTrackId(track.id)}
-                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </>
-                    )}
-                    <span className="text-sm text-gray-900">{track.title}</span>
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditClick(track)}
+                        className="h-8 w-8"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setDeleteTrackId(track.id)}
+                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm text-gray-900">{track.title}</span>
+                    </>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
                       variant={currentTrackIndex === index ? "default" : "outline"}
                       size="sm"
-                      onClick={() => handlePlayTrack(index, true)}
+                      onClick={() => handlePlayClick(index)}
                       data-track-index={index}
                     >
                       {currentTrackIndex === index ? (
