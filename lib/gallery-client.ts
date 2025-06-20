@@ -22,6 +22,7 @@ interface UploadGalleryItemParams {
   taggedUsers?: string[]
   uploadedBy: string
   albumId: string
+  onProgress?: (progress: number) => void
 }
 
 export async function uploadGalleryItem({
@@ -30,7 +31,8 @@ export async function uploadGalleryItem({
   caption = '',
   taggedUsers = [],
   uploadedBy,
-  albumId
+  albumId,
+  onProgress
 }: UploadGalleryItemParams): Promise<GalleryItem | null> {
   try {
     const formData = new FormData()
@@ -40,16 +42,33 @@ export async function uploadGalleryItem({
     formData.append('taggedUsers', JSON.stringify(taggedUsers))
     formData.append('uploadedBy', uploadedBy)
 
-    const response = await fetch(`/api/albums/${albumId}/gallery`, {
-      method: 'POST',
-      body: formData
+    const xhr = new XMLHttpRequest()
+    const promise = new Promise<GalleryItem | null>((resolve, reject) => {
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable && onProgress) {
+          const progress = (event.loaded / event.total) * 100
+          onProgress(progress)
+        }
+      })
+
+      xhr.addEventListener('load', async () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const data = JSON.parse(xhr.responseText)
+          resolve(data)
+        } else {
+          reject(new Error('Upload failed'))
+        }
+      })
+
+      xhr.addEventListener('error', () => {
+        reject(new Error('Upload failed'))
+      })
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to upload gallery item')
-    }
+    xhr.open('POST', `/api/albums/${albumId}/gallery`)
+    xhr.send(formData)
 
-    return await response.json()
+    return await promise
   } catch (error) {
     console.error('Error uploading gallery item:', error)
     return null

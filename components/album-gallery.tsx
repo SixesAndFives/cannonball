@@ -144,19 +144,20 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative flex-1 min-h-0">
-              {selectedItem.type === 'video' ? (
-                <video
-                  src={selectedItem.url}
-                  controls
-                  className="w-full h-full object-contain"
-                />
+              {selectedItem?.type === 'video' ? (
+                <div className="w-full h-full flex items-center justify-center">
+                  <video
+                    controls
+                    autoPlay
+                    src={selectedItem.url}
+                    className="max-w-full max-h-[80vh] object-contain"
+                  />
+                </div>
               ) : (
                 <Image
-                  src={selectedItem.url}
-                  alt={selectedItem.caption || selectedItem.title || 'Gallery image'}
-                  width={1200}
-                  height={800}
-                  className="w-full h-full object-contain"
+                  src={selectedItem?.url}
+                  alt={selectedItem?.title || ''}
+                  className="max-h-[80vh] object-contain"
                 />
               )}
             </div>

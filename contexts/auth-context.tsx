@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import type { User } from '@/lib/types'
 
 type AuthUser = Omit<User, 'password'>
@@ -14,10 +14,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('auth-user')
+    if (savedUser) {
+      setUser(JSON.parse(savedUser))
+    }
+    setIsInitialized(true)
+  }, [])
+
+  const updateUser = (newUser: AuthUser | null) => {
+    setUser(newUser)
+    if (newUser) {
+      localStorage.setItem('auth-user', JSON.stringify(newUser))
+    } else {
+      localStorage.removeItem('auth-user')
+    }
+  }
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      {children}
+    <AuthContext.Provider value={{ user, setUser: updateUser }}>
+      {isInitialized ? children : null}
     </AuthContext.Provider>
   )
 }

@@ -213,7 +213,12 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
               disabled={isUploading}
               className="flex-1"
             >
-              {isUploading ? "Uploading..." : "Upload"}
+              {isUploading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
+                  <span>Uploading...</span>
+                </div>
+              ) : "Upload"}
             </Button>
             <Button
               variant="outline"

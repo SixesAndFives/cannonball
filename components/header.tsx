@@ -1,32 +1,39 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuth } from '@/contexts/auth-context'
-import { Button } from './ui/button'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export function Header() {
-  const router = useRouter()
   const { user, setUser } = useAuth()
+  const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <header className="border-b border-gray-200 bg-white">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="block">
-              <h1 className="text-2xl font-semibold text-gray-900">Cannonball</h1>
-              <p className="text-sm text-gray-500">Private Music Archive</p>
-            </Link>
-            <nav className="space-x-4 text-sm">
-              <Link href="/albums" className="text-gray-600 hover:text-gray-900">Albums</Link>
-              <span className="text-gray-300">|</span>
-              <Link href="/gallery" className="text-gray-600 hover:text-gray-900">Gallery</Link>
-            </nav>
-          </div>
           <div className="flex items-center gap-4">
-            {user && (
+            <Link href="/" className="block">
+              <div className="relative w-40 h-12 overflow-hidden">
+                <Image
+                  src="/images/logo.jpg"
+                  alt="Cannonball Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </Link>
+            <h1 className="text-2xl font-bold tracking-wider">THE VAULT</h1>
+          </div>
+          <div className="flex items-center gap-6">
+            {mounted && user && (
               <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-600">{user.fullName}</span>
                 <div className="relative w-8 h-8 rounded-full overflow-hidden">
@@ -39,15 +46,22 @@ export function Header() {
                 </div>
               </div>
             )}
-            <Button 
-              variant="ghost" 
-              onClick={() => {
-                setUser(null)
-                router.push('/')
-              }}
-            >
-              Sign Out
-            </Button>
+            <nav className="text-sm">
+              <Link href="/albums" className="text-gray-600 hover:text-gray-900">Albums</Link>
+              <span className="text-gray-300 mx-2">|</span>
+              <Link href="/gallery" className="text-gray-600 hover:text-gray-900">Gallery</Link>
+              <span className="text-gray-300 mx-2">|</span>
+              <button
+                onClick={() => {
+                  setUser(null)
+                  router.push('/login')
+                }}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                Sign Out
+              </button>
+            </nav>
+
           </div>
         </div>
       </div>

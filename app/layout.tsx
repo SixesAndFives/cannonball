@@ -7,9 +7,8 @@ import { Toaster } from 'sonner'
 import { Header } from '@/components/header'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'Cannonball Archive',
+  description: 'Music archive for Cannonball'
 }
 
 export default function RootLayout({
@@ -19,6 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/images/logo.jpg" />
+        <link rel="shortcut icon" href="/images/logo.jpg" />
+      </head>
       <body>
         <AuthProvider>
           <PlayerProvider>

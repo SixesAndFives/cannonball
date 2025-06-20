@@ -1,26 +1,6 @@
 {
   "items": [
     {
-      "id": "ff134346-8af2-42ea-8468-fc0a6eb8752d",
-      "albumId": "all-of-me",
-      "type": "image",
-      "url": "https://f004.backblazeb2.com/file/cannonball-music/gallery/all-of-me/abd4d3c8-c185-459e-a93f-32740acecba4-test-image.png",
-      "caption": "Test upload",
-      "fileName": "gallery/all-of-me/abd4d3c8-c185-459e-a93f-32740acecba4-test-image.png",
-      "contentType": "image/png",
-      "uploadTimestamp": 1750444754765
-    },
-    {
-      "id": "bc4ab408-d2db-436a-8b70-0979e0a36499",
-      "albumId": "all-of-me",
-      "type": "image",
-      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/all-of-me/3876a766-2e30-4a2d-9d9d-3981232ab0ac-test-image.png",
-      "caption": "Test upload",
-      "fileName": "Images/all-of-me/3876a766-2e30-4a2d-9d9d-3981232ab0ac-test-image.png",
-      "contentType": "image/png",
-      "uploadTimestamp": 1750444899271
-    },
-    {
       "id": "4a465d5f-2b0e-4663-9827-da601cc4ddef",
       "albumId": "live---polebridge-052425",
       "type": "image",
@@ -59,6 +39,66 @@
       "fileName": "Images/acf3db16-b6f2-453d-ad48-bdd0ba414bed-1000011772.jpg",
       "contentType": "image/jpeg",
       "uploadTimestamp": 1750446105755
+    },
+    {
+      "id": "974e2d11-3f80-4ac6-bafb-6df694331ffe",
+      "albumId": "live---polebridge-052425",
+      "type": "video",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/ee6fbecd-0268-4a0e-9feb-5b8a7f12ddf3-IMG_9715.MOV",
+      "caption": "A snippet of Elizabeth Reed",
+      "fileName": "Images/ee6fbecd-0268-4a0e-9feb-5b8a7f12ddf3-IMG_9715.MOV",
+      "contentType": "video/quicktime",
+      "uploadTimestamp": 1750446601364
+    },
+    {
+      "id": "88117abe-b25d-4727-94a9-1fce3cb4d861",
+      "albumId": "live---polebridge-052425",
+      "type": "video",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/6be38c84-a540-42c1-b284-f86ec4318bc2-IMG_9718.MOV",
+      "caption": "In Memory of My Memory",
+      "fileName": "Images/6be38c84-a540-42c1-b284-f86ec4318bc2-IMG_9718.MOV",
+      "contentType": "video/quicktime",
+      "uploadTimestamp": 1750447043426
+    },
+    {
+      "id": "07980268-49f6-4430-bc61-79e2ae2e61bd",
+      "albumId": "live---polebridge-052425",
+      "type": "video",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/a4c3cca5-f63d-456f-8a39-f6bf7dd18d10-IMG_9723.MOV",
+      "caption": "Patrick is feeling it",
+      "fileName": "Images/a4c3cca5-f63d-456f-8a39-f6bf7dd18d10-IMG_9723.MOV",
+      "contentType": "video/quicktime",
+      "uploadTimestamp": 1750447132885
+    },
+    {
+      "id": "f5e4b797-8bf3-4587-b8c4-51cec5bb3e30",
+      "albumId": "live---polebridge-052425",
+      "type": "video",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/12c2d641-3c24-4579-b284-94cf2272fc0b-IMG_9722.MOV",
+      "caption": "Ezra",
+      "fileName": "Images/12c2d641-3c24-4579-b284-94cf2272fc0b-IMG_9722.MOV",
+      "contentType": "video/quicktime",
+      "uploadTimestamp": 1750447266194
+    },
+    {
+      "id": "8b46326f-17f4-495c-a921-4ed23d96aec8",
+      "albumId": "live---polebridge-052425",
+      "type": "video",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/2f4700de-ef93-4bff-a1fe-9431391c00a8-IMG_9730.MOV",
+      "caption": "Night time Alley Cat",
+      "fileName": "Images/2f4700de-ef93-4bff-a1fe-9431391c00a8-IMG_9730.MOV",
+      "contentType": "video/quicktime",
+      "uploadTimestamp": 1750447693366
+    },
+    {
+      "id": "24656f2b-a7ae-4389-ad65-94bb2dc50f6e",
+      "albumId": "live---polebridge-052425",
+      "type": "video",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/c441c23e-0706-487e-adc7-d58fb18f6876-IMG_9721.MOV",
+      "caption": "Daniel shouts to the heavens",
+      "fileName": "Images/c441c23e-0706-487e-adc7-d58fb18f6876-IMG_9721.MOV",
+      "contentType": "video/quicktime",
+      "uploadTimestamp": 1750447758103
     }
   ]
 }
