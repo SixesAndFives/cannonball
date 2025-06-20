@@ -1,0 +1,53 @@
+.userGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .userGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.userButton {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: 4px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.userButton:hover {
+  border-color: rgb(59 130 246);
+}
+
+.userImage {
+  object-fit: cover;
+}
+
+.userOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.userButton:hover .userOverlay {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.userName {
+  color: white;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.userButton:hover .userName {
+  opacity: 1;
+}

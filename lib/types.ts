@@ -39,9 +39,18 @@ export interface GalleryItem {
 
 export interface Comment {
   id: string;
-  author: string;  // Will be replaced by userName when auth is added
+  author: string;
   content: string;
   timestamp: string;
-  // These will be used later when we add authentication
-  userId?: string;
+  userId: string;
+  profileImage?: string;
+}
+
+export interface User {
+  id: string;          // UUID for the user
+  fullName: string;    // Full name of the user
+  userName: string;    // Username for login
+  password: string;    // Hashed password (we'll add hashing later)
+  profileImage: string; // Path to profile image in public/images
+  createdAt: string;   // ISO timestamp
 }
