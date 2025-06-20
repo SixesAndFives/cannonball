@@ -2,7 +2,7 @@ import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
 import { parseBuffer, IAudioMetadata, ICommonTagsResult } from 'music-metadata';
-import { Album, Track } from './types.js';
+import { Album, Track } from './types';
 import { fileURLToPath } from 'url';
 
 const keyID = '004b14fc428245a0000000004';

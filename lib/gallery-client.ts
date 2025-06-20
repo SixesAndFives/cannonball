@@ -1,0 +1,113 @@
+'use client'
+
+import type { GalleryItem } from './types'
+
+export async function getAlbumGallery(albumId: string): Promise<GalleryItem[]> {
+  try {
+    const response = await fetch(`/api/albums/${albumId}/gallery`)
+    if (!response.ok) {
+      throw new Error('Failed to fetch gallery')
+    }
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching gallery:', error)
+    return []
+  }
+}
+
+interface UploadGalleryItemParams {
+  file: File
+  title: string
+  caption?: string
+  taggedUsers?: string[]
+  uploadedBy: string
+  albumId: string
+}
+
+export async function uploadGalleryItem({
+  file,
+  title,
+  caption = '',
+  taggedUsers = [],
+  uploadedBy,
+  albumId
+}: UploadGalleryItemParams): Promise<GalleryItem | null> {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('title', title)
+    formData.append('caption', caption)
+    formData.append('taggedUsers', JSON.stringify(taggedUsers))
+    formData.append('uploadedBy', uploadedBy)
+
+    const response = await fetch(`/api/albums/${albumId}/gallery`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to upload gallery item')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error uploading gallery item:', error)
+    return null
+  }
+}
+
+export async function deleteGalleryItem(
+  albumId: string,
+  itemId: string,
+  fileUrl: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(`/api/albums/${albumId}/gallery/${itemId}`, {
+      method: 'DELETE',
+      headers: {
+        'x-file-url': fileUrl
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to delete gallery item')
+    }
+
+    const { success } = await response.json()
+    return success
+  } catch (error) {
+    console.error('Error deleting gallery item:', error)
+    return false
+  }
+}
+
+interface UpdateGalleryItemParams {
+  title?: string
+  caption?: string
+  taggedUsers?: string[]
+}
+
+export async function updateGalleryItem(
+  albumId: string,
+  itemId: string,
+  updates: UpdateGalleryItemParams
+): Promise<GalleryItem | null> {
+  try {
+    const response = await fetch(`/api/albums/${albumId}/gallery/${itemId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updates)
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to update gallery item')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error updating gallery item:', error)
+    return null
+  }
+}

@@ -13,11 +13,12 @@ export async function updateAlbum(id: string, updatedAlbum: Album): Promise<bool
     })
 
     if (!response.ok) {
-      throw new Error('Failed to update album')
+      const error = await response.json()
+      throw new Error(error.error || 'Failed to update album')
     }
 
-    const data = await response.json()
-    return data.success
+    await response.json()
+    return true
   } catch (error) {
     console.error("Error updating album:", error)
     return false

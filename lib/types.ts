@@ -8,7 +8,7 @@ export interface Album {
   tracks: Track[];
   gallery?: GalleryItem[];
   comments?: Comment[];
-  personnel?: string[];
+  personnel: string[];  // Array of user IDs
 }
 
 export interface Track {
@@ -33,8 +33,14 @@ export interface Track {
 
 export interface GalleryItem {
   id: string;
+  albumId: string;
+  type: 'image' | 'video';
   url: string;
-  caption?: string;
+  title: string;
+  caption: string;
+  taggedUsers: string[];
+  uploadedBy: string;
+  timestamp: string;
 }
 
 export interface Comment {
@@ -48,9 +54,10 @@ export interface Comment {
 
 export interface User {
   id: string;          // UUID for the user
-  fullName: string;    // Full name of the user
-  userName: string;    // Username for login
-  password: string;    // Hashed password (we'll add hashing later)
-  profileImage: string; // Path to profile image in public/images
-  createdAt: string;   // ISO timestamp
+  fullName: string;    // Display name
+  userName: string;    // Login username
+  password: string;    // Plain text for now
+  profileImage?: string;
+  createdAt: string;
+  instruments?: string;  // Comma-separated list of instruments
 }

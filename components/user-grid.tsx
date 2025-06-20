@@ -52,15 +52,16 @@ export function UserGrid({ users }: UserGridProps) {
             className={styles.userButton}
           >
             <Image
-              src={user.profileImage}
+              src={user.profileImage || ''}
               alt={user.fullName}
               fill
               className={styles.userImage}
             />
             <div className={styles.userOverlay}>
-              <span className={styles.userName}>
-                {user.fullName}
-              </span>
+              <div className={styles.userInfo}>
+                <span className={styles.userName}>{user.fullName}</span>
+                <span className={styles.userInstruments}>{user.instruments}</span>
+              </div>
             </div>
           </button>
         ))}
@@ -76,7 +77,7 @@ export function UserGrid({ users }: UserGridProps) {
               <div className="space-y-6 py-4">
                 <div className="relative w-32 h-32 mx-auto">
                   <Image
-                    src={selectedUser.profileImage}
+                    src={selectedUser.profileImage || ''}
                     alt={selectedUser.fullName}
                     fill
                     className="rounded-full object-cover"

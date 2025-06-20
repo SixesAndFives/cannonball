@@ -1,0 +1,26 @@
+{
+  "corsRules": [
+    {
+      "corsRuleName": "allow-dev-and-prod",
+      "allowedOrigins": [
+        "http://localhost:3000"
+      ],
+      "allowedOperations": [
+        "b2_download_file_by_id",
+        "b2_download_file_by_name",
+        "b2_upload_file",
+        "b2_upload_part"
+      ],
+      "allowedHeaders": [
+        "authorization",
+        "content-type",
+        "x-bz-file-name",
+        "x-bz-content-sha1"
+      ],
+      "exposeHeaders": [
+        "x-bz-content-sha1"
+      ],
+      "maxAgeSeconds": 3600
+    }
+  ]
+}

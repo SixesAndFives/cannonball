@@ -1,0 +1,64 @@
+{
+  "items": [
+    {
+      "id": "ff134346-8af2-42ea-8468-fc0a6eb8752d",
+      "albumId": "all-of-me",
+      "type": "image",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/gallery/all-of-me/abd4d3c8-c185-459e-a93f-32740acecba4-test-image.png",
+      "caption": "Test upload",
+      "fileName": "gallery/all-of-me/abd4d3c8-c185-459e-a93f-32740acecba4-test-image.png",
+      "contentType": "image/png",
+      "uploadTimestamp": 1750444754765
+    },
+    {
+      "id": "bc4ab408-d2db-436a-8b70-0979e0a36499",
+      "albumId": "all-of-me",
+      "type": "image",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/all-of-me/3876a766-2e30-4a2d-9d9d-3981232ab0ac-test-image.png",
+      "caption": "Test upload",
+      "fileName": "Images/all-of-me/3876a766-2e30-4a2d-9d9d-3981232ab0ac-test-image.png",
+      "contentType": "image/png",
+      "uploadTimestamp": 1750444899271
+    },
+    {
+      "id": "4a465d5f-2b0e-4663-9827-da601cc4ddef",
+      "albumId": "live---polebridge-052425",
+      "type": "image",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/957ac929-fb6a-467d-9a25-29064a9f6593-1000011774.jpg",
+      "caption": "Jeremy and Juan are working on the sub.",
+      "fileName": "Images/957ac929-fb6a-467d-9a25-29064a9f6593-1000011774.jpg",
+      "contentType": "image/jpeg",
+      "uploadTimestamp": 1750445542789
+    },
+    {
+      "id": "f6960e5f-7c1a-4328-846d-cfca431ba995",
+      "albumId": "live---polebridge-052425",
+      "type": "image",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/24414267-f741-4237-b07e-47ed45522133-1000011771.jpg",
+      "caption": "When it is cooling down.",
+      "fileName": "Images/24414267-f741-4237-b07e-47ed45522133-1000011771.jpg",
+      "contentType": "image/jpeg",
+      "uploadTimestamp": 1750445821202
+    },
+    {
+      "id": "8545b401-5e58-44a8-8f17-f2c2394b985e",
+      "albumId": "live---polebridge-052425",
+      "type": "image",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/004058d6-92e2-49ed-ab76-458e2debbb94-1000011773.jpg",
+      "caption": "Hero the dog enjoys Cannonball at Polebridge",
+      "fileName": "Images/004058d6-92e2-49ed-ab76-458e2debbb94-1000011773.jpg",
+      "contentType": "image/jpeg",
+      "uploadTimestamp": 1750445966315
+    },
+    {
+      "id": "b5c7db36-859f-44ed-9e44-70c91e5ea7f6",
+      "albumId": "live---polebridge-052425",
+      "type": "image",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/acf3db16-b6f2-453d-ad48-bdd0ba414bed-1000011772.jpg",
+      "caption": "It was all level this year.",
+      "fileName": "Images/acf3db16-b6f2-453d-ad48-bdd0ba414bed-1000011772.jpg",
+      "contentType": "image/jpeg",
+      "uploadTimestamp": 1750446105755
+    }
+  ]
+}

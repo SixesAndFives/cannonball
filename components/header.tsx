@@ -31,7 +31,7 @@ export function Header() {
                 <span className="text-sm text-gray-600">{user.fullName}</span>
                 <div className="relative w-8 h-8 rounded-full overflow-hidden">
                   <Image
-                    src={user.profileImage}
+                    src={user.profileImage || ''}
                     alt={user.fullName}
                     fill
                     className="object-cover"

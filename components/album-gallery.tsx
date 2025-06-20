@@ -1,120 +1,206 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import Image from "next/image"
-import { ChevronLeft, ChevronRight, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import * as React from 'react'
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { ImageIcon, Film, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { getAlbumGallery } from '@/lib/gallery-client'
 import type { GalleryItem } from "@/lib/types"
 
 interface AlbumGalleryProps {
-  images: GalleryItem[]
+  albumId: string
 }
 
-export function AlbumGallery({ images }: AlbumGalleryProps) {
-  if (images.length === 0) {
+export function AlbumGallery({ albumId }: AlbumGalleryProps) {
+  const [items, setItems] = useState<GalleryItem[]>([])
+  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Function to load gallery items with retry for new uploads
+  const loadGallery = async (isRetry = false) => {
+    try {
+      const items = await getAlbumGallery(albumId)
+      setItems(items)
+      
+      // If this is a retry and we got items, we can stop retrying
+      if (isRetry) {
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.error('Error loading gallery:', error)
+      setIsLoading(false)
+    }
+  }
+
+  // Initial load
+  useEffect(() => {
+    setIsLoading(true)
+    loadGallery()
+  }, [albumId])
+
+  // Retry mechanism for new uploads
+  useEffect(() => {
+    if (!isLoading) return
+
+    // Try up to 3 times with 1 second delay
+    let retryCount = 0
+    const maxRetries = 3
+    
+    const retryTimer = setInterval(() => {
+      if (retryCount >= maxRetries) {
+        clearInterval(retryTimer)
+        setIsLoading(false)
+        return
+      }
+      
+      retryCount++
+      loadGallery(true)
+    }, 1000)
+
+    return () => clearInterval(retryTimer)
+  }, [isLoading])
+
+  if (isLoading) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        No gallery images available
+      <div className="flex items-center justify-center h-48">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     )
   }
 
-  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null)
-
-  const openLightbox = (image: GalleryItem) => {
-    setSelectedImage(image)
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <ImageIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+        <p className="text-gray-600">No photos or videos yet</p>
+      </div>
+    )
   }
 
-  const closeLightbox = () => {
-    setSelectedImage(null)
+  const openLightbox = (item: GalleryItem) => {
+    setSelectedItem(item)
+  }
+
+  const closeLightbox = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation()
+    setSelectedItem(null)
   }
 
   const navigateImage = (direction: "next" | "prev") => {
-    if (!selectedImage) return
+    if (!selectedItem) return
 
-    const currentIndex = images.findIndex((img) => img.id === selectedImage.id)
+    const currentIndex = items.findIndex(item => item.id === selectedItem.id)
     let newIndex
 
     if (direction === "next") {
-      newIndex = (currentIndex + 1) % images.length
+      newIndex = (currentIndex + 1) % items.length
     } else {
-      newIndex = (currentIndex - 1 + images.length) % images.length
+      newIndex = (currentIndex - 1 + items.length) % items.length
     }
 
-    setSelectedImage(images[newIndex])
+    setSelectedItem(items[newIndex])
   }
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {images.map((image) => (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {items.map((item) => (
           <div
-            key={image.id}
-            className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 cursor-pointer"
-            onClick={() => openLightbox(image)}
+            key={item.id}
+            className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg bg-gray-100"
+            onClick={() => openLightbox(item)}
           >
-            <Image
-              src={image.url}
-              alt={image.caption}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover hover:scale-105 transition-transform duration-300"
-            />
-            {image.caption && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2 text-sm">
-                {image.caption}
+            {item.type === 'video' ? (
+              <div className="relative h-full w-full">
+                <video
+                  src={item.url}
+                  className="h-full w-full object-cover"
+                />
+                <Film className="absolute inset-0 m-auto w-8 h-8 text-white opacity-75" />
               </div>
+            ) : (
+              <Image
+                src={item.url}
+                alt={item.caption || item.title || 'Gallery image'}
+                fill
+                className="object-cover transition-transform group-hover:scale-105"
+              />
             )}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
+              <p className="text-sm text-white truncate">{item.title}</p>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Lightbox */}
-      {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4 text-white hover:bg-gray-800"
-            onClick={closeLightbox}
+      {selectedItem && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+          onClick={closeLightbox}
+        >
+          <div 
+            className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-lg bg-white flex flex-col"
+            onClick={(e) => e.stopPropagation()}
           >
-            <X className="h-6 w-6" />
-          </Button>
+            <div className="relative flex-1 min-h-0">
+              {selectedItem.type === 'video' ? (
+                <video
+                  src={selectedItem.url}
+                  controls
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <Image
+                  src={selectedItem.url}
+                  alt={selectedItem.caption || selectedItem.title || 'Gallery image'}
+                  width={1200}
+                  height={800}
+                  className="w-full h-full object-contain"
+                />
+              )}
+            </div>
+            <div className="p-4 bg-white border-t">
+              <h3 className="text-lg font-semibold">{selectedItem.title}</h3>
+              {selectedItem.caption && (
+                <p className="text-gray-600 mt-1">{selectedItem.caption}</p>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-900"
+              onClick={closeLightbox}
+            >
+              <X className="h-6 w-6" />
+            </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-gray-800"
-            onClick={() => navigateImage("prev")}
-          >
-            <ChevronLeft className="h-8 w-8" />
-          </Button>
 
-          <div className="relative h-[80vh] w-full max-w-4xl">
-            <Image
-              src={selectedImage.url}
-              alt={selectedImage.caption}
-              fill
-              sizes="80vw"
-              className="object-contain"
-            />
-            {selectedImage.caption && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-4 text-center">
-                {selectedImage.caption}
-              </div>
-            )}
+
+            <div className="absolute top-1/2 -translate-y-1/2 left-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-black/20"
+                onClick={() => navigateImage("prev")}
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </Button>
+            </div>
+
+            <div className="absolute top-1/2 -translate-y-1/2 right-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-black/20"
+                onClick={() => navigateImage("next")}
+              >
+                <ChevronRight className="h-8 w-8" />
+              </Button>
+            </div>
           </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-gray-800"
-            onClick={() => navigateImage("next")}
-          >
-            <ChevronRight className="h-8 w-8" />
-          </Button>
         </div>
       )}
-    </>
+    </div>
   )
 }
