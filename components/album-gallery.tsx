@@ -113,11 +113,22 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
           >
             {item.type === 'video' ? (
               <div className="relative h-full w-full">
-                <video
-                  src={item.url}
-                  className="h-full w-full object-cover"
-                />
+                {item.thumbnailUrl ? (
+                  <Image
+                    src={item.thumbnailUrl}
+                    alt={item.caption || 'Video thumbnail'}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-gray-200" />
+                )}
                 <Film className="absolute inset-0 m-auto w-8 h-8 text-white opacity-75" />
+                <link
+                  rel="preload"
+                  href={item.url}
+                  as="video"
+                />
               </div>
             ) : (
               <Image
@@ -140,7 +151,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
           onClick={closeLightbox}
         >
           <div 
-            className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-lg bg-white flex flex-col"
+            className="relative max-h-[95vh] max-w-[95vw] overflow-hidden rounded-lg bg-white flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative flex-1 min-h-0">
@@ -154,11 +165,16 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
                   />
                 </div>
               ) : (
-                <Image
-                  src={selectedItem?.url}
-                  alt={selectedItem?.title || ''}
-                  className="max-h-[80vh] object-contain"
-                />
+                <div className="relative w-[90vw] h-[85vh]">
+                  <Image
+                    src={selectedItem?.url}
+                    alt={selectedItem?.title || ''}
+                    fill
+                    sizes="90vw"
+                    priority
+                    className="object-contain"
+                  />
+                </div>
               )}
             </div>
             <div className="p-4 bg-white border-t">

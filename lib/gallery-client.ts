@@ -2,6 +2,19 @@
 
 import type { GalleryItem } from './types'
 
+export async function getAllGalleryItems(): Promise<GalleryItem[]> {
+  try {
+    const response = await fetch('/api/gallery')
+    if (!response.ok) {
+      throw new Error('Failed to fetch gallery items')
+    }
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching gallery items:', error)
+    return []
+  }
+}
+
 export async function getAlbumGallery(albumId: string): Promise<GalleryItem[]> {
   try {
     const response = await fetch(`/api/albums/${albumId}/gallery`)

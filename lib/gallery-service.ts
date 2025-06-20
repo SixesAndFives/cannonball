@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { randomUUID } from 'crypto'
+import { generateVideoThumbnail } from './video-utils'
 const B2 = require('backblaze-b2')
 
 const galleryPath = path.join(process.cwd(), 'lib', 'gallery.json')
@@ -10,10 +11,12 @@ export interface GalleryItem {
   albumId: string
   type: 'image' | 'video'
   url: string
+  thumbnailUrl?: string  // URL to thumbnail for videos
   caption: string
   fileName: string
   contentType: string
   uploadTimestamp: number
+  taggedUsers: string[]
 }
 
 export interface GalleryData {
@@ -44,24 +47,44 @@ export async function uploadGalleryItem(
   fileName: string,
   contentType: string,
   albumId: string,
-  caption: string
+  caption: string,
+  taggedUsers: string[] = []
 ): Promise<GalleryItem> {
   try {
     // Authenticate with B2
     await b2.authorize()
 
     // Get upload URL
-    const uploadUrl = await b2.getUploadUrl({
+    const uploadUrlResponse = await b2.getUploadUrl({
       bucketId: process.env.B2_BUCKET_ID!
     })
 
     // Generate a unique filename to avoid collisions
     const uniqueFileName = `Images/${randomUUID()}-${fileName}`
+    const uploadFileName = uniqueFileName
 
-    // Upload file
-    const uploadResult = await b2.uploadFile({
-      uploadUrl: uploadUrl.data.uploadUrl,
-      uploadAuthToken: uploadUrl.data.authorizationToken,
+    let thumbnailUrl: string | undefined
+
+    // If this is a video, generate and upload thumbnail
+    if (contentType.startsWith('video/')) {
+      const thumbnailBuffer = await generateVideoThumbnail(file)
+      if (thumbnailBuffer) {
+        const thumbnailFileName = `thumbnails/${randomUUID()}.jpg`
+        const thumbnailUploadResponse = await b2.uploadFile({
+          uploadUrl: uploadUrlResponse.data.uploadUrl,
+          uploadAuthToken: uploadUrlResponse.data.authorizationToken,
+          fileName: thumbnailFileName,
+          data: thumbnailBuffer,
+          contentType: 'image/jpeg'
+        })
+        thumbnailUrl = `https://f004.backblazeb2.com/file/cannonball-music/${thumbnailFileName}`
+      }
+    }
+
+    // Upload to B2
+    const uploadResponse = await b2.uploadFile({
+      uploadUrl: uploadUrlResponse.data.uploadUrl,
+      uploadAuthToken: uploadUrlResponse.data.authorizationToken,
       fileName: uniqueFileName,
       data: file,
       contentLength: file.length,
@@ -69,23 +92,25 @@ export async function uploadGalleryItem(
     })
 
     // Create gallery item
-    const item: GalleryItem = {
+    const newItem: GalleryItem = {
       id: randomUUID(),
       albumId,
-      type: contentType.startsWith('image/') ? 'image' : 'video',
+      type: contentType.startsWith('video/') ? 'video' : 'image',
       url: `https://f004.backblazeb2.com/file/cannonball-music/${uniqueFileName}`,
       caption,
       fileName: uniqueFileName,
       contentType,
-      uploadTimestamp: Date.now()
+      uploadTimestamp: Date.now(),
+      taggedUsers,
+      thumbnailUrl
     }
 
     // Add to gallery.json
     const gallery = await readGalleryData()
-    gallery.items.push(item)
+    gallery.items.push(newItem)
     await fs.writeFile(galleryPath, JSON.stringify(gallery, null, 2))
 
-    return item
+    return newItem
   } catch (error) {
     console.error('Error uploading to B2:', error)
     throw error
@@ -111,6 +136,11 @@ export async function getAlbumGallery(albumId: string): Promise<GalleryItem[]> {
 }
 
 export const getGalleryItemsByAlbum = getAlbumGallery
+
+export async function getAllGalleryItems(): Promise<GalleryItem[]> {
+  const data = await readGalleryData()
+  return data.items
+}
 
 export async function deleteGalleryItem(itemId: string): Promise<boolean> {
   const gallery = await readGalleryData()

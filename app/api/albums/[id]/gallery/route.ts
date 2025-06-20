@@ -30,6 +30,8 @@ export async function POST(
     const formData = await request.formData()
     const file = formData.get('file') as File
     const caption = formData.get('caption') as string
+    const taggedUsersJson = formData.get('taggedUsers') as string
+    const taggedUsers = taggedUsersJson ? JSON.parse(taggedUsersJson) : []
     
     if (!file) {
       return NextResponse.json(
@@ -49,7 +51,8 @@ export async function POST(
       fileName,
       contentType,
       params.id,
-      caption || ''
+      caption,
+      taggedUsers
     )
     
     return NextResponse.json(item)

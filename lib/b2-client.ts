@@ -288,6 +288,9 @@ export async function getAlbumFiles(albumName: string): Promise<{ tracks: Track[
   }
 }
 
+// Folders to exclude from album sync
+const EXCLUDED_FOLDERS = ['Images', 'thumbnails'];
+
 export async function syncAlbums(): Promise<void> {
   console.log('Starting album sync...');
   try {
@@ -321,6 +324,11 @@ export async function syncAlbums(): Promise<void> {
 
     // Add new albums from B2
     for (const folder of folders) {
+      // Skip excluded folders
+      if (EXCLUDED_FOLDERS.includes(folder)) {
+        console.log(`Skipping excluded folder: ${folder}`);
+        continue;
+      }
       // Skip if album already exists
       if (existingAlbums.has(folder)) {
         console.log(`Skipping existing album: ${folder}`);
@@ -338,7 +346,8 @@ export async function syncAlbums(): Promise<void> {
         originalAlbumName: folder,
         title: folder,
         tracks,
-        coverImage
+        coverImage,
+        personnel: []  // Initialize with empty personnel array
       };
 
       // Add to albums array

@@ -36,6 +36,7 @@ export interface GalleryItem {
   albumId: string;
   type: 'image' | 'video';
   url: string;
+  thumbnailUrl?: string;
   title: string;
   caption: string;
   taggedUsers: string[];
