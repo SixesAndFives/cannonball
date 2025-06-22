@@ -75,18 +75,26 @@ export async function POST() {
 
         // Upload thumbnail to B2
         const thumbnailFileName = `thumbnails/${item.id}.jpg`
+        console.log(`Attempting to upload thumbnail: ${thumbnailFileName}`)
+        console.log(`Thumbnail buffer size: ${thumbnailBuffer.length} bytes`)
         
-        await b2.uploadFile({
+        try {
+          await b2.uploadFile({
           uploadUrl: uploadUrlResponse.data.uploadUrl,
           uploadAuthToken: uploadUrlResponse.data.authorizationToken,
           fileName: thumbnailFileName,
           data: thumbnailBuffer,
           contentType: 'image/jpeg'
-        })
+          })
+          console.log(`Successfully uploaded thumbnail to B2: ${thumbnailFileName}`)
 
         // Update item with thumbnail URL
         item.thumbnailUrl = `https://f004.backblazeb2.com/file/cannonball-music/${thumbnailFileName}`
 
+        } catch (uploadError) {
+          console.error(`Error uploading thumbnail to B2:`, uploadError)
+          throw uploadError
+        }
         console.log(`Successfully processed ${item.fileName}`)
       } catch (error) {
         console.error(`Error processing ${item.fileName}:`, error)

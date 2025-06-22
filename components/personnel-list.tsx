@@ -9,7 +9,7 @@ import type { Album, User } from '@/lib/types'
 
 interface PersonnelListProps {
   album: Album
-  users: User[]
+  users: Omit<User, 'password'>[]
   onUpdate: (userIds: string[]) => void
 }
 

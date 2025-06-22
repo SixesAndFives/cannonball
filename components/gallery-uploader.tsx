@@ -14,7 +14,7 @@ import type { User } from '@/lib/types'
 
 interface GalleryUploaderProps {
   albumId: string
-  users: User[]
+  users: Omit<User, 'password'>[]
   userId: string
   onSuccess?: () => void
 }

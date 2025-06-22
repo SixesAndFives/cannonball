@@ -19,7 +19,7 @@ import type { Album, Track, Comment, User } from "@/lib/types"
 
 interface AlbumDetailClientProps {
   initialAlbum: Album | null
-  users: User[]
+  users: Omit<User, 'password'>[]
   currentUser: User | null
 }
 

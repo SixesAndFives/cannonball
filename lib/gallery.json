@@ -73,80 +73,6 @@
       ]
     },
     {
-      "id": "974e2d11-3f80-4ac6-bafb-6df694331ffe",
-      "albumId": "live---polebridge-052425",
-      "type": "video",
-      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/ee6fbecd-0268-4a0e-9feb-5b8a7f12ddf3-IMG_9715.MOV",
-      "caption": "A snippet of Elizabeth Reed",
-      "fileName": "Images/ee6fbecd-0268-4a0e-9feb-5b8a7f12ddf3-IMG_9715.MOV",
-      "contentType": "video/quicktime",
-      "uploadTimestamp": 1750446601364,
-      "thumbnailUrl": "https://f004.backblazeb2.com/file/cannonball-music/thumbnails/974e2d11-3f80-4ac6-bafb-6df694331ffe.jpg"
-    },
-    {
-      "id": "88117abe-b25d-4727-94a9-1fce3cb4d861",
-      "albumId": "live---polebridge-052425",
-      "type": "video",
-      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/6be38c84-a540-42c1-b284-f86ec4318bc2-IMG_9718.MOV",
-      "caption": "In Memory of My Memory",
-      "fileName": "Images/6be38c84-a540-42c1-b284-f86ec4318bc2-IMG_9718.MOV",
-      "contentType": "video/quicktime",
-      "uploadTimestamp": 1750447043426,
-      "thumbnailUrl": "https://f004.backblazeb2.com/file/cannonball-music/thumbnails/88117abe-b25d-4727-94a9-1fce3cb4d861.jpg"
-    },
-    {
-      "id": "07980268-49f6-4430-bc61-79e2ae2e61bd",
-      "albumId": "live---polebridge-052425",
-      "type": "video",
-      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/a4c3cca5-f63d-456f-8a39-f6bf7dd18d10-IMG_9723.MOV",
-      "caption": "Patrick is feeling it",
-      "fileName": "Images/a4c3cca5-f63d-456f-8a39-f6bf7dd18d10-IMG_9723.MOV",
-      "contentType": "video/quicktime",
-      "uploadTimestamp": 1750447132885,
-      "thumbnailUrl": "https://f004.backblazeb2.com/file/cannonball-music/thumbnails/07980268-49f6-4430-bc61-79e2ae2e61bd.jpg"
-    },
-    {
-      "id": "f5e4b797-8bf3-4587-b8c4-51cec5bb3e30",
-      "albumId": "live---polebridge-052425",
-      "type": "video",
-      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/12c2d641-3c24-4579-b284-94cf2272fc0b-IMG_9722.MOV",
-      "caption": "Ezra",
-      "fileName": "Images/12c2d641-3c24-4579-b284-94cf2272fc0b-IMG_9722.MOV",
-      "contentType": "video/quicktime",
-      "uploadTimestamp": 1750447266194,
-      "taggedUsers": [
-        "1",
-        "2",
-        "4",
-        "6",
-        "7",
-        "8"
-      ],
-      "thumbnailUrl": "https://f004.backblazeb2.com/file/cannonball-music/thumbnails/f5e4b797-8bf3-4587-b8c4-51cec5bb3e30.jpg"
-    },
-    {
-      "id": "8b46326f-17f4-495c-a921-4ed23d96aec8",
-      "albumId": "live---polebridge-052425",
-      "type": "video",
-      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/2f4700de-ef93-4bff-a1fe-9431391c00a8-IMG_9730.MOV",
-      "caption": "Night time Alley Cat",
-      "fileName": "Images/2f4700de-ef93-4bff-a1fe-9431391c00a8-IMG_9730.MOV",
-      "contentType": "video/quicktime",
-      "uploadTimestamp": 1750447693366,
-      "thumbnailUrl": "https://f004.backblazeb2.com/file/cannonball-music/thumbnails/8b46326f-17f4-495c-a921-4ed23d96aec8.jpg"
-    },
-    {
-      "id": "24656f2b-a7ae-4389-ad65-94bb2dc50f6e",
-      "albumId": "live---polebridge-052425",
-      "type": "video",
-      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/c441c23e-0706-487e-adc7-d58fb18f6876-IMG_9721.MOV",
-      "caption": "Daniel shouts to the heavens",
-      "fileName": "Images/c441c23e-0706-487e-adc7-d58fb18f6876-IMG_9721.MOV",
-      "contentType": "video/quicktime",
-      "uploadTimestamp": 1750447758103,
-      "thumbnailUrl": "https://f004.backblazeb2.com/file/cannonball-music/thumbnails/24656f2b-a7ae-4389-ad65-94bb2dc50f6e.jpg"
-    },
-    {
       "id": "df26199e-6552-4b79-b551-b75f85902744",
       "albumId": "live---polebridge-052425",
       "type": "image",
@@ -162,6 +88,20 @@
         "6",
         "8",
         "7"
+      ]
+    },
+    {
+      "id": "4e916ac7-d9ee-4a26-a3bb-61a42efb4836",
+      "albumId": "live---polebridge-052425",
+      "type": "video",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/5ebc7241-e0fe-4b2c-87c7-c4df188318f8-IMG_9715.MOV",
+      "thumbnailUrl": "https://f004.backblazeb2.com/file/cannonball-music/thumbnails/4e916ac7-d9ee-4a26-a3bb-61a42efb4836.jpg",
+      "caption": "Test",
+      "fileName": "Images/5ebc7241-e0fe-4b2c-87c7-c4df188318f8-IMG_9715.MOV",
+      "contentType": "video/quicktime",
+      "uploadTimestamp": 1750633359623,
+      "taggedUsers": [
+        "1"
       ]
     }
   ]

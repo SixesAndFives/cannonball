@@ -63,21 +63,34 @@ export async function uploadGalleryItem(
     const uniqueFileName = `Images/${randomUUID()}-${fileName}`
     const uploadFileName = uniqueFileName
 
-    let thumbnailUrl: string | undefined
+    // Initialize thumbnailUrl
+    let thumbnailUrl: string | undefined = undefined
+    console.log('Starting upload process for:', fileName)
 
     // If this is a video, generate and upload thumbnail
     if (contentType.startsWith('video/')) {
+      console.log('Video detected, generating thumbnail...')
       const thumbnailBuffer = await generateVideoThumbnail(file)
+      console.log('Thumbnail buffer received:', thumbnailBuffer ? 'yes' : 'no')
       if (thumbnailBuffer) {
+        console.log('Thumbnail generated successfully, attempting upload...')
+        // Get fresh upload URL for thumbnail
+        const thumbnailUploadUrlResponse = await b2.getUploadUrl({
+          bucketId: process.env.B2_BUCKET_ID!
+        })
+
         const thumbnailFileName = `thumbnails/${randomUUID()}.jpg`
         const thumbnailUploadResponse = await b2.uploadFile({
-          uploadUrl: uploadUrlResponse.data.uploadUrl,
-          uploadAuthToken: uploadUrlResponse.data.authorizationToken,
+          uploadUrl: thumbnailUploadUrlResponse.data.uploadUrl,
+          uploadAuthToken: thumbnailUploadUrlResponse.data.authorizationToken,
           fileName: thumbnailFileName,
           data: thumbnailBuffer,
           contentType: 'image/jpeg'
         })
+        console.log('Thumbnail uploaded successfully')
+        console.log('Thumbnail upload response:', thumbnailUploadResponse)
         thumbnailUrl = `https://f004.backblazeb2.com/file/cannonball-music/${thumbnailFileName}`
+        console.log('Set thumbnailUrl to:', thumbnailUrl)
       }
     }
 
@@ -91,18 +104,47 @@ export async function uploadGalleryItem(
       contentType
     })
 
+    // Get the item ID now so we can use it for the thumbnail filename
+    const itemId = randomUUID()
+
+    // If this is a video, generate and upload thumbnail
+    if (contentType.startsWith('video/')) {
+      console.log('Video detected, generating thumbnail...')
+      const thumbnailBuffer = await generateVideoThumbnail(file)
+      console.log('Thumbnail buffer received:', thumbnailBuffer ? 'yes' : 'no')
+      if (thumbnailBuffer) {
+        console.log('Thumbnail generated successfully, attempting upload...')
+        // Get fresh upload URL for thumbnail
+        const thumbnailUploadUrlResponse = await b2.getUploadUrl({
+          bucketId: process.env.B2_BUCKET_ID!
+        })
+
+        const thumbnailFileName = `thumbnails/${itemId}.jpg`
+        await b2.uploadFile({
+          uploadUrl: thumbnailUploadUrlResponse.data.uploadUrl,
+          uploadAuthToken: thumbnailUploadUrlResponse.data.authorizationToken,
+          fileName: thumbnailFileName,
+          data: thumbnailBuffer,
+          contentType: 'image/jpeg'
+        })
+        console.log('Thumbnail uploaded successfully')
+        thumbnailUrl = `https://f004.backblazeb2.com/file/cannonball-music/${thumbnailFileName}`
+        console.log('Set thumbnailUrl to:', thumbnailUrl)
+      }
+    }
+
     // Create gallery item
     const newItem: GalleryItem = {
-      id: randomUUID(),
+      id: itemId,
       albumId,
       type: contentType.startsWith('video/') ? 'video' : 'image',
       url: `https://f004.backblazeb2.com/file/cannonball-music/${uniqueFileName}`,
+      ...(thumbnailUrl && { thumbnailUrl }),
       caption,
       fileName: uniqueFileName,
       contentType,
       uploadTimestamp: Date.now(),
-      taggedUsers,
-      thumbnailUrl
+      taggedUsers
     }
 
     // Add to gallery.json
