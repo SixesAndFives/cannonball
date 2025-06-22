@@ -6,18 +6,15 @@ const B2 = require('backblaze-b2')
 
 const galleryPath = path.join(process.cwd(), 'lib', 'gallery.json')
 
-export interface GalleryItem {
-  id: string
-  albumId: string
-  type: 'image' | 'video'
-  url: string
-  thumbnailUrl?: string  // URL to thumbnail for videos
-  caption: string
+import type { GalleryItem as BaseGalleryItem } from './types'
+
+type GalleryItemInternal = Omit<BaseGalleryItem, 'title' | 'uploadedBy' | 'timestamp'> & {
   fileName: string
   contentType: string
   uploadTimestamp: number
-  taggedUsers: string[]
 }
+
+export type GalleryItem = GalleryItemInternal
 
 export interface GalleryData {
   items: GalleryItem[]
@@ -172,16 +169,28 @@ export async function addGalleryItem(item: Omit<GalleryItem, 'id'>): Promise<Gal
   return newItem
 }
 
-export async function getAlbumGallery(albumId: string): Promise<GalleryItem[]> {
-  const gallery = await readGalleryData()
-  return gallery.items.filter(item => item.albumId === albumId)
+export async function getAlbumGallery(albumId: string): Promise<BaseGalleryItem[]> {
+  const data = await readGalleryData()
+  return data.items
+    .filter(item => item.albumId === albumId)
+    .map(item => ({
+      ...item,
+      title: item.fileName,
+      uploadedBy: 'system', // TODO: Add real user tracking
+      timestamp: new Date(item.uploadTimestamp).toISOString()
+    }))
 }
 
 export const getGalleryItemsByAlbum = getAlbumGallery
 
-export async function getAllGalleryItems(): Promise<GalleryItem[]> {
+export async function getAllGalleryItems(): Promise<BaseGalleryItem[]> {
   const data = await readGalleryData()
-  return data.items
+  return data.items.map(item => ({
+    ...item,
+    title: item.fileName,
+    uploadedBy: 'system', // TODO: Add real user tracking
+    timestamp: new Date(item.uploadTimestamp).toISOString()
+  }))
 }
 
 export async function deleteGalleryItem(itemId: string): Promise<boolean> {

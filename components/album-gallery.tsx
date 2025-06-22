@@ -1,12 +1,10 @@
 'use client'
 
-import * as React from 'react'
 import { useState, useEffect } from 'react'
+import { ImageIcon, X } from 'lucide-react'
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { ImageIcon, Film, X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { getAlbumGallery } from '@/lib/gallery-client'
-import type { GalleryItem } from "@/lib/types"
+import { GalleryGrid } from '@/components/gallery-grid'
+import type { GalleryItem } from '@/lib/types'
 
 interface AlbumGalleryProps {
   albumId: string
@@ -14,13 +12,15 @@ interface AlbumGalleryProps {
 
 export function AlbumGallery({ albumId }: AlbumGalleryProps) {
   const [items, setItems] = useState<GalleryItem[]>([])
-  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null)
 
   // Function to load gallery items with retry for new uploads
   const loadGallery = async (isRetry = false) => {
     try {
-      const items = await getAlbumGallery(albumId)
+      const response = await fetch(`/api/gallery/album/${albumId}`)
+      if (!response.ok) throw new Error('Failed to load gallery items')
+      const items = await response.json()
       setItems(items)
       
       // If this is a retry and we got items, we can stop retrying
@@ -59,7 +59,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
     }, 1000)
 
     return () => clearInterval(retryTimer)
-  }, [isLoading])
+  }, [isLoading, albumId])
 
   if (isLoading) {
     return (
@@ -78,143 +78,76 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
     )
   }
 
-  const openLightbox = (item: GalleryItem) => {
-    setSelectedItem(item)
-  }
-
-  const closeLightbox = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation()
-    setSelectedItem(null)
-  }
-
-  const navigateImage = (direction: "next" | "prev") => {
-    if (!selectedItem) return
-
-    const currentIndex = items.findIndex(item => item.id === selectedItem.id)
-    let newIndex
-
-    if (direction === "next") {
-      newIndex = (currentIndex + 1) % items.length
-    } else {
-      newIndex = (currentIndex - 1 + items.length) % items.length
-    }
-
-    setSelectedItem(items[newIndex])
-  }
-
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg bg-gray-100"
-            onClick={() => openLightbox(item)}
+    <div>
+      <GalleryGrid
+        items={items}
+        onItemUpdate={async (itemId: string, updates: Partial<GalleryItem>) => {
+          try {
+            const response = await fetch(`/api/gallery/${itemId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(updates)
+            })
+            
+            if (!response.ok) throw new Error('Failed to update gallery item')
+            
+            // Update local state
+            setItems(prevItems =>
+              prevItems.map(item =>
+                item.id === itemId
+                  ? { ...item, ...updates }
+                  : item
+              )
+            )
+
+            // Refresh the gallery after update
+            loadGallery()
+          } catch (error) {
+            console.error('Failed to update gallery item:', error)
+            // TODO: Add error toast
+          }
+        }}
+        onItemSelect={setSelectedItem}
+      />
+
+      {selectedItem && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm z-50"
+          onClick={(e) => {
+            // Only close if clicking the backdrop
+            if (e.target === e.currentTarget) setSelectedItem(null)
+          }}
+        >
+          <div 
+            className="relative max-w-[95vw] max-h-[95vh] bg-black rounded-lg overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
           >
-            {item.type === 'video' ? (
-              <div className="relative h-full w-full">
-                {item.thumbnailUrl ? (
-                  <Image
-                    src={item.thumbnailUrl}
-                    alt={item.caption || 'Video thumbnail'}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="h-full w-full bg-gray-200" />
-                )}
-                <Film className="absolute inset-0 m-auto w-8 h-8 text-white opacity-75" />
-                <link
-                  rel="preload"
-                  href={item.url}
-                  as="video"
+            <button
+              onClick={() => setSelectedItem(null)}
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/75 transition-colors duration-200"
+            >
+              <X size={24} />
+            </button>
+            {selectedItem.type === 'image' ? (
+              <div className="relative w-[90vw] h-[85vh]">
+                <Image
+                  src={selectedItem.url}
+                  alt={selectedItem.caption || ''}
+                  className="object-contain"
+                  fill
+                  sizes="90vw"
+                  priority
+                  quality={95}
                 />
               </div>
             ) : (
-              <Image
-                src={item.url}
-                alt={item.caption || item.title || 'Gallery image'}
-                fill
-                className="object-cover transition-transform group-hover:scale-105"
+              <video
+                src={selectedItem.url}
+                controls
+                className="max-w-[90vw] max-h-[85vh] object-contain"
               />
             )}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
-              <p className="text-sm text-white truncate">{item.title}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {selectedItem && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-          onClick={closeLightbox}
-        >
-          <div 
-            className="relative max-h-[95vh] max-w-[95vw] overflow-hidden rounded-lg bg-white flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative flex-1 min-h-0">
-              {selectedItem?.type === 'video' ? (
-                <div className="w-full h-full flex items-center justify-center">
-                  <video
-                    controls
-                    autoPlay
-                    src={selectedItem.url}
-                    className="max-w-full max-h-[80vh] object-contain"
-                  />
-                </div>
-              ) : (
-                <div className="relative w-[90vw] h-[85vh]">
-                  <Image
-                    src={selectedItem?.url}
-                    alt={selectedItem?.title || ''}
-                    fill
-                    sizes="90vw"
-                    priority
-                    className="object-contain"
-                  />
-                </div>
-              )}
-            </div>
-            <div className="p-4 bg-white border-t">
-              <h3 className="text-lg font-semibold">{selectedItem.title}</h3>
-              {selectedItem.caption && (
-                <p className="text-gray-600 mt-1">{selectedItem.caption}</p>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-900"
-              onClick={closeLightbox}
-            >
-              <X className="h-6 w-6" />
-            </Button>
-
-
-
-            <div className="absolute top-1/2 -translate-y-1/2 left-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-black/20"
-                onClick={() => navigateImage("prev")}
-              >
-                <ChevronLeft className="h-8 w-8" />
-              </Button>
-            </div>
-
-            <div className="absolute top-1/2 -translate-y-1/2 right-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-black/20"
-                onClick={() => navigateImage("next")}
-              >
-                <ChevronRight className="h-8 w-8" />
-              </Button>
-            </div>
           </div>
         </div>
       )}

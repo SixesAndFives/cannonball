@@ -1,77 +1,93 @@
-'use client'
+'use client';
 
-import { getAllGalleryItems } from '@/lib/gallery-client'
-import { Header } from '@/components/header'
-import { Film, X } from 'lucide-react'
-import Image from 'next/image'
-import type { GalleryItem } from '@/lib/types'
-import { useEffect, useState } from 'react'
+import { Header } from '@/components/header';
+import { useState, useEffect } from 'react';
+import { GalleryGrid } from '@/components/gallery-grid';
+import { X } from 'lucide-react';
+import Image from 'next/image';
+import type { GalleryItem } from '@/lib/types';
 
 export default function GalleryPage() {
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([])
-  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null)
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
 
   useEffect(() => {
-    getAllGalleryItems().then(setGalleryItems)
-  }, [])
+    const loadGallery = async () => {
+      try {
+        const response = await fetch('/api/gallery');
+        if (!response.ok) throw new Error('Failed to load gallery items');
+        const galleryItems = await response.json();
+        setItems(galleryItems);
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadGallery();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   return (
-    <>
+    <div>
       <Header />
-      <main className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4">
         <div className="mt-8">
-        <h2 className="text-xl font-medium text-gray-800 mb-4">Gallery</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {galleryItems.map((item) => (
-            <div 
-              key={item.id} 
-              className="aspect-video relative overflow-hidden rounded-lg shadow-md cursor-pointer bg-gray-100" 
-              onClick={() => setSelectedItem(item)}
-            >
-              {item.type === 'image' ? (
-                <Image
-                  src={item.url}
-                  alt={item.caption || ''}
-                  className="object-cover"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              ) : (
-                <div className="relative w-full h-full bg-black">
-                  <Image
-                    src={item.thumbnailUrl || item.url}
-                    alt={item.caption || ''}
-                    className="object-contain"
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    quality={90}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Film className="w-8 h-8 text-white opacity-75" />
-                  </div>
-                </div>
-              )}
-              {item.caption && (
-                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
-                  <p className="text-sm">{item.caption}</p>
-                </div>
-              )}
-            </div>
-          ))}
+          <h2 className="text-xl font-medium text-gray-800 mb-4">Gallery</h2>
+          <GalleryGrid
+            items={items}
+            onItemUpdate={async (itemId: string, updates: Partial<GalleryItem>) => {
+              try {
+                const response = await fetch(`/api/gallery/${itemId}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(updates)
+                });
+                
+                if (!response.ok) throw new Error('Failed to update gallery item');
+                
+                // Update local state
+                setItems(prevItems =>
+                  prevItems.map(item =>
+                    item.id === itemId
+                      ? { ...item, ...updates }
+                      : item
+                  )
+                );
+              } catch (error) {
+                console.error('Failed to update gallery item:', error);
+                // TODO: Add error toast
+              }
+            }}
+            onItemSelect={setSelectedItem}
+          />
         </div>
-        </div>
-      </main>
+      </div>
 
-      <dialog
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 p-4 backdrop-blur-sm"
-        open={!!selectedItem}
-        onClick={() => setSelectedItem(null)}
-      >
-        {selectedItem && (
-          <div className="relative max-w-[95vw] max-h-[95vh] bg-black rounded-lg overflow-hidden">
+      {selectedItem && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm z-50"
+          onClick={(e: React.MouseEvent) => {
+            // Only close if clicking the backdrop
+            if (e.target === e.currentTarget) setSelectedItem(null);
+          }}
+        >
+          <div 
+            className="relative max-w-[95vw] max-h-[95vh] bg-black rounded-lg overflow-hidden"
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
             <button
               onClick={() => setSelectedItem(null)}
-              className="absolute top-2 right-2 z-10 p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-75"
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/75 transition-colors duration-200"
             >
               <X size={24} />
             </button>
@@ -84,21 +100,19 @@ export default function GalleryPage() {
                   fill
                   sizes="90vw"
                   priority
+                  quality={95}
                 />
               </div>
             ) : (
-              <div className="relative w-[90vw] h-[85vh] flex items-center justify-center">
-                <video
-                  src={selectedItem.url}
-                  controls
-                  autoPlay
-                  className="max-w-full max-h-full w-auto h-auto"
-                />
-              </div>
+              <video
+                src={selectedItem.url}
+                controls
+                className="max-w-[90vw] max-h-[85vh] object-contain"
+              />
             )}
           </div>
-        )}
-      </dialog>
-    </>
-  )
+        </div>
+      )}
+    </div>
+  );
 }
