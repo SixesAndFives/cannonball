@@ -8,8 +8,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Playlist } from '@/lib/types';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function PlaylistsPage() {
+  const { user } = useAuth();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [playlistUsers, setPlaylistUsers] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -46,6 +48,14 @@ export default function PlaylistsPage() {
     loadData();
   }, []);
 
+  // Sort playlists - current user's favorites first, then everything else
+  const sortedPlaylists = user ? [
+    // Current user's favorites
+    ...playlists.filter(p => p.id.endsWith('-favorites') && p.createdBy === user.id),
+    // All other playlists
+    ...playlists.filter(p => !(p.id.endsWith('-favorites') && p.createdBy === user.id))
+  ] : playlists;
+
   return (
     <div>
       <Header />
@@ -60,7 +70,6 @@ export default function PlaylistsPage() {
             </Button>
           </div>
 
-          {/* Loading State */}
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map((i) => (
@@ -72,7 +81,7 @@ export default function PlaylistsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {playlists.map((playlist) => (
+              {sortedPlaylists.map((playlist) => (
                 <Link
                   key={playlist.id}
                   href={`/playlists/${playlist.id}`}
@@ -99,7 +108,7 @@ export default function PlaylistsPage() {
                         {playlist.tracks?.length || 0} tracks
                       </p>
                     </div>
-                    {playlistUsers[playlist.createdBy]?.profileImage ? (
+                    {playlistUsers[playlist.createdBy]?.profileImage && (
                       <Image
                         src={playlistUsers[playlist.createdBy].profileImage}
                         alt={playlistUsers[playlist.createdBy].fullName}
@@ -107,10 +116,6 @@ export default function PlaylistsPage() {
                         height={32}
                         className="rounded-full"
                       />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <Music className="w-4 h-4 text-gray-400" />
-                      </div>
                     )}
                   </div>
                 </Link>
