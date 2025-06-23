@@ -288,6 +288,10 @@ export async function getAlbumFiles(albumName: string): Promise<{ tracks: Track[
   }
 }
 
+export async function getBighornStudiosAlbum(albumName: string): Promise<{ tracks: Track[], coverImage?: string }> {
+  return await getAlbumFiles(albumName);
+}
+
 // Folders to exclude from album sync
 const EXCLUDED_FOLDERS = ['Images', 'thumbnails'];
 

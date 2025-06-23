@@ -2,13 +2,19 @@
 import { getAlbumById } from "@/lib/album-service"
 import { getAllUsers } from "@/lib/users-service"
 import { AlbumDetailClient } from "@/app/albums/[id]/client"
-import type { Album } from "@/lib/types"
+import { getCurrentUser } from "@/lib/auth-service"
+import type { Album, User } from "@/lib/types"
 
-export default async function AlbumDetailPage({ params }: { params: { id: string } }) {
+type UserWithoutPassword = Omit<User, 'password'>;
+
+export default async function AlbumDetailPage(
+  { params }: { params: { id: string } }
+) {
   const id = params.id
-  const [album, users] = await Promise.all([
+  const [album, users, currentUser] = await Promise.all([
     getAlbumById(id),
-    getAllUsers()
+    getAllUsers(),
+    getCurrentUser()
   ])
-  return <AlbumDetailClient initialAlbum={album} users={users} currentUser={null} />
+  return <AlbumDetailClient initialAlbum={album} users={users as UserWithoutPassword[]} currentUser={currentUser as UserWithoutPassword | null} />
 }

@@ -42,10 +42,12 @@ export function FooterPlayer({
     if (!audio) return
 
     if (autoPlay) {
-      audio.play().catch(() => {
+      audio.play().then(() => {
+        setIsPlaying(true)
+      }).catch(() => {
         setError('Autoplay blocked. Click play to start.')
+        setIsPlaying(false)
       })
-      setIsPlaying(true)
     }
 
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
@@ -89,10 +91,10 @@ export function FooterPlayer({
     // Reset state when src changes
     setCurrentTime(0)
     setDuration(0)
-    setIsPlaying(false)
     setError(null)
     setIsLoading(true)
     setLoadingProgress(0)
+    // Don't reset isPlaying - let autoPlay handle it
   }, [src])
 
   const togglePlayPause = async () => {

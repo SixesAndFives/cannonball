@@ -24,7 +24,6 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string>('')
   const [isVideo, setIsVideo] = useState(false)
-  const [title, setTitle] = useState('')
   const [caption, setCaption] = useState('')
   const [taggedUsers, setTaggedUsers] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -55,10 +54,10 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
   })
 
   const handleSubmit = async () => {
-    if (!file || !title.trim()) {
+    if (!file) {
       toast({
         title: "Missing information",
-        description: "Please provide a file and title",
+        description: "Please select a file to upload",
         variant: "destructive"
       })
       return
@@ -68,7 +67,6 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
     try {
       const result = await uploadGalleryItem({
         file,
-        title: title.trim(),
         caption: caption.trim(),
         taggedUsers,
         uploadedBy: userId,
@@ -87,7 +85,6 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
       // Reset form
       setFile(null)
       setPreview('')
-      setTitle('')
       setCaption('')
       setTaggedUsers([])
       onSuccess?.()
@@ -105,7 +102,6 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
   const handleCancel = () => {
     setFile(null)
     setPreview('')
-    setTitle('')
     setCaption('')
     setTaggedUsers([])
   }
@@ -149,17 +145,6 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
           </div>
 
           <div className="space-y-4">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Title
-              </label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter a title"
-              />
-            </div>
 
             <div>
               <label htmlFor="caption" className="block text-sm font-medium text-gray-700 mb-1">

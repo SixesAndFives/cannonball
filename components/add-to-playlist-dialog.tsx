@@ -35,11 +35,7 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
       setPlaylists(data)
     } catch (error) {
       console.error('Error fetching playlists:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to load playlists',
-        variant: 'destructive',
-      })
+      toast.error('Failed to load playlists')
     } finally {
       setLoading(false)
     }

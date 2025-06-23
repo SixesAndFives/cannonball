@@ -11,7 +11,9 @@ import { toast } from 'sonner';
 import { formatDuration } from '@/lib/utils';
 import { usePlayer } from '@/contexts/player-context';
 
-export default function PlaylistPage({ params }: { params: Promise<{ id: string }> }) {
+export default function PlaylistPage(
+  { params }: { params: Promise<{ id: string }> }
+) {
   const { id } = use(params);
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [albums, setAlbums] = useState<Record<string, Album>>({});
@@ -120,29 +122,22 @@ export default function PlaylistPage({ params }: { params: Promise<{ id: string 
             <div>
               {playlist.tracks.length > 0 ? (
                 <div className="space-y-3">
-                  {playlist.tracks.map((track) => {
-                    // Handle both track reference and direct track data
-                    const isTrackRef = 'albumId' in track && 'trackId' in track;
-                    const playlistTrack = track as (PlaylistTrack | Track);
-                    const trackData = isTrackRef
-                      ? {
-                          album: albums[(playlistTrack as PlaylistTrack).albumId],
-                          track: albums[(playlistTrack as PlaylistTrack).albumId]?.tracks.find(
-                            t => t.id === (playlistTrack as PlaylistTrack).trackId
-                          )
-                        }
-                      : {
-                          album: Object.values(albums).find(a => 
-                            a.tracks.some(t => t.id === (playlistTrack as Track).id)
-                          ),
-                          track: playlistTrack as Track
-                        };
-                    
+                  {playlist?.tracks.map((track, index) => {
+                    // Find album for this track
+                    const directTrack = track as Track;
+                    const album = Object.values(albums).find(a => 
+                      a.tracks.some(t => t.id === directTrack.id)
+                    );
+                    const trackData = {
+                      album: album || null,
+                      track: directTrack
+                    };
+
                     if (!trackData.album || !trackData.track) return null;
 
                     return (
                       <div 
-                        key={isTrackRef ? `${track.albumId}-${track.trackId}` : track.id}
+                        key={track.id}
                         className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 group"
                       >
                         <div className="relative w-16 h-16 flex-shrink-0">
@@ -170,17 +165,11 @@ export default function PlaylistPage({ params }: { params: Promise<{ id: string 
                               // Get all playable tracks from the playlist
                               const playableTracks = playlist.tracks
                                 .map(t => {
-                                  const isRef = 'albumId' in t && 'trackId' in t;
-                                  const pTrack = t as (PlaylistTrack | Track);
-                                  const album = isRef
-                                    ? albums[(pTrack as PlaylistTrack).albumId]
-                                    : Object.values(albums).find(a => 
-                                        a.tracks.some(at => at.id === (pTrack as Track).id)
-                                      );
-                                  const track = isRef
-                                    ? album?.tracks.find(at => at.id === (pTrack as PlaylistTrack).trackId)
-                                    : pTrack as Track;
-                                  return track && album && track.audioUrl ? { track, album } : null;
+                                  const pTrack = t as Track;
+                                  const album = Object.values(albums).find(a => 
+                                    a.tracks.some(at => at.id === pTrack.id)
+                                  );
+                                  return pTrack && album && pTrack.audioUrl ? { track: pTrack, album } : null;
                                 })
                                 .filter((t): t is { track: Required<Track>; album: Album } => t !== null);
 
@@ -212,8 +201,8 @@ export default function PlaylistPage({ params }: { params: Promise<{ id: string 
                           <button
                             className="p-1.5 rounded-full hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
                             onClick={async () => {
-                              const trackId = isTrackRef ? (track as PlaylistTrack).trackId : (track as Track).id;
-                              setIsDeleting(trackId);
+                              const trackId = track.id;
+                              if (trackId) setIsDeleting(trackId);
                               try {
                                 const response = await fetch(`/api/playlists/${playlist.id}/tracks/${trackId}`, {
                                   method: 'DELETE',
@@ -228,11 +217,7 @@ export default function PlaylistPage({ params }: { params: Promise<{ id: string 
                                   if (!prev) return prev;
                                   return {
                                     ...prev,
-                                    tracks: prev.tracks.filter(t => 
-                                      'trackId' in t 
-                                        ? (t as PlaylistTrack).trackId !== trackId
-                                        : (t as Track).id !== trackId
-                                    )
+                                    tracks: prev.tracks.filter(t => t.id !== trackId)
                                   };
                                 });
                                 
@@ -244,9 +229,9 @@ export default function PlaylistPage({ params }: { params: Promise<{ id: string 
                                 setIsDeleting(null);
                               }
                             }}
-                            disabled={isDeleting === (isTrackRef ? (track as PlaylistTrack).trackId : (track as Track).id)}
+                            disabled={isDeleting === track.id}
                           >
-                            {isDeleting === (isTrackRef ? (track as PlaylistTrack).trackId : (track as Track).id) ? (
+                            {isDeleting === track.id ? (
                               <div className="w-5 h-5 flex items-center justify-center">
                                 <div className="w-3 h-3 border-2 border-gray-300/20 border-t-gray-300 rounded-full animate-spin" />
                               </div>

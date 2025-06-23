@@ -18,10 +18,12 @@ import { useToast } from "@/hooks/use-toast"
 import { updateAlbum } from "@/lib/album-client"
 import type { Album, Track, Comment, User } from "@/lib/types"
 
+type UserWithoutPassword = Omit<User, 'password'>
+
 interface AlbumDetailClientProps {
   initialAlbum: Album | null
-  users: Omit<User, 'password'>[]
-  currentUser: User | null
+  users: UserWithoutPassword[]
+  currentUser: UserWithoutPassword | null
 }
 
 export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDetailClientProps) {

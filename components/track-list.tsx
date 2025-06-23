@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, forwardRef, useImperativeHandle } from "react"
-import { Pencil, Play, Pause, Trash2 } from "lucide-react"
+import { Pencil, Play, Pause, Trash2, ListPlus, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AudioPlayer } from "@/components/audio-player"
@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils"
 import { formatDuration } from "@/lib/format-duration"
 import type { Track } from "@/lib/types"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { AddToPlaylistDialog } from "@/components/add-to-playlist-dialog"
+import { useFavorites } from "@/hooks/use-favorites"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface TrackListProps {
   tracks: Track[]
@@ -30,6 +33,8 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
   const [editingTrackId, setEditingTrackId] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState("")
   const [deleteTrackId, setDeleteTrackId] = useState<string | null>(null)
+  const [addToPlaylistTrack, setAddToPlaylistTrack] = useState<Track | null>(null)
+  const { isInFavorites, toggleFavorite } = useFavorites(albumId)
 
   const handleDeleteClick = async (trackId: string) => {
     try {
@@ -100,7 +105,7 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
       <div className="bg-white shadow rounded-lg divide-y">
         {tracks.map((track, index) => (
           <div
-            key={track.id}
+            key={`${track.id}-${index}`}
             className={cn(
               "flex items-center justify-between p-4 hover:bg-gray-50",
               currentTrackIndex === index && "bg-gray-50"
@@ -125,28 +130,52 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                 </div>
               ) : (
                 <div className="flex items-center justify-between flex-1">
+                  <span className="text-sm text-gray-900">{track.title}</span>
                   <div className="flex items-center gap-2">
-                    <>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditClick(track)}
-                        className="h-8 w-8"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setDeleteTrackId(track.id)}
-                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                      <span className="text-sm text-gray-900">{track.title}</span>
-                    </>
-                  </div>
-                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEditClick(track)}
+                      className="h-8 w-8 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setDeleteTrackId(track.id)}
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setAddToPlaylistTrack(track)}
+                      className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <ListPlus className="h-4 w-4" />
+                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => toggleFavorite(track)}
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Heart className={cn(
+                              "h-4 w-4",
+                              isInFavorites(track) && "fill-current"
+                            )} />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {isInFavorites(track) ? 'Remove from Favorites' : 'Add to Favorites'}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     <Button
                       variant={currentTrackIndex === index ? "default" : "outline"}
                       size="sm"
@@ -173,10 +202,22 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
       <ConfirmDialog
         open={deleteTrackId !== null}
         onOpenChange={(open) => !open && setDeleteTrackId(null)}
-        onConfirm={() => deleteTrackId && handleDeleteClick(deleteTrackId)}
+        onConfirm={() => {
+          if (deleteTrackId) {
+            onDeleteTrack(deleteTrackId)
+            setDeleteTrackId(null)
+          }
+        }}
         title="Delete Track"
         description="Are you sure you want to delete this track? This action cannot be undone."
       />
+      {addToPlaylistTrack && (
+        <AddToPlaylistDialog
+          track={addToPlaylistTrack}
+          isOpen={addToPlaylistTrack !== null}
+          onClose={() => setAddToPlaylistTrack(null)}
+        />
+      )}
     </div>
   )
 })

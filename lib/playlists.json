@@ -1,6 +1,101 @@
 {
   "playlists": [
     {
+      "id": "daniel-favorites",
+      "title": "Daniel's Favorites",
+      "coverImage": "/images/dminton.jpg",
+      "createdBy": "1",
+      "createdAt": 1750637262603,
+      "tracks": [
+        {
+          "id": "09.21.18-break-it-down",
+          "title": "09.21.18 Break It Down",
+          "duration": 340.0858125,
+          "audioUrl": "/api/audio/Autumn%20Wind%2FBreak%20it%20down%209.21.wav"
+        }
+      ]
+    },
+    {
+      "id": "andrew-favorites",
+      "title": "Andrew's Favorites",
+      "coverImage": "/images/adiafos.jpg",
+      "createdBy": "2",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "karen-favorites",
+      "title": "Karen's Favorites",
+      "coverImage": "/images/kminton.jpg",
+      "createdBy": "3",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "chris-favorites",
+      "title": "Chris's Favorites",
+      "coverImage": "/images/cdimaio.jpg",
+      "createdBy": "4",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "emily-favorites",
+      "title": "Emily's Favorites",
+      "coverImage": "/images/eclark.jpg",
+      "createdBy": "5",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "tony-favorites",
+      "title": "Tony's Favorites",
+      "coverImage": "/images/tdobson.jpg",
+      "createdBy": "6",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "dave-favorites",
+      "title": "Dave's Favorites",
+      "coverImage": "/images/ddarrow.jpg",
+      "createdBy": "7",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "jordan-favorites",
+      "title": "Jordan's Favorites",
+      "coverImage": "/images/jreese.jpg",
+      "createdBy": "8",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "rio-favorites",
+      "title": "Rio's Favorites",
+      "coverImage": "/images/rmattole.jpg",
+      "createdBy": "9",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "parker-favorites",
+      "title": "Parker's Favorites",
+      "coverImage": "/images/pbeeson.jpg",
+      "createdBy": "10",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
+      "id": "stirling-favorites",
+      "title": "Stirling's Favorites",
+      "coverImage": "/images/styler.jpg",
+      "createdBy": "11",
+      "createdAt": 1750637262603,
+      "tracks": []
+    },
+    {
       "id": "732564f4-130d-4931-b839-53d8b0ac9253",
       "title": "Grateful Dead Covers",
       "coverImage": "/images/playlists/732564f4-130d-4931-b839-53d8b0ac9253.png",
