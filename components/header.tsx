@@ -16,7 +16,7 @@ export function Header() {
   }, [])
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="border-b border-blue-200 bg-blue-50/95 backdrop-blur-md">
       <div className="flex w-full items-center py-3">
         <div className="flex-1">
           <div className="max-w-[1400px] w-full mx-auto px-4 flex items-center justify-between">
