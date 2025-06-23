@@ -2,7 +2,8 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Play, Upload } from "lucide-react"
+import { Play } from "lucide-react"
+import { usePlayer } from "@/contexts/player-context"
 import { Button } from "@/components/ui/button"
 import type { Album } from "@/lib/types"
 import { useRef, useState } from "react"
@@ -12,7 +13,28 @@ interface AlbumCardProps {
 }
 
 export function AlbumCard({ album }: AlbumCardProps) {
+  const { playTrack } = usePlayer()
 
+  const handlePlayNow = () => {
+    if (album.tracks.length > 0 && album.tracks[0].audioUrl) {
+      playTrack(
+        {
+          id: album.tracks[0].id,
+          title: album.tracks[0].title,
+          audioUrl: album.tracks[0].audioUrl
+        },
+        album.id,
+        album.title,
+        album.coverImage || null,
+        0,
+        album.tracks.filter(t => t.audioUrl).map(t => ({
+          id: t.id,
+          title: t.title,
+          audioUrl: t.audioUrl!
+        }))
+      )
+    }
+  }
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 transition-shadow hover:shadow-md">
@@ -33,11 +55,14 @@ export function AlbumCard({ album }: AlbumCardProps) {
         <p className="text-sm text-gray-500 mb-3">{album.year}</p>
 
         <div className="flex gap-2">
-          <Button asChild className="flex-1 bg-gray-800 hover:bg-gray-700" size="sm">
-            <Link href={`/play/${album.id}`}>
-              <Play className="h-4 w-4 mr-1" />
-              Play Now
-            </Link>
+          <Button 
+            className="flex-1 bg-gray-800 hover:bg-gray-700" 
+            size="sm"
+            onClick={handlePlayNow}
+            disabled={album.tracks.length === 0}
+          >
+            <Play className="h-4 w-4 mr-1" />
+            Play Now
           </Button>
 
           <Button asChild variant="outline" className="flex-1" size="sm">
