@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
+import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -25,8 +26,16 @@ interface AlbumDetailClientProps {
 
 export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDetailClientProps) {
   const { toast } = useToast()
+  const { setUser } = useAuth()
   const [album, setAlbum] = useState<Album | null>(initialAlbum)
   const [galleryKey, setGalleryKey] = useState(0)
+
+  // Initialize auth context with server user
+  useEffect(() => {
+    if (currentUser) {
+      setUser(currentUser)
+    }
+  }, [currentUser, setUser])
 
   const [isPending, startTransition] = useTransition()
   const { playTrack, currentTrack } = usePlayer()
@@ -143,13 +152,21 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
                 onPlayTrack={(index) => {
                   const track = album.tracks[index]
                   if (track.audioUrl) {
+                    const tracksWithAlbumInfo = album.tracks
+                      .filter(t => t.audioUrl)
+                      .map(t => ({
+                        id: t.id,
+                        title: t.title,
+                        audioUrl: t.audioUrl!,
+                        albumId: album.id,
+                        albumTitle: album.title,
+                        coverImage: album.coverImage || null
+                      }))
+
                     playTrack(
-                      { ...track, audioUrl: track.audioUrl },
-                      album.id,
-                      album.title,
-                      album.coverImage || null,
+                      tracksWithAlbumInfo[index],
                       index,
-                      album.tracks.filter(t => t.audioUrl).map(t => ({ ...t, audioUrl: t.audioUrl! }))
+                      tracksWithAlbumInfo
                     )
                   }
                 }}

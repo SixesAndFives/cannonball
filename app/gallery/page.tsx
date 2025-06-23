@@ -40,10 +40,8 @@ export default function GalleryPage() {
   return (
     <div>
       <Header />
-      <div className="container mx-auto px-4">
-        <div className="mt-8">
-          <h2 className="text-xl font-medium text-gray-800 mb-4">Gallery</h2>
-          <GalleryGrid
+      <div className="container mx-auto px-4 py-4">
+        <GalleryGrid
             items={items}
             onItemUpdate={async (itemId: string, updates: Partial<GalleryItem>) => {
               try {
@@ -70,7 +68,6 @@ export default function GalleryPage() {
             }}
             onItemSelect={setSelectedItem}
           />
-        </div>
       </div>
 
       {selectedItem && (

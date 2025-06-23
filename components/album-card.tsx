@@ -17,21 +17,21 @@ export function AlbumCard({ album }: AlbumCardProps) {
 
   const handlePlayNow = () => {
     if (album.tracks.length > 0 && album.tracks[0].audioUrl) {
-      playTrack(
-        {
-          id: album.tracks[0].id,
-          title: album.tracks[0].title,
-          audioUrl: album.tracks[0].audioUrl
-        },
-        album.id,
-        album.title,
-        album.coverImage || null,
-        0,
-        album.tracks.filter(t => t.audioUrl).map(t => ({
+      const tracksWithAlbumInfo = album.tracks
+        .filter(t => t.audioUrl)
+        .map(t => ({
           id: t.id,
           title: t.title,
-          audioUrl: t.audioUrl!
+          audioUrl: t.audioUrl!,
+          albumId: album.id,
+          albumTitle: album.title,
+          coverImage: album.coverImage || null
         }))
+
+      playTrack(
+        tracksWithAlbumInfo[0],
+        0,
+        tracksWithAlbumInfo
       )
     }
   }

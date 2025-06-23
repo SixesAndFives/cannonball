@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
-import { Music, Play, Trash2 } from 'lucide-react';
+import { Music, Play, Trash2, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Album, Playlist, Track, PlaylistTrack } from '@/lib/types';
@@ -192,13 +192,17 @@ export default function PlaylistPage({ params }: { params: Promise<{ id: string 
                               // Play the track
                               if (trackIndex !== -1) {
                                 const { track, album } = playableTracks[trackIndex];
+                                const tracksWithAlbumInfo = playableTracks.map(pt => ({
+                                  ...pt.track,
+                                  albumId: pt.album.id,
+                                  albumTitle: pt.album.title,
+                                  coverImage: pt.album.coverImage || null
+                                }))
+
                                 playInPlayer(
-                                  track,
-                                  album.id,
-                                  album.title,
-                                  album.coverImage || null,
+                                  tracksWithAlbumInfo[trackIndex],
                                   trackIndex,
-                                  playableTracks.map(t => t.track)
+                                  tracksWithAlbumInfo
                                 );
                               }
                             }}

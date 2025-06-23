@@ -7,6 +7,9 @@ interface Track {
   id: string
   title: string
   audioUrl: string
+  albumId?: string
+  albumTitle?: string
+  coverImage?: string | null
 }
 
 interface PlayerContextType {
@@ -18,7 +21,7 @@ interface PlayerContextType {
     trackIndex: number | null
   }
   playlist: Track[]
-  playTrack: (track: Track, albumId: string, albumTitle: string, coverImage: string | null, trackIndex: number, playlist: Track[]) => void
+  playTrack: (track: Track, trackIndex: number, playlist: Track[]) => void
   playNext: () => void
   playPrevious: () => void
   clearTrack: () => void
@@ -38,17 +41,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const playTrack = (
     track: Track,
-    albumId: string,
-    albumTitle: string,
-    coverImage: string | null,
     trackIndex: number,
     newPlaylist: Track[]
   ) => {
     setCurrentTrack({
       track,
-      albumId,
-      albumTitle,
-      coverImage,
+      albumId: track.albumId || null,
+      albumTitle: track.albumTitle || null,
+      coverImage: track.coverImage || null,
       trackIndex
     })
     setPlaylist(newPlaylist)
@@ -60,9 +60,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (nextIndex < playlist.length) {
       playTrack(
         playlist[nextIndex],
-        currentTrack.albumId!,
-        currentTrack.albumTitle!,
-        currentTrack.coverImage,
         nextIndex,
         playlist
       )
@@ -75,9 +72,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (prevIndex >= 0) {
       playTrack(
         playlist[prevIndex],
-        currentTrack.albumId!,
-        currentTrack.albumTitle!,
-        currentTrack.coverImage,
         prevIndex,
         playlist
       )
