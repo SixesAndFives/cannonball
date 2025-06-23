@@ -53,6 +53,26 @@ export interface Comment {
   profileImage?: string;
 }
 
+export interface PlaylistTrack {
+  id: string
+  title: string
+  duration: number
+  audioUrl?: string
+  // Legacy fields for backward compatibility
+  albumId?: string
+  trackId?: string
+  addedAt?: number
+}
+
+export interface Playlist {
+  id: string;
+  title: string;
+  coverImage?: string;
+  createdBy: string;
+  createdAt: number;
+  tracks: PlaylistTrack[];
+}
+
 export interface User {
   id: string;          // UUID for the user
   fullName: string;    // Display name

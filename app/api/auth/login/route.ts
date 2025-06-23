@@ -17,9 +17,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
     }
 
-    // For now, we'll just return the user info without the password
+    // Remove password and set cookie
     const { password: _, ...userWithoutPassword } = user
-    return NextResponse.json(userWithoutPassword)
+    const response = NextResponse.json(userWithoutPassword)
+    response.cookies.set('userId', user.id)
+    return response
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
