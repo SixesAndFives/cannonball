@@ -1,0 +1,46 @@
+{
+  "playlists": [
+    {
+      "id": "732564f4-130d-4931-b839-53d8b0ac9253",
+      "title": "Grateful Dead Covers",
+      "coverImage": "/images/playlists/732564f4-130d-4931-b839-53d8b0ac9253.png",
+      "createdBy": "1",
+      "createdAt": 1750637262603,
+      "tracks": [
+        {
+          "id": "09.21.18-eleven-jam",
+          "title": "09.21.18 Eleven Jam",
+          "duration": 327.817,
+          "audioUrl": "/api/audio/Autumn%20Wind%2Feleven.12%20jam.wav"
+        },
+        {
+          "id": "the-other-one",
+          "title": "The Other One",
+          "duration": 480.696,
+          "audioUrl": "/api/audio/Back%20To%20School%2FeMastered_The%20other%20Juan.mp3"
+        },
+        {
+          "id": "01.20.18-gomorrah",
+          "title": "01.20.18 Gomorrah",
+          "duration": 409.056,
+          "audioUrl": "/api/audio/Brother%20Howl%2FGomorrah.wav"
+        }
+      ]
+    },
+    {
+      "id": "f9937d06-69f9-4a3f-908d-2412b990f872",
+      "title": "Tom Waits Covers",
+      "coverImage": "/images/playlists/f9937d06-69f9-4a3f-908d-2412b990f872.jpg",
+      "createdBy": "4",
+      "createdAt": 1750639377100,
+      "tracks": [
+        {
+          "id": "all-the-world-is-green",
+          "title": "All The World Is Green",
+          "duration": 484.296,
+          "audioUrl": "/api/audio/Back%20To%20School%2FeMastered_All%20the%20world%20is%20green.mp3"
+        }
+      ]
+    }
+  ]
+}
