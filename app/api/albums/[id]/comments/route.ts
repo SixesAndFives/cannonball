@@ -20,11 +20,12 @@ function writeAlbums(data: { albums: Album[] }) {
 // GET /api/albums/[id]/comments
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const data = readAlbums()
-    const album = data.albums.find(a => a.id === params.id)
+    const album = data.albums.find((a: Album) => a.id === id)
     
     if (!album) {
       return NextResponse.json({ error: 'Album not found' }, { status: 404 })
@@ -40,9 +41,10 @@ export async function GET(
 // POST /api/albums/[id]/comments
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const { author, content, userId, profileImage } = await request.json()
     
     if (!author || !content) {
@@ -50,7 +52,7 @@ export async function POST(
     }
 
     const data = readAlbums()
-    const albumIndex = data.albums.findIndex((a: Album) => a.id === params.id)
+    const albumIndex = data.albums.findIndex((a: Album) => a.id === id)
     
     if (albumIndex === -1) {
       return NextResponse.json({ error: 'Album not found' }, { status: 404 })

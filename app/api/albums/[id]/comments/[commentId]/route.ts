@@ -19,11 +19,12 @@ function writeAlbums(data: { albums: Album[] }) {
 // DELETE /api/albums/[id]/comments/[commentId]
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string; commentId: string } }
+  { params }: { params: Promise<{ id: string; commentId: string }> }
 ) {
   try {
+    const { id, commentId } = await params
     const data = readAlbums()
-    const albumIndex = data.albums.findIndex((a: Album) => a.id === params.id)
+    const albumIndex = data.albums.findIndex((a: Album) => a.id === id)
     
     if (albumIndex === -1) {
       return NextResponse.json({ error: 'Album not found' }, { status: 404 })
@@ -34,7 +35,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
     }
 
-    const commentIndex = album.comments.findIndex((c: Comment) => c.id === params.commentId)
+    const commentIndex = album.comments.findIndex((c: Comment) => c.id === commentId)
     if (commentIndex === -1) {
       return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
     }

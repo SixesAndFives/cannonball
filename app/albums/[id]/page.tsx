@@ -8,9 +8,9 @@ import type { Album, User } from "@/lib/types"
 type UserWithoutPassword = Omit<User, 'password'>;
 
 export default async function AlbumDetailPage(
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = params.id
+  const { id } = await params
   const [album, users, currentUser] = await Promise.all([
     getAlbumById(id),
     getAllUsers(),
