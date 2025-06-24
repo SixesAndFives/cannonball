@@ -22,10 +22,14 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
         <div className="flex-1">
           <div className="max-w-[1400px] w-full mx-auto px-4 flex items-center justify-between">
             <div>
-              <Link href="/" className="text-2xl tracking-wider hover:text-gray-700 flex items-center gap-2">
-                <span className="font-bold">CANNONBALL</span>
-                <span className="text-gray-600 hidden sm:inline">-</span>
-                <span className="italic font-normal text-gray-700 text-base hidden sm:inline">you have reached the center of the universe</span>
+              <Link href="/" className="tracking-wider hover:text-gray-700">
+                <div className="flex sm:flex-row flex-col sm:items-center gap-2">
+                  <span className="text-2xl font-bold">CANNONBALL</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-600 hidden sm:inline">-</span>
+                    <span className="italic font-normal text-gray-700 text-sm sm:text-base sm:inline">you have reached the center of the universe</span>
+                  </div>
+                </div>
               </Link>
             </div>
             <div className="flex items-center gap-4">

@@ -130,12 +130,138 @@ export function FooterPlayer({
     <div 
       className={cn(
         "fixed bottom-0 left-0 right-0 bg-blue-50/95 backdrop-blur-md border-t border-blue-200 transition-all duration-300 ease-in-out z-50",
-        isExpanded ? "h-24" : "h-12",
+        isExpanded ? "h-32 md:h-24" : "h-16 md:h-12",
         className
       )}
     >
       <div className="container mx-auto px-4 h-full">
-        <div className="flex items-center justify-between h-full">
+        {/* Mobile Layout */}
+        <div className="md:hidden h-full">
+          {isExpanded ? (
+            <div className="flex flex-col h-full py-2">
+              {/* Track Info Row */}
+              <div className="flex items-center gap-3 mb-2">
+                {coverImage && (
+                  <div className="relative w-12 h-12 rounded overflow-hidden flex-shrink-0">
+                    <img 
+                      src={coverImage} 
+                      alt={albumTitle}
+                      className="object-cover"
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="truncate text-sm font-medium text-gray-900">{title}</div>
+                  <div className="truncate text-xs text-gray-500">{albumTitle}</div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="h-10 w-10"
+                >
+                  <ChevronDown className="h-5 w-5" />
+                </Button>
+              </div>
+
+              {/* Progress Bar Row */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs text-gray-500 w-10 text-right">{formatTime(currentTime)}</span>
+                <Slider
+                  value={[currentTime]}
+                  min={0}
+                  max={duration || 100}
+                  step={1}
+                  onValueChange={handleSeek}
+                  className="flex-1"
+                />
+                <span className="text-xs text-gray-500 w-10">{formatTime(duration)}</span>
+              </div>
+
+              {/* Controls Row */}
+              <div className="flex items-center justify-center gap-4">
+                {onPrevious && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onPrevious}
+                    className="h-12 w-12"
+                  >
+                    <SkipBack className="h-6 w-6" />
+                  </Button>
+                )}
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={togglePlayPause}
+                  className="h-12 w-12"
+                >
+                  {isPlaying ? (
+                    <Pause className="h-6 w-6" />
+                  ) : (
+                    <Play className="h-6 w-6" />
+                  )}
+                </Button>
+
+                {onNext && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onNext}
+                    className="h-12 w-12"
+                  >
+                    <SkipForward className="h-6 w-6" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between h-full">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                {coverImage && (
+                  <div className="relative w-10 h-10 rounded overflow-hidden flex-shrink-0">
+                    <img 
+                      src={coverImage} 
+                      alt={albumTitle}
+                      className="object-cover"
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="truncate text-sm font-medium text-gray-900">{title}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={togglePlayPause}
+                  className="h-10 w-10"
+                >
+                  {isPlaying ? (
+                    <Pause className="h-5 w-5" />
+                  ) : (
+                    <Play className="h-5 w-5" />
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="h-10 w-10"
+                >
+                  <ChevronUp className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Layout (unchanged) */}
+        <div className="hidden md:flex items-center justify-between h-full">
           {/* Track Info */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {coverImage && (
