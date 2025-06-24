@@ -1,9 +1,9 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import fetch from 'node-fetch'
-import { generateVideoThumbnail } from '/Users/danielminton/Documents/CascadeProjects/cannonball-archive/lib/video-utils'
+import { generateVideoThumbnail } from '../lib/video-utils'
 import { B2 } from 'backblaze-b2'
-import type { GalleryItem } from '/Users/danielminton/Documents/CascadeProjects/cannonball-archive/lib/types'
+import type { GalleryItem } from '../lib/types'
 
 const b2 = new B2({
   applicationKeyId: process.env.B2_APPLICATION_KEY_ID!,
