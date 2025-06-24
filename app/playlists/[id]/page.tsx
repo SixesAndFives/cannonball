@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, use } from 'react';
-import { Header } from '@/components/header';
+
 import { Button } from '@/components/ui/button';
 import { Music, Play, Trash2, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
@@ -54,9 +54,8 @@ export default function PlaylistPage(
 
   if (isLoading) {
     return (
-      <div>
-        <Header />
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gray-50 pb-24">
+        <div className="container mx-auto px-4 py-4">
           <div className="animate-pulse">
             <div className="h-8 w-48 bg-gray-200 rounded mb-8" />
             <div className="h-48 w-48 bg-gray-200 rounded" />
@@ -68,9 +67,8 @@ export default function PlaylistPage(
 
   if (!playlist) {
     return (
-      <div>
-        <Header />
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gray-50 pb-24">
+        <div className="container mx-auto px-4 py-4">
           <div className="max-w-2xl mx-auto text-center">
             <h1 className="text-2xl font-semibold text-gray-900 mb-4">Playlist not found</h1>
             <p className="text-gray-600 mb-8">This playlist might have been deleted or doesn't exist.</p>
@@ -87,9 +85,8 @@ export default function PlaylistPage(
   }
 
   return (
-    <div>
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 pb-24">
+      <div className="container mx-auto px-4 py-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">{playlist.title}</h1>

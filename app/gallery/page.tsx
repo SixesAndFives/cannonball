@@ -1,6 +1,6 @@
 'use client';
 
-import { Header } from '@/components/header';
+
 import { useState, useEffect } from 'react';
 import { GalleryGrid } from '@/components/gallery-grid';
 import { X } from 'lucide-react';
@@ -39,7 +39,6 @@ export default function GalleryPage() {
 
   return (
     <div>
-      <Header />
       <div className="container mx-auto px-4 py-4">
         <GalleryGrid
             items={items}

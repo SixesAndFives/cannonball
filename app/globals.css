@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --menu-bg: #ffffff;
+}
+
+.mobile-menu-panel {
+  background-color: var(--menu-bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Header } from '@/components/header';
+
 import { Button } from '@/components/ui/button';
 import { Music, Plus } from 'lucide-react';
 import Link from 'next/link';
@@ -57,9 +57,8 @@ export default function PlaylistsPage() {
   ] : playlists;
 
   return (
-    <div>
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 pb-24">
+      <div className="container mx-auto px-4 py-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-end mb-6">
             <Button asChild>

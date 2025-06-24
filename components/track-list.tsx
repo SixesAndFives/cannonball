@@ -132,22 +132,27 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                 <div className="flex items-center justify-between flex-1">
                   <span className="text-sm text-gray-900">{track.title}</span>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditClick(track)}
-                      className="h-8 w-8 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setDeleteTrackId(track.id)}
-                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {/* Admin actions - desktop only */}
+                    <div className="hidden md:flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditClick(track)}
+                        className="h-8 w-8 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setDeleteTrackId(track.id)}
+                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Always visible actions */}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -177,17 +182,21 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                       </Tooltip>
                     </TooltipProvider>
                     <Button
-                      variant={currentTrackIndex === index ? "default" : "outline"}
-                      size="sm"
+                      variant={currentTrackIndex === index ? "default" : "ghost"}
+                      size="icon"
                       onClick={() => handlePlayClick(index)}
                       data-track-index={index}
+                      className="h-8 w-8 md:h-auto md:w-auto md:px-4"
                     >
                       {currentTrackIndex === index ? (
-                        "Now Playing"
+                        <>
+                          <span className="hidden md:inline">Now Playing</span>
+                          <Pause className="h-4 w-4 md:hidden" />
+                        </>
                       ) : (
                         <>
-                          <Play className="h-4 w-4 mr-2" />
-                          Play Track
+                          <Play className="h-4 w-4 md:mr-2" />
+                          <span className="hidden md:inline">Play Track</span>
                         </>
                       )}
                     </Button>

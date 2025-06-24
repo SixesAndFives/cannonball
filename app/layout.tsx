@@ -1,15 +1,12 @@
-import type { Metadata } from 'next'
 import './globals.css'
 import Link from 'next/link'
 import { PlayerProvider } from '@/contexts/player-context'
 import { AuthProvider } from '@/contexts/auth-context'
 import { Toaster } from 'sonner'
-import { Header } from '@/components/header'
+import { ClientWrapper } from '@/components/client-wrapper'
+import { metadata } from './metadata'
 
-export const metadata: Metadata = {
-  title: 'Cannonball Archive',
-  description: 'Music archive for Cannonball'
-}
+export { metadata }
 
 export default function RootLayout({
   children,
@@ -25,7 +22,9 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <PlayerProvider>
-            {children}
+            <ClientWrapper>
+              {children}
+            </ClientWrapper>
           </PlayerProvider>
           <Toaster position="top-center" />
         </AuthProvider>
