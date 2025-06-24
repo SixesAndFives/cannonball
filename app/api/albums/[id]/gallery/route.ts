@@ -5,11 +5,12 @@ import type { GalleryItem } from '@/lib/gallery-service'
 // GET /api/albums/[id]/gallery
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('Fetching gallery for album:', params.id)
-    const items = await getAlbumGallery(params.id)
+    const { id } = await params
+    console.log('Fetching gallery for album:', id)
+    const items = await getAlbumGallery(id)
     console.log('Found items:', items)
     return NextResponse.json(items)
   } catch (error) {
@@ -24,9 +25,10 @@ export async function GET(
 // POST /api/albums/[id]/gallery
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const formData = await request.formData()
     const file = formData.get('file') as File
     const caption = formData.get('caption') as string
@@ -50,7 +52,7 @@ export async function POST(
       buffer,
       fileName,
       contentType,
-      params.id,
+      id,
       caption,
       taggedUsers
     )

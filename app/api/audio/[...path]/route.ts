@@ -1,10 +1,11 @@
 import { NextRequest } from 'next/server'
 import { authorize } from '@/lib/b2-client'
 
-export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   try {
+    const { path } = await params
     // Get the B2 file path from the URL parameters
-    const filePath = params.path.join('/')
+    const filePath = path.join('/')
     console.log('Audio request for:', filePath)
     
     // Get an authorized download URL from B2

@@ -3,11 +3,12 @@ import { NextResponse } from 'next/server';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const updates = await request.json();
-    const updatedItem = await updateGalleryItem(params.id, updates);
+    const updatedItem = await updateGalleryItem(id, updates);
     
     if (!updatedItem) {
       return new NextResponse('Gallery item not found', { status: 404 });

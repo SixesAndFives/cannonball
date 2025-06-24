@@ -101,7 +101,7 @@ export async function listAlbumFiles(albumId: string): Promise<string[]> {
       maxFileCount: 1000
     })
 
-    return files.map(file => 
+    return files.map((file: { fileName: string }) => 
       `https://f004.backblazeb2.com/file/${BUCKET_NAME}/${file.fileName}`
     )
   } catch (error) {

@@ -3,11 +3,12 @@ import { readGalleryData } from '@/lib/gallery-service'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const galleryData = await readGalleryData()
   const video = galleryData.items.find(
-    (item) => item.id === params.id && item.type === 'video'
+    (item) => item.id === id && item.type === 'video'
   )
 
   if (!video) {

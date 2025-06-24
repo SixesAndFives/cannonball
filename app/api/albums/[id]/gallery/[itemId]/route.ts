@@ -5,11 +5,12 @@ import { deleteFromB2 } from '@/lib/b2-image-client'
 // DELETE /api/albums/[id]/gallery/[itemId]
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string; itemId: string } }
+  { params }: { params: Promise<{ id: string; itemId: string }> }
 ) {
   try {
+    const { id, itemId } = await params
     // Delete from gallery.json
-    const deleted = await deleteGalleryItem(params.itemId)
+    const deleted = await deleteGalleryItem(itemId)
     if (!deleted) {
       return NextResponse.json(
         { error: 'Gallery item not found' },
@@ -38,9 +39,10 @@ export async function DELETE(
 // PATCH /api/albums/[id]/gallery/[itemId]
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string; itemId: string } }
+  { params }: { params: Promise<{ id: string; itemId: string }> }
 ) {
   try {
+    const { id, itemId } = await params
     const updates = await request.json()
     
     // Only allow updating title, caption, and taggedUsers
@@ -50,7 +52,7 @@ export async function PATCH(
       taggedUsers: updates.taggedUsers
     }
     
-    const updated = await updateGalleryItem(params.itemId, allowedUpdates)
+    const updated = await updateGalleryItem(itemId, allowedUpdates)
     if (!updated) {
       return NextResponse.json(
         { error: 'Gallery item not found' },

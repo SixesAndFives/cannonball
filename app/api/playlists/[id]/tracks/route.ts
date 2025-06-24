@@ -17,10 +17,10 @@ async function writePlaylists(playlists: any[]) {
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const playlistId = await params.id
+    const { id: playlistId } = await params
     const { track } = await request.json()
 
     const playlists = await readPlaylists()

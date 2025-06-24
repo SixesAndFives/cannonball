@@ -3,10 +3,11 @@ import { getAlbumGallery } from '@/lib/gallery-service'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const items = await getAlbumGallery(params.id)
+    const { id } = await params
+    const items = await getAlbumGallery(id)
     return NextResponse.json(items)
   } catch (error) {
     console.error('Error getting album gallery:', error)

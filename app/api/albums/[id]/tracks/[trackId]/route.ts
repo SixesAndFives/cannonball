@@ -5,12 +5,13 @@ import albumsData from '@/lib/albums.json'
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string; trackId: string } }
+  { params }: { params: Promise<{ id: string; trackId: string }> }
 ) {
   console.log('Deleting track:', params)
   try {
-    const albumId = decodeURIComponent(params.id)
-    const trackId = decodeURIComponent(params.trackId)
+    const { id, trackId } = await params
+    const albumId = decodeURIComponent(id)
+    const decodedTrackId = decodeURIComponent(trackId)
     
     // Find the album
     console.log('Looking for album:', albumId)
@@ -25,11 +26,8 @@ export async function DELETE(
     // Find and remove the track
     const album = albumsData.albums[albumIndex]
     console.log('Found album:', album.title)
-    console.log('Looking for track:', trackId)
-    const trackIndex = album.tracks.findIndex(track => {
-      console.log('Checking track:', track.id)
-      return track.id === trackId
-    })
+    console.log('Looking for track:', decodedTrackId)
+    const trackIndex = album.tracks.findIndex(track => track.id === decodedTrackId)
     if (trackIndex === -1) {
       return NextResponse.json({ error: 'Track not found' }, { status: 404 })
     }

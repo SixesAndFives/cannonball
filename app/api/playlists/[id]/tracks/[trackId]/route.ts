@@ -16,10 +16,10 @@ async function writePlaylists(playlists: any[]) {
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string; trackId: string } }
+  { params }: { params: Promise<{ id: string; trackId: string }> }
 ) {
   try {
-    const { id: playlistId, trackId } = params
+    const { id: playlistId, trackId } = await params
 
     const playlists = await readPlaylists()
     if (!Array.isArray(playlists)) {

@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
 import { authorize } from '@/lib/b2-client';
 
-export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const fullPath = decodeURIComponent(params.path.join('/'));
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path } = await params
+  const fullPath = decodeURIComponent(path.join('/'));
   
   // Extract the file name from the full B2 URL if present
   const fileName = fullPath.includes('backblazeb2.com') 
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
 
   // Get a fresh download URL with authorization
   const { downloadUrl, authToken } = await authorize();
-  const [albumId, filename] = params.path;
+  const [albumId, filename] = path;
   const b2Url = `${downloadUrl}/file/cannonball-music/${albumId}/${filename}`;
   
   console.log('Fetching image from:', b2Url);

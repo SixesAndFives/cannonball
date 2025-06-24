@@ -23,9 +23,10 @@ export function CommentSection({ comments: initialComments, albumId }: CommentSe
     const comment: Comment = {
       id: `comment-${Date.now()}`,
       author: "Current User",
-      authorAvatar: "/placeholder-user.jpg",
       content: newComment,
       timestamp: new Date().toISOString(),
+      userId: "1",
+      profileImage: "/placeholder-user.jpg"
     }
 
     setComments([...comments, comment])
@@ -43,7 +44,7 @@ export function CommentSection({ comments: initialComments, albumId }: CommentSe
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-4">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={comment.authorAvatar || "/placeholder.svg"} alt={comment.author} />
+              <AvatarImage src={comment.profileImage || "/placeholder.svg"} alt={comment.author} />
               <AvatarFallback>{comment.author.substring(0, 2)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">

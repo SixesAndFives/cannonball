@@ -5,16 +5,17 @@ import type { Album } from '@/lib/types'
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const albumsPath = join(process.cwd(), 'lib', 'albums.json')
     const albumsData = JSON.parse(readFileSync(albumsPath, 'utf-8'))
     
     const updatedAlbum = await request.json() as Album
     
     // Ensure the ID in the URL matches the album ID
-    if (params.id !== updatedAlbum.id) {
+    if (id !== updatedAlbum.id) {
       return NextResponse.json(
         { error: 'Album ID mismatch' },
         { status: 400 }
@@ -23,7 +24,7 @@ export async function PUT(
 
     // Find and update the album
     const albumIndex = albumsData.albums.findIndex(
-      (album: Album) => album.id === params.id
+      (album: Album) => album.id === id
     )
 
     if (albumIndex === -1) {
