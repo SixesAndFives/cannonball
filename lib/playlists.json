@@ -12,6 +12,12 @@
           "title": "09.21.18 Break It Down",
           "duration": 340.0858125,
           "audioUrl": "/api/audio/Autumn%20Wind%2FBreak%20it%20down%209.21.wav"
+        },
+        {
+          "id": "09.21.18-ezra",
+          "title": "09.21.18 Ezra",
+          "duration": 485.61797916666666,
+          "audioUrl": "/api/audio/Autumn%20Wind%2FEzra%209.21.wav"
         }
       ]
     },

@@ -165,6 +165,25 @@
         "7",
         "1"
       ]
+    },
+    {
+      "id": "beee2d94-131c-4142-9e17-3b3140146e5e",
+      "albumId": "live---polebridge-052425",
+      "type": "video",
+      "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/2a94a8b7-fd26-415b-942e-caafeb832ce3-IMG_9730.MOV",
+      "thumbnailUrl": "https://f004.backblazeb2.com/file/cannonball-music/thumbnails/beee2d94-131c-4142-9e17-3b3140146e5e.jpg",
+      "caption": "Night time crowd shot",
+      "fileName": "Images/2a94a8b7-fd26-415b-942e-caafeb832ce3-IMG_9730.MOV",
+      "contentType": "video/quicktime",
+      "uploadTimestamp": 1750702731070,
+      "taggedUsers": [
+        "1",
+        "2",
+        "4",
+        "6",
+        "7",
+        "8"
+      ]
     }
   ]
 }
