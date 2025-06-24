@@ -18,6 +18,12 @@
           "title": "09.21.18 Ezra",
           "duration": 485.61797916666666,
           "audioUrl": "/api/audio/Autumn%20Wind%2FEzra%209.21.wav"
+        },
+        {
+          "id": "all-in-your-head",
+          "title": "All In Your Head",
+          "duration": 308.97632653061225,
+          "audioUrl": "/api/audio/Bighorn%20Studios%2FAll%20In%20Your%20Head.mp3"
         }
       ]
     },
