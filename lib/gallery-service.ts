@@ -2,19 +2,28 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { randomUUID } from 'crypto'
 import { generateVideoThumbnail } from './video-utils'
+import { supabase } from './supabase/server'
 const B2 = require('backblaze-b2')
 
 const galleryPath = path.join(process.cwd(), 'lib', 'gallery.json')
 
-import type { GalleryItem as BaseGalleryItem } from './types'
+import type { GalleryItem } from './types'
 
-type GalleryItemInternal = Omit<BaseGalleryItem, 'title' | 'uploadedBy' | 'timestamp'> & {
-  fileName: string
-  contentType: string
-  uploadTimestamp: number
+type GalleryItemInternal = {
+  id: string
+  album_id: string
+  type: 'image' | 'video'
+  url: string
+  thumbnail_url?: string
+  caption: string
+  tagged_users: string[]
+  title?: string
+  file_name?: string
+  content_type?: string
+  created_at?: string
+  uploaded_by?: string
+  upload_timestamp?: number
 }
-
-export type GalleryItem = GalleryItemInternal
 
 export interface GalleryData {
   items: GalleryItem[]
@@ -43,9 +52,9 @@ export async function uploadGalleryItem(
   file: Buffer,
   fileName: string,
   contentType: string,
-  albumId: string,
+  album_id: string,
   caption: string,
-  taggedUsers: string[] = []
+  tagged_users: string[] = []
 ): Promise<GalleryItem> {
   try {
     // Authenticate with B2
@@ -133,15 +142,17 @@ export async function uploadGalleryItem(
     // Create gallery item
     const newItem: GalleryItem = {
       id: itemId,
-      albumId,
+      album_id,
       type: contentType.startsWith('video/') ? 'video' : 'image',
       url: `https://f004.backblazeb2.com/file/cannonball-music/${uniqueFileName}`,
-      ...(thumbnailUrl && { thumbnailUrl }),
+      ...(thumbnailUrl && { thumbnail_url: thumbnailUrl }),
       caption,
-      fileName: uniqueFileName,
-      contentType,
-      uploadTimestamp: Date.now(),
-      taggedUsers
+      file_name: uniqueFileName,
+      content_type: contentType,
+      created_at: new Date().toISOString(),
+      uploaded_by: 'system',
+      tagged_users,
+      title: uniqueFileName.split('/').pop()?.replace(/\.[^/.]+$/, '') || 'Untitled'
     }
 
     // Add to gallery.json
@@ -164,33 +175,64 @@ export async function addGalleryItem(item: Omit<GalleryItem, 'id'>): Promise<Gal
   }
   
   gallery.items.push(newItem)
-  await fs.writeFile(galleryPath, JSON.stringify(gallery, null, 2))
   
   return newItem
 }
 
-export async function getAlbumGallery(albumId: string): Promise<BaseGalleryItem[]> {
-  const data = await readGalleryData()
-  return data.items
-    .filter(item => item.albumId === albumId)
-    .map(item => ({
-      ...item,
-      title: item.fileName,
-      uploadedBy: 'system', // TODO: Add real user tracking
-      timestamp: new Date(item.uploadTimestamp).toISOString()
-    }))
+export async function getAlbumGallery(album_id: string): Promise<GalleryItem[]> {
+  const { data: album, error } = await supabase
+    .from('albums')
+    .select('gallery')
+    .eq('id', album_id)
+    .single()
+
+  if (error) throw error
+  return album?.gallery?.map((item: GalleryItemInternal) => {
+    // Use created_at if available, otherwise try uploadTimestamp, or fallback to current time
+    const timestamp = item.created_at || 
+      (typeof item.upload_timestamp === 'number' ? new Date(item.upload_timestamp).toISOString() : new Date().toISOString())
+
+    const baseItem: GalleryItem = {
+      id: item.id,
+      album_id: item.album_id,
+      type: item.type,
+      url: item.url,
+      thumbnail_url: item.thumbnail_url,
+      caption: item.caption,
+      tagged_users: item.tagged_users,
+      title: item.file_name || 'Untitled',
+      uploaded_by: item.uploaded_by || 'system',
+      created_at: timestamp,
+      file_name: item.file_name || 'untitled',
+      content_type: item.content_type || 'application/octet-stream'
+    }
+
+    return baseItem
+  }) || []
 }
 
 export const getGalleryItemsByAlbum = getAlbumGallery
 
-export async function getAllGalleryItems(): Promise<BaseGalleryItem[]> {
+export async function getAllGalleryItems(): Promise<GalleryItem[]> {
   const data = await readGalleryData()
-  return data.items.map(item => ({
-    ...item,
-    title: item.fileName,
-    uploadedBy: 'system', // TODO: Add real user tracking
-    timestamp: new Date(item.uploadTimestamp).toISOString()
-  }))
+  return data.items.map(item => {
+    const title = item.file_name || 'Untitled'
+    const galleryItem: GalleryItem = {
+      id: item.id,
+      album_id: item.album_id,
+      type: item.type,
+      url: item.url,
+      thumbnail_url: item.thumbnail_url,
+      caption: item.caption || '',
+      tagged_users: item.tagged_users || [],
+      title,
+      uploaded_by: 'system', // TODO: Add real user tracking
+      created_at: item.created_at || new Date().toISOString(),
+      file_name: item.file_name || title,
+      content_type: item.content_type || 'application/octet-stream'
+    }
+    return galleryItem
+  })
 }
 
 export async function deleteGalleryItem(itemId: string): Promise<boolean> {
@@ -208,7 +250,7 @@ export async function deleteGalleryItem(itemId: string): Promise<boolean> {
 
 export async function updateGalleryItem(
   itemId: string,
-  updates: Partial<Omit<GalleryItem, 'id' | 'albumId' | 'url'>>
+  updates: Partial<Omit<GalleryItem, 'id' | 'album_id' | 'url'>>
 ): Promise<GalleryItem | null> {
   const gallery = await readGalleryData()
   const index = gallery.items.findIndex(item => item.id === itemId)

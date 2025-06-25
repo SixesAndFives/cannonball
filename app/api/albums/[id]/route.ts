@@ -1,7 +1,37 @@
-import { readFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
 import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase/server'
 import type { Album } from '@/lib/types'
+
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    const { data: album, error } = await supabase
+      .from('albums')
+      .select('*, tracks(*), album_personnel(*)')
+      .eq('id', id)
+      .single()
+
+    if (error) throw error
+    if (!album) {
+      return NextResponse.json(
+        { error: 'Album not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(album)
+  } catch (error) {
+    console.error('Error fetching album:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch album' },
+      { status: 500 }
+    )
+  }
+}
 
 export async function PUT(
   request: Request,
@@ -9,9 +39,6 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const albumsPath = join(process.cwd(), 'lib', 'albums.json')
-    const albumsData = JSON.parse(readFileSync(albumsPath, 'utf-8'))
-    
     const updatedAlbum = await request.json() as Album
     
     // Ensure the ID in the URL matches the album ID
@@ -22,29 +49,25 @@ export async function PUT(
       )
     }
 
-    // Find and update the album
-    const albumIndex = albumsData.albums.findIndex(
-      (album: Album) => album.id === id
-    )
+    // Update the album
+    const { data: album, error } = await supabase
+      .from('albums')
+      .update({
+        personnel: updatedAlbum.personnel
+      })
+      .eq('id', id)
+      .select()
+      .single()
 
-    if (albumIndex === -1) {
+    if (error) throw error
+    if (!album) {
       return NextResponse.json(
         { error: 'Album not found' },
         { status: 404 }
       )
     }
 
-    // Preserve tracks and other data, only update personnel
-    const existingAlbum = albumsData.albums[albumIndex]
-    albumsData.albums[albumIndex] = {
-      ...existingAlbum,
-      personnel: updatedAlbum.personnel
-    }
-
-    // Write back to file
-    writeFileSync(albumsPath, JSON.stringify(albumsData, null, 2))
-
-    return NextResponse.json(albumsData.albums[albumIndex])
+    return NextResponse.json(album)
   } catch (error) {
     console.error('Error updating album:', error)
     return NextResponse.json(

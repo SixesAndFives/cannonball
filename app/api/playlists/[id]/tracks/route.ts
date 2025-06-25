@@ -1,19 +1,6 @@
 import { NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { supabase } from '@/lib/supabase/server'
 import type { Track } from '@/lib/types'
-
-const playlistsPath = path.join(process.cwd(), 'lib/playlists.json')
-
-async function readPlaylists() {
-  const data = await fs.readFile(playlistsPath, 'utf8')
-  const { playlists } = JSON.parse(data)
-  return playlists
-}
-
-async function writePlaylists(playlists: any[]) {
-  await fs.writeFile(playlistsPath, JSON.stringify({ playlists }, null, 2))
-}
 
 export async function POST(
   request: Request,
@@ -23,46 +10,136 @@ export async function POST(
     const { id: playlistId } = await params
     const { track } = await request.json()
 
-    const playlists = await readPlaylists()
-    if (!Array.isArray(playlists)) {
-      throw new Error('Invalid playlists data structure')
-    }
-
-    const playlistIndex = playlists.findIndex((p) => p.id === playlistId)
-
-    if (playlistIndex === -1) {
-      return NextResponse.json(
-        { error: 'Playlist not found' },
-        { status: 404 }
-      )
-    }
-
-    // Initialize tracks array if it doesn't exist
-    if (!playlists[playlistIndex].tracks) {
-      playlists[playlistIndex].tracks = []
-    }
-
     // Check if track already exists in playlist
-    const trackExists = playlists[playlistIndex].tracks.some(
-      (t: Track) => t.id === track.id
-    )
+    const { data: existingTrack } = await supabase
+      .from('playlist_tracks')
+      .select('*')
+      .eq('playlist_id', playlistId)
+      .eq('track_id', track.id)
+      .single()
 
-    if (trackExists) {
+    if (existingTrack) {
       return NextResponse.json(
         { error: 'Track already exists in playlist' },
         { status: 400 }
       )
     }
 
-    // Add track to playlist
-    playlists[playlistIndex].tracks.push(track)
-    await writePlaylists(playlists)
+    // Add track to playlist_tracks table
+    const { error } = await supabase
+      .from('playlist_tracks')
+      .insert({
+        id: `${playlistId}_${track.id}`,
+        playlist_id: playlistId,
+        track_id: track.id
+      })
+
+    if (error) {
+      console.error('Error adding track to playlist:', error)
+      return NextResponse.json(
+        { error: 'Failed to add track to playlist' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error adding track to playlist:', error)
     return NextResponse.json(
       { error: 'Failed to add track to playlist' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  console.log('==== DELETE ENDPOINT START ====');
+  try {
+    console.log('DELETE request received:', {
+      url: request.url,
+      params: await params
+    })
+
+    const { id: playlistId } = await params
+    const url = new URL(request.url)
+    console.log('URL parts:', {
+      pathname: url.pathname,
+      segments: url.pathname.split('/'),
+    })
+
+    const trackId = url.pathname.split('/').pop()
+    
+    console.log('DELETE track from playlist:', { 
+      playlistId, 
+      trackId,
+      fullUrl: request.url,
+      headers: Object.fromEntries(request.headers.entries())
+    })
+    
+    if (!trackId) {
+      console.log('No track ID found in URL')
+      return NextResponse.json(
+        { error: 'Track ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // First check if the track exists
+    console.log('Checking if track exists in playlist...');
+    const { data: existingTrack, error: findError } = await supabase
+      .from('playlist_tracks')
+      .select('*')
+      .eq('playlist_id', playlistId)
+      .eq('track_id', trackId)
+      .single();
+
+    console.log('Find track result:', { existingTrack, findError });
+
+    if (findError) {
+      console.error('Error finding track:', findError);
+      return NextResponse.json(
+        { error: 'Error finding track in playlist' },
+        { status: 500 }
+      );
+    }
+
+    if (!existingTrack) {
+      console.log('Track not found in playlist');
+      return NextResponse.json(
+        { error: 'Track not found in playlist' },
+        { status: 404 }
+      );
+    }
+
+    // Remove track from playlist_tracks table
+    console.log('Track found, executing delete...');
+    const { data, error } = await supabase
+      .from('playlist_tracks')
+      .delete()
+      .eq('playlist_id', playlistId)
+      .eq('track_id', trackId)
+
+    console.log('Supabase delete result:', { data, error })
+
+    if (error) {
+      console.error('Error removing track from playlist:', error)
+      return NextResponse.json(
+        { error: 'Failed to remove track from playlist', details: error },
+        { status: 500 }
+      )
+    }
+
+    console.log('Successfully deleted track from playlist');
+    console.log('==== DELETE ENDPOINT END ====');
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error removing track from playlist:', error)
+    return NextResponse.json(
+      { error: 'Failed to remove track from playlist' },
       { status: 500 }
     )
   }

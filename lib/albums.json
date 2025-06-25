@@ -813,32 +813,7 @@
         "8",
         "2"
       ],
-      "comments": [
-        {
-          "id": "de5dbd57-29d2-4155-ad65-c3986227098f",
-          "author": "Daniel Minton",
-          "content": "There are kids playing and laughing and Tony starts the show with \"Oh SHIT!....\"\n\nA sign of things to come.",
-          "timestamp": "2025-06-20T19:31:32.593Z",
-          "userId": "1",
-          "profileImage": "/images/dminton.jpg"
-        },
-        {
-          "id": "f89f2a97-91b6-424b-add7-439b4319d273",
-          "author": "Andrew Diafos",
-          "content": "Amazing.",
-          "timestamp": "2025-06-20T19:57:12.602Z",
-          "userId": "2",
-          "profileImage": "/images/adiafos.jpg"
-        },
-        {
-          "id": "201d60b9-351a-4ee0-97b2-715307c6b3ac",
-          "author": "Karen Minton",
-          "content": "I danced my ass off.",
-          "timestamp": "2025-06-20T22:51:14.561Z",
-          "userId": "3",
-          "profileImage": "/images/kminton.jpg"
-        }
-      ]
+      "comments": []
     },
     {
       "id": "night-voices",

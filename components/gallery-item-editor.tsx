@@ -11,12 +11,15 @@ interface GalleryItemEditorProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (updates: { caption: string; taggedUsers: string[] }) => Promise<void>;
+  onDelete?: () => Promise<void>;
 }
 
-export function GalleryItemEditor({ item, isOpen, onClose, onSave }: GalleryItemEditorProps) {
+export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: GalleryItemEditorProps) {
   const [caption, setCaption] = useState(item.caption || '');
-  const [taggedUsers, setTaggedUsers] = useState(item.taggedUsers || []);
+  const [taggedUsers, setTaggedUsers] = useState(item.tagged_users || []);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [taggedUserDetails, setTaggedUserDetails] = useState<User[]>([]);
 
@@ -57,6 +60,21 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave }: GalleryItem
     }
   };
 
+  const handleDelete = async () => {
+    if (!onDelete) return;
+    try {
+      setIsDeleting(true);
+      await onDelete();
+      onClose();
+    } catch (error) {
+      console.error('Failed to delete gallery item:', error);
+      // TODO: Add error toast
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -77,7 +95,7 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave }: GalleryItem
           ) : (
             <div className="relative w-full h-full bg-black">
               <Image
-                src={item.thumbnailUrl || item.url}
+                src={item.thumbnail_url || item.url}
                 alt={caption}
                 className="object-contain"
                 fill
@@ -150,21 +168,59 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave }: GalleryItem
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t">
+        {/* Action Buttons */}
+        <div className="mt-6 flex justify-between">
+          {/* Delete Button */}
+          {onDelete && (
+            <button
+              type="button"
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={isDeleting || isSaving}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Item'}
+            </button>
+          )}
+
+          {/* Save Button */}
           <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-          >
-            Cancel
-          </button>
-          <button
+            type="button"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSave}
-            disabled={isSaving}
-            className="px-4 py-2 text-sm text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors disabled:opacity-50"
+            disabled={isSaving || isDeleting}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="fixed inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
+            <div className="relative bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+              <h3 className="text-lg font-medium mb-4">Delete Gallery Item?</h3>
+              <p className="text-gray-600 mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Drawer>
   );

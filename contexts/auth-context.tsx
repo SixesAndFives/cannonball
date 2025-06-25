@@ -18,8 +18,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const savedUser = localStorage.getItem('auth-user')
+    console.log('AuthContext - Loading user from localStorage:', { savedUser })
     if (savedUser) {
-      setUser(JSON.parse(savedUser))
+      const parsedUser = JSON.parse(savedUser)
+      console.log('AuthContext - Parsed user:', parsedUser)
+      setUser(parsedUser)
     }
     setIsInitialized(true)
   }, [])

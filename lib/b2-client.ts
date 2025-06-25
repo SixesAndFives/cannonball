@@ -239,17 +239,17 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
       tracks.push({
         id: title.toLowerCase().replace(/\s+/g, '-'),
         title,
-        duration: metadata.format.duration || 0,
-        audioUrl: file.url,
+        duration: metadata.format.duration ? metadata.format.duration.toString() : '0:00',
+        audio_url: file.url,
         artist: metadata.common?.artist || 'Cannonball',
         album: metadata.common?.album || fileName.split('/')[0],
         year: metadata.common?.year || new Date().getFullYear(),
-        trackNumber: metadata.common?.track?.no || undefined,
+        track_number: metadata.common?.track?.no || undefined,
         genre: metadata.common?.genre?.[0],
         comment: metadata.common?.comment?.[0]?.text,
         composer: metadata.common?.composer?.[0],
         bitrate: metadata.format.bitrate,
-        sampleRate: metadata.format.sampleRate,
+        sample_rate: metadata.format.sampleRate,
         channels: metadata.format.numberOfChannels,
         lossless: metadata.format.lossless
       });
@@ -262,13 +262,13 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
       tracks.push({
         id: title.toLowerCase().replace(/\s+/g, '-'),
         title,
-        duration: 0,
-        audioUrl: file.url,
+        duration: '0:00',
+        audio_url: file.url,
         artist: 'Cannonball',
         album: file.fileName.split('/')[0] || '',
         year: new Date().getFullYear(),
         bitrate: file.fileName.endsWith('.wav') ? 1152000 : undefined,
-        sampleRate: file.fileName.endsWith('.wav') ? 48000 : 44100,
+        sample_rate: file.fileName.endsWith('.wav') ? 48000 : 44100,
         channels: 1,
         lossless: file.fileName.endsWith('.wav')
       });

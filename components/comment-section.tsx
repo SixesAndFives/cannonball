@@ -24,9 +24,9 @@ export function CommentSection({ comments: initialComments, albumId }: CommentSe
       id: `comment-${Date.now()}`,
       author: "Current User",
       content: newComment,
-      timestamp: new Date().toISOString(),
-      userId: "1",
-      profileImage: "/placeholder-user.jpg"
+      created_at: new Date().toISOString(),
+      user_id: "1",
+      profile_image: "/placeholder-user.jpg"
     }
 
     setComments([...comments, comment])
@@ -44,13 +44,13 @@ export function CommentSection({ comments: initialComments, albumId }: CommentSe
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-4">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={comment.profileImage || "/placeholder.svg"} alt={comment.author} />
+              <AvatarImage src={comment.profile_image || "/placeholder.svg"} alt={comment.author} />
               <AvatarFallback>{comment.author.substring(0, 2)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-medium text-gray-900">{comment.author}</span>
-                <span className="text-xs text-gray-500">{new Date(comment.timestamp).toLocaleDateString()}</span>
+                <span className="text-xs text-gray-500">{new Date(comment.created_at).toLocaleDateString()}</span>
               </div>
               <p className="text-gray-700">{comment.content}</p>
             </div>

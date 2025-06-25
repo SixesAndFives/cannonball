@@ -16,16 +16,16 @@ export function AlbumCard({ album }: AlbumCardProps) {
   const { playTrack } = usePlayer()
 
   const handlePlayNow = () => {
-    if (album.tracks.length > 0 && album.tracks[0].audioUrl) {
+    if (album.tracks.length > 0 && album.tracks[0].audio_url) {
       const tracksWithAlbumInfo = album.tracks
-        .filter(t => t.audioUrl)
+        .filter(t => t.audio_url)
         .map(t => ({
           id: t.id,
           title: t.title,
-          audioUrl: t.audioUrl!,
-          albumId: album.id,
-          albumTitle: album.title,
-          coverImage: album.coverImage || null
+          audio_url: t.audio_url!,
+          album_id: album.id,
+          album_title: album.title,
+          cover_image: album.cover_image || null
         }))
 
       playTrack(
@@ -40,7 +40,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 transition-shadow hover:shadow-md">
       <div className="relative aspect-square">
         <Image
-          src={album.coverImage || '/images/placeholder-album.jpg'}
+          src={album.cover_image || '/images/placeholder-album.jpg'}
           alt={album.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

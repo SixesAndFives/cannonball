@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
-
-const albumsPath = path.join(process.cwd(), 'lib', 'albums.json');
+import { supabase } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const data = await fs.readFile(albumsPath, 'utf-8');
-    const { albums } = JSON.parse(data);
+    const { data: albums, error } = await supabase
+      .from('albums')
+      .select('*, tracks(*)')
+      .order('year', { ascending: false });
+
+    if (error) throw error;
+
     return NextResponse.json(albums);
   } catch (error) {
     console.error('Error fetching albums:', error);

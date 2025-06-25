@@ -59,7 +59,7 @@ export default function GalleryPage() {
               const item = items.find(i => i.id === itemId)
               if (!item) return
               try {
-                const response = await fetch(`/api/albums/${item.album_id}/gallery/${itemId}`, {
+                const response = await fetch(`/api/gallery/${item.album_id}/gallery/${itemId}`, {
                   method: 'PATCH',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(updates)

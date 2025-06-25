@@ -16,8 +16,8 @@ export async function GET(
   }
 
   // If we already have a thumbnail URL, redirect to it
-  if (video.thumbnailUrl) {
-    return NextResponse.redirect(video.thumbnailUrl)
+  if (video.thumbnail_url) {
+    return NextResponse.redirect(video.thumbnail_url)
   }
 
   // If no thumbnail, redirect to the video itself

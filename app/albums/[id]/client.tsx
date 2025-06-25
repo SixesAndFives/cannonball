@@ -43,14 +43,43 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
   const { playTrack, currentTrack } = usePlayer()
   const currentTrackIndex = currentTrack.trackIndex
 
-  const handleDeleteTrack = (trackId: string) => {
+  const handleDeleteTrack = async (trackId: string) => {
     if (!album) return
+    console.log('CLIENT - Deleting track:', { albumId: album.id, trackId })
 
-    const updatedAlbum = {
-      ...album,
-      tracks: album.tracks.filter(track => track.id !== trackId)
+    try {
+      const response = await fetch('/api/delete-track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ albumId: album.id, trackId })
+      })
+
+      const data = await response.json()
+      console.log('CLIENT - Delete track response:', data)
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete track')
+      }
+
+      // Update local state only after successful deletion
+      const updatedAlbum = {
+        ...album,
+        tracks: album.tracks.filter(track => track.id !== trackId)
+      }
+      setAlbum(updatedAlbum)
+      
+      toast({
+        title: 'Track deleted',
+        description: 'The track has been removed successfully.'
+      })
+    } catch (error) {
+      console.error('CLIENT - Error deleting track:', error)
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to delete track',
+        variant: 'destructive'
+      })
     }
-    setAlbum(updatedAlbum)
   }
 
 
@@ -153,16 +182,14 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
                 onDeleteTrack={handleDeleteTrack}
                 onPlayTrack={(index) => {
                   const track = album.tracks[index]
-                  if (track.audioUrl) {
+                  if (track.audio_url) {
                     const tracksWithAlbumInfo = album.tracks
-                      .filter(t => t.audioUrl)
+                      .filter(t => t.audio_url)
                       .map(t => ({
-                        id: t.id,
-                        title: t.title,
-                        audioUrl: t.audioUrl!,
-                        albumId: album.id,
-                        albumTitle: album.title,
-                        coverImage: album.coverImage || null
+                        ...t,
+                        album_id: album.id,
+                        album_title: album.title,
+                        cover_image: album.cover_image || null
                       }))
 
                     playTrack(

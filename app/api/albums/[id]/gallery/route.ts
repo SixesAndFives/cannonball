@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getAlbumGallery, uploadGalleryItem } from '@/lib/gallery-service'
-import type { GalleryItem } from '@/lib/gallery-service'
+import { getAlbumGallery, uploadGalleryItem } from '@/lib/gallery-service-supabase'
+import type { GalleryItem } from '@/lib/gallery-service-supabase'
 
 // GET /api/albums/[id]/gallery
 export async function GET(
@@ -46,6 +46,14 @@ export async function POST(
     const buffer = Buffer.from(await file.arrayBuffer())
     const fileName = file.name
     const contentType = file.type
+    const uploadedBy = formData.get('uploadedBy') as string
+    
+    if (!uploadedBy) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      )
+    }
     
     // Upload to B2 and create gallery item
     const item = await uploadGalleryItem(
@@ -54,7 +62,8 @@ export async function POST(
       contentType,
       id,
       caption,
-      taggedUsers
+      taggedUsers,
+      uploadedBy
     )
     
     return NextResponse.json(item)

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { deleteGalleryItem, updateGalleryItem } from '@/lib/gallery-service'
-import { deleteFromB2 } from '@/lib/b2-image-client'
+import { deleteGalleryItem, updateGalleryItem } from '@/lib/gallery-service-supabase'
 
 // DELETE /api/albums/[id]/gallery/[itemId]
 export async function DELETE(
@@ -9,21 +8,12 @@ export async function DELETE(
 ) {
   try {
     const { id, itemId } = await params
-    // Delete from gallery.json
-    const deleted = await deleteGalleryItem(itemId)
+    const deleted = await deleteGalleryItem(id, itemId)
     if (!deleted) {
       return NextResponse.json(
         { error: 'Gallery item not found' },
         { status: 404 }
       )
-    }
-
-    // Delete from B2
-    // Note: We extract the filename from the full URL
-    const url = request.headers.get('x-file-url')
-    if (url) {
-      const fileName = url.split('/file/cannonball-music/')[1]
-      await deleteFromB2(fileName)
     }
 
     return NextResponse.json({ success: true })
@@ -45,14 +35,13 @@ export async function PATCH(
     const { id, itemId } = await params
     const updates = await request.json()
     
-    // Only allow updating title, caption, and taggedUsers
+    // Only allow updating caption and tagged_users
     const allowedUpdates = {
-      title: updates.title,
       caption: updates.caption,
-      taggedUsers: updates.taggedUsers
+      tagged_users: updates.taggedUsers // Convert from client-side name to server-side name
     }
     
-    const updated = await updateGalleryItem(itemId, allowedUpdates)
+    const updated = await updateGalleryItem(id, itemId, allowedUpdates)
     if (!updated) {
       return NextResponse.json(
         { error: 'Gallery item not found' },

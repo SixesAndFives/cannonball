@@ -1,7 +1,7 @@
 'use server'
 
 import type { Album } from "./types"
-import albumsData from './albums.json'
+import { supabase } from './supabase'
 
 export async function generateId(name: string): Promise<string> {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-")
@@ -15,19 +15,18 @@ async function getAuthorizedUrl(url: string, type: 'audio' | 'cover' = 'audio'):
 }
 
 async function normalizeAlbum(album: any): Promise<Album> {
-  const id = album.id || await generateId(album.originalAlbumName)
   return {
-    id,
-    originalAlbumName: album.originalAlbumName,
-    title: album.title || album.originalAlbumName,
-    coverImage: album.coverImage,
-    year: album.year || (album.tracks?.[0]?.year) || 'Unknown',
-    notes: album.notes,
-    tracks: await Promise.all(album.tracks.map(async (track: any) => ({
-      id: track.id || `track-${Math.random().toString(36).slice(2)}`,
-      title: track.title || track.audioUrl?.split('/').pop()?.replace(/\.\w+$/, '') || 'Untitled Track',
-      duration: track.duration || '0:00',
-      audioUrl: await getAuthorizedUrl(track.audioUrl)
+    id: album.id,
+    original_album_name: album.original_album_name,
+    title: album.title,
+    cover_image: album.cover_image,
+    year: album.year || 'Unknown',
+    notes: album.notes || '',
+    tracks: await Promise.all((album.tracks || []).map(async (track: any) => ({
+      id: track.id,
+      title: track.title,
+      duration: typeof track.duration === 'number' ? track.duration.toString() : '0:00',
+      audio_url: await getAuthorizedUrl(track.audio_url)
     }))),
     gallery: album.gallery || [],
     comments: album.comments || [],
@@ -37,50 +36,40 @@ async function normalizeAlbum(album: any): Promise<Album> {
 
 export async function getAlbumById(id: string): Promise<Album | null> {
   try {
-    // First try to find by direct ID match
-    let album = albumsData.albums.find(album => album.id === id)
-    
-    // If not found, try matching by generated ID
-    if (!album) {
-      for (const a of albumsData.albums) {
-        const albumId = await generateId(a.originalAlbumName)
-        if (albumId === id) {
-          album = a
-          break
-        }
-      }
-    }
-    
-    return album ? await normalizeAlbum(album) : null
+    const { data: album, error } = await supabase
+      .from('albums')
+      .select('*, tracks(*)')
+      .eq('id', id)
+      .single()
+
+    if (error || !album) return null
+    return normalizeAlbum(album)
   } catch (error) {
-    console.error("Error reading album:", error)
+    console.error('Error getting album:', error)
     return null
   }
 }
 
 export async function updateAlbum(id: string, updatedAlbum: Album): Promise<boolean> {
   try {
-    const response = await fetch(`/api/albums/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedAlbum),
-    })
+    const { error } = await supabase
+      .from('albums')
+      .update(updatedAlbum)
+      .eq('id', id)
 
-    if (!response.ok) {
-      throw new Error('Failed to update album')
-    }
-
-    const data = await response.json()
-    return data.success
+    return !error
   } catch (error) {
-    console.error("Error updating album:", error)
+    console.error('Error updating album:', error)
     return false
   }
 }
 
 export async function getAllAlbums(): Promise<Album[]> {
-  const albums = await Promise.all(albumsData.albums.map(normalizeAlbum))
-  return albums
+  const { data: albums, error } = await supabase
+    .from('albums')
+    .select('*, tracks(*)')
+    .order('year', { ascending: false })
+
+  if (error || !albums) return []
+  return Promise.all(albums.map(normalizeAlbum))
 }

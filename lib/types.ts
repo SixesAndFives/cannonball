@@ -1,9 +1,9 @@
 export interface Album {
-  id: string;  // Derived from originalAlbumName
-  originalAlbumName: string;
-  title: string;  // Either newAlbumName or originalAlbumName
-  year?: number;
-  coverImage?: string;
+  id: string;  // Derived from original_album_name
+  original_album_name: string;
+  title: string;  // Either new_album_name or original_album_name
+  year?: string;
+  cover_image?: string;
   notes?: string;
   tracks: Track[];
   gallery?: GalleryItem[];
@@ -14,71 +14,73 @@ export interface Album {
 export interface Track {
   id: string;
   title: string;
-  duration: number;  // Changed to number for seconds
-  audioUrl?: string;
-  // Metadata fields
+  audio_url: string;
+  duration?: string;
   artist?: string;
   album?: string;
+  album_id?: string;
+  album_title?: string;
   year?: number;
-  trackNumber?: number;
+  track_number?: number;
   genre?: string;
   comment?: string;
   composer?: string;
-  // Audio format information
   bitrate?: number;
-  sampleRate?: number;
+  sample_rate?: number;
   channels?: number;
   lossless?: boolean;
 }
 
 export interface GalleryItem {
   id: string;
-  albumId: string;
+  album_id: string;
   type: 'image' | 'video';
   url: string;
-  thumbnailUrl?: string;
+  thumbnail_url?: string;
   title: string;
   caption: string;
-  taggedUsers: string[];
-  uploadedBy: string;
-  timestamp: string;
+  tagged_users: string[];
+  uploaded_by: string;
+  created_at: string;
+  file_name: string;
+  content_type: string;
 }
 
 export interface Comment {
   id: string;
   author: string;
   content: string;
-  timestamp: string;
-  userId: string;
-  profileImage?: string;
+  user_id?: string;
+  profile_image?: string;
+  created_at: string;
 }
 
 export interface PlaylistTrack {
-  id: string
-  title: string
-  duration: number
-  audioUrl?: string
-  // Legacy fields for backward compatibility
-  albumId?: string
-  trackId?: string
-  addedAt?: number
+  id: string;
+  title: string;
+  duration: number;
+  audio_url?: string;
+  album_id: string;
+  album_title: string;
+  cover_image?: string;
+  added_at?: number;
 }
 
 export interface Playlist {
   id: string;
   title: string;
-  coverImage?: string;
-  createdBy: string;
-  createdAt: number;
+  cover_image?: string;
+  user_id: string;
+  created_at: number;
   tracks: PlaylistTrack[];
 }
 
 export interface User {
   id: string;          // UUID for the user
-  fullName: string;    // Display name
-  userName: string;    // Login username
-  password: string;    // Plain text for now
-  profileImage?: string;
-  createdAt: string;
+  full_name: string;    // Display name
+  user_name: string;    // Login username
+  password: string;
+  profile_image?: string;
+  created_at: string;
   instruments?: string;  // Comma-separated list of instruments
 }

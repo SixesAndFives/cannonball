@@ -1,64 +1,74 @@
 import { NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
-
-const playlistsPath = path.join(process.cwd(), 'lib/playlists.json')
-
-async function readPlaylists() {
-  const data = await fs.readFile(playlistsPath, 'utf8')
-  const { playlists } = JSON.parse(data)
-  return playlists
-}
-
-async function writePlaylists(playlists: any[]) {
-  await fs.writeFile(playlistsPath, JSON.stringify({ playlists }, null, 2))
-}
+import { supabase } from '@/lib/supabase/server'
+import type { NextRequest } from 'next/server'
 
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string; trackId: string }> }
-) {
+): Promise<NextResponse> {
+  console.log('==== DELETE ENDPOINT START ====');
   try {
     const { id: playlistId, trackId } = await params
+    console.log('Deleting track from playlist:', { playlistId, trackId })
 
-    const playlists = await readPlaylists()
-    if (!Array.isArray(playlists)) {
-      throw new Error('Invalid playlists data structure')
-    }
+    // First check if the track exists
+    const { data: existingTrack, error: findError } = await supabase
+      .from('playlist_tracks')
+      .select('*')
+      .eq('playlist_id', playlistId)
+      .eq('track_id', trackId)
+      .single()
 
-    const playlistIndex = playlists.findIndex((p) => p.id === playlistId)
-    if (playlistIndex === -1) {
+    console.log('Find track result:', { existingTrack, findError })
+
+    if (findError) {
+      console.error('Error finding track:', findError)
       return NextResponse.json(
-        { error: 'Playlist not found' },
-        { status: 404 }
+        { error: 'Error finding track in playlist' },
+        { status: 500 }
       )
     }
 
-    const playlist = playlists[playlistIndex]
-    if (!playlist.tracks) {
-      return NextResponse.json(
-        { error: 'Playlist has no tracks' },
-        { status: 404 }
-      )
-    }
-
-    // Find the track to remove
-    const trackIndex = playlist.tracks.findIndex((t: any) => {
-      // Handle both track reference and direct track data
-      return 'trackId' in t ? t.trackId === trackId : t.id === trackId
-    })
-
-    if (trackIndex === -1) {
+    if (!existingTrack) {
+      console.log('Track not found in playlist')
       return NextResponse.json(
         { error: 'Track not found in playlist' },
         { status: 404 }
       )
     }
 
-    // Remove the track
-    playlist.tracks.splice(trackIndex, 1)
-    await writePlaylists(playlists)
+    // Remove track from playlist_tracks table
+    console.log('Track found, executing delete...')
+    
+    // Log the exact query we're about to run
+    const query = supabase
+      .from('playlist_tracks')
+      .delete()
+      .eq('playlist_id', playlistId)
+      .eq('track_id', trackId)
+    
+    console.log('Supabase query:', {
+      table: 'playlist_tracks',
+      method: 'delete',
+      conditions: {
+        playlist_id: playlistId,
+        track_id: trackId
+      }
+    })
 
+    const { data, error, count } = await query
+    console.log('Delete result:', { data, error, count })
+
+    if (error) {
+      console.error('Error removing track from playlist:', error)
+      return NextResponse.json(
+        { error: 'Failed to remove track from playlist', details: error },
+        { status: 500 }
+      )
+    }
+
+    console.log('Successfully deleted track from playlist')
+    console.log('==== DELETE ENDPOINT END ====');
     return NextResponse.json({ success: true })
   } catch (error: any) {
     console.error('Error removing track from playlist:', error)

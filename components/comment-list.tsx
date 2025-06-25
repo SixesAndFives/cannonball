@@ -95,9 +95,9 @@ export function CommentList({ albumId, comments, onCommentAdded, onCommentDelete
             >
               <div className="flex justify-between items-start">
                 <div className="flex items-start gap-3">
-                  {comment.profileImage && (
+                  {comment.profile_image && (
                     <Image
-                      src={comment.profileImage}
+                      src={comment.profile_image}
                       alt={comment.author}
                       width={40}
                       height={40}
@@ -106,7 +106,7 @@ export function CommentList({ albumId, comments, onCommentAdded, onCommentDelete
                   )}
                   <div>
                     <h4 className="font-medium text-gray-900">{comment.author}</h4>
-                    <p className="text-sm text-gray-500">{formatDate(comment.timestamp)}</p>
+                    <p className="text-sm text-gray-500">{formatDate(comment.created_at)}</p>
                   </div>
                 </div>
                 <Button

@@ -1,50 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import fs from 'fs/promises';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 import { Playlist } from '@/lib/types';
-
-const playlistsPath = path.join(process.cwd(), 'lib', 'playlists.json');
-const playlistsDir = path.join(process.cwd(), 'public', 'images', 'playlists');
-
-// Initialize playlists.json if it doesn't exist
-async function initPlaylistsFile() {
-  try {
-    await fs.access(playlistsPath);
-  } catch {
-    await fs.writeFile(playlistsPath, JSON.stringify({ playlists: [] }, null, 2));
-  }
-}
-
-// Initialize playlists directory if it doesn't exist
-async function initPlaylistsDir() {
-  try {
-    await fs.access(playlistsDir);
-  } catch {
-    await fs.mkdir(playlistsDir, { recursive: true });
-  }
-}
-
-// Read playlists from JSON file
-async function readPlaylists(): Promise<{ playlists: Playlist[] }> {
-  await initPlaylistsFile();
-  const data = await fs.readFile(playlistsPath, 'utf-8');
-  return JSON.parse(data);
-}
-
-// Write playlists to JSON file
-async function writePlaylists(data: { playlists: Playlist[] }) {
-  await fs.writeFile(playlistsPath, JSON.stringify(data, null, 2));
-}
+import { getAllPlaylists } from '@/lib/playlist-service';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+import fs from 'fs/promises';
 
 export async function GET() {
   try {
-    const data = await readPlaylists();
-    return NextResponse.json(data.playlists);
+    console.log('GET /api/playlists - Starting request');
+    const playlists = await getAllPlaylists();
+    console.log('GET /api/playlists - Got playlists:', JSON.stringify(playlists, null, 2));
+    return NextResponse.json(playlists);
   } catch (error) {
-    console.error('Error reading playlists:', error);
+    console.error('Error reading playlist:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch playlists' },
+      { error: 'Failed to fetch playlist' },
       { status: 500 }
     );
   }
@@ -52,51 +24,93 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    await initPlaylistsDir();
     const formData = await request.formData();
     const title = formData.get('title') as string;
-    const createdBy = formData.get('createdBy') as string;
-    const coverImage = formData.get('coverImage') as File | null;
+    const coverImage = formData.get('coverImage') as File;
+    const userId = formData.get('user_id') as string;
 
-    if (!title || !createdBy) {
+    if (!title || !userId) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Title and user_id are required' },
         { status: 400 }
       );
     }
 
-    const playlistId = uuidv4();
-    let coverImagePath: string | undefined;
-
+    let coverImagePath = '';
     if (coverImage) {
-      const ext = coverImage.name.split('.').pop() || 'jpg';
-      const filename = `${playlistId}.${ext}`;
-      const imagePath = path.join(playlistsDir, filename);
-      
+      // Create playlists directory if it doesn't exist
+      const playlistsDir = path.join(process.cwd(), 'public', 'images', 'playlists');
+      await fs.mkdir(playlistsDir, { recursive: true });
+
+      // Generate unique filename using playlist ID
+      const playlistId = uuidv4();
+      const ext = path.extname(coverImage.name);
+      const filename = `${playlistId}${ext}`;
+      const filepath = path.join(playlistsDir, filename);
+
+      // Convert File to Buffer and save
       const bytes = await coverImage.arrayBuffer();
-      await fs.writeFile(imagePath, Buffer.from(bytes));
-      
+      const buffer = Buffer.from(bytes);
+      await writeFile(filepath, buffer);
+
       coverImagePath = `/images/playlists/${filename}`;
     }
 
-    const newPlaylist: Playlist = {
-      id: playlistId,
-      title,
-      coverImage: coverImagePath,
-      createdBy,
-      createdAt: Date.now(),
-      tracks: []
-    };
+    const { data: playlist, error } = await supabase
+      .from('playlists')
+      .insert({
+        id: uuidv4(),
+        title,
+        cover_image: coverImagePath,
+        user_id: userId,
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
 
-    const data = await readPlaylists();
-    data.playlists.push(newPlaylist);
-    await writePlaylists(data);
+    if (error) throw error;
 
-    return NextResponse.json(newPlaylist);
+    return NextResponse.json(playlist);
   } catch (error) {
     console.error('Error creating playlist:', error);
     return NextResponse.json(
       { error: 'Failed to create playlist' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+
+    // First delete all playlist tracks
+    const { error: deleteTracksError } = await supabase
+      .from('playlist_tracks')
+      .delete()
+      .eq('playlist_id', id);
+
+    if (deleteTracksError) throw deleteTracksError;
+
+    // Then delete the playlist
+    const { error: deletePlaylistError } = await supabase
+      .from('playlists')
+      .delete()
+      .eq('id', id);
+
+    if (deletePlaylistError) throw deletePlaylistError;
+
+    // Note: Cover image deletion from storage will be handled later
+    // when we implement Supabase storage
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting playlist:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete playlist' },
       { status: 500 }
     );
   }

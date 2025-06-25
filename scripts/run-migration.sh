@@ -1,0 +1,6 @@
+#!/bin/bash
+export NEXT_PUBLIC_SUPABASE_URL="https://rafhkwpcmpzcfejmakzi.supabase.co"
+export NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhZmhrd3BjbXB6Y2Zlam1ha3ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA3ODY0NjUsImV4cCI6MjA2NjM2MjQ2NX0.ir1xHiP5jjMQL356m-_Vkg9zDxy5JS3lhsXrM3vpRdU"
+
+# Run the migration script
+npx tsx scripts/migrate-to-supabase.ts

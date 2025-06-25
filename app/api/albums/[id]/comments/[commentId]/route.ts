@@ -1,20 +1,6 @@
 import { NextResponse } from 'next/server'
-import { readFileSync, writeFileSync } from 'fs'
-import path from 'path'
+import { supabase } from '@/lib/supabase/server'
 import type { Album, Comment } from '@/lib/types'
-
-const ALBUMS_PATH = path.join(process.cwd(), 'lib/albums.json')
-
-// Helper function to read albums
-function readAlbums(): { albums: Album[] } {
-  const content = readFileSync(ALBUMS_PATH, 'utf-8')
-  return JSON.parse(content)
-}
-
-// Helper function to write albums
-function writeAlbums(data: { albums: Album[] }) {
-  writeFileSync(ALBUMS_PATH, JSON.stringify(data, null, 2))
-}
 
 // DELETE /api/albums/[id]/comments/[commentId]
 export async function DELETE(
@@ -23,26 +9,33 @@ export async function DELETE(
 ) {
   try {
     const { id, commentId } = await params
-    const data = readAlbums()
-    const albumIndex = data.albums.findIndex((a: Album) => a.id === id)
-    
-    if (albumIndex === -1) {
+
+    // Get current comments
+    const { data: album, error: fetchError } = await supabase
+      .from('albums')
+      .select('comments')
+      .eq('id', id)
+      .single()
+
+    if (fetchError) throw fetchError
+    if (!album) {
       return NextResponse.json({ error: 'Album not found' }, { status: 404 })
     }
 
-    const album = data.albums[albumIndex]
-    if (!album.comments) {
-      return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
-    }
+    const currentComments = album.comments || []
+    const updatedComments = currentComments.filter(
+      (comment: Comment) => comment.id !== commentId
+    )
 
-    const commentIndex = album.comments.findIndex((c: Comment) => c.id === commentId)
-    if (commentIndex === -1) {
-      return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
-    }
+    // Update the album with filtered comments
+    const { error: updateError } = await supabase
+      .from('albums')
+      .update({
+        comments: updatedComments
+      })
+      .eq('id', id)
 
-    // Remove the comment
-    album.comments.splice(commentIndex, 1)
-    writeAlbums(data)
+    if (updateError) throw updateError
 
     return NextResponse.json({ success: true })
   } catch (error) {

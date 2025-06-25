@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
+import { supabase } from '@/lib/supabase';
+import { normalizePlaylist } from '@/lib/playlist-service';
+import { writeFile } from 'fs/promises';
 import path from 'path';
-import { Playlist } from '@/lib/types';
-
-const playlistsPath = path.join(process.cwd(), 'lib', 'playlists.json');
-
-async function readPlaylists(): Promise<{ playlists: Playlist[] }> {
-  const data = await fs.readFile(playlistsPath, 'utf-8');
-  return JSON.parse(data);
-}
+import fs from 'fs/promises';
 
 export async function GET(
   request: NextRequest,
@@ -16,9 +11,14 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
-    const data = await readPlaylists();
-    const playlist = data.playlists.find(p => p.id === id);
 
+    const { data: playlist, error } = await supabase
+      .from('playlists')
+      .select('*, playlist_tracks(*, tracks(*, albums(*)))')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
     if (!playlist) {
       return NextResponse.json(
         { error: 'Playlist not found' },
@@ -26,7 +26,8 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(playlist);
+    const normalizedPlaylist = await normalizePlaylist(playlist);
+    return NextResponse.json(normalizedPlaylist);
   } catch (error) {
     console.error('Error reading playlist:', error);
     return NextResponse.json(
@@ -42,26 +43,49 @@ export async function PATCH(
 ) {
   try {
     const { id } = await context.params;
-    const data = await readPlaylists();
-    const playlistIndex = data.playlists.findIndex(p => p.id === id);
+    const formData = await request.formData();
+    const title = formData.get('title') as string;
+    const coverImage = formData.get('file') as File | null;
 
-    if (playlistIndex === -1) {
+    let coverImagePath = undefined;
+    if (coverImage) {
+      // Create playlists directory if it doesn't exist
+      const playlistsDir = path.join(process.cwd(), 'public', 'images', 'playlists');
+      await fs.mkdir(playlistsDir, { recursive: true });
+
+      // Generate unique filename
+      const ext = path.extname(coverImage.name);
+      const filename = `${id}${ext}`;
+      const filepath = path.join(playlistsDir, filename);
+
+      // Convert File to Buffer and save
+      const bytes = await coverImage.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      await writeFile(filepath, buffer);
+
+      coverImagePath = `/images/playlists/${filename}`;
+    }
+
+    const { data: playlist, error } = await supabase
+      .from('playlists')
+      .update({
+        title,
+        ...(coverImagePath && { cover_image: coverImagePath })
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    if (!playlist) {
       return NextResponse.json(
         { error: 'Playlist not found' },
         { status: 404 }
       );
     }
 
-    const updates = await request.json();
-    const updatedPlaylist = {
-      ...data.playlists[playlistIndex],
-      ...updates,
-    };
-
-    data.playlists[playlistIndex] = updatedPlaylist;
-    await fs.writeFile(playlistsPath, JSON.stringify(data, null, 2));
-
-    return NextResponse.json(updatedPlaylist);
+    const normalizedPlaylist = await normalizePlaylist(playlist);
+    return NextResponse.json(normalizedPlaylist);
   } catch (error) {
     console.error('Error updating playlist:', error);
     return NextResponse.json(
@@ -77,30 +101,26 @@ export async function DELETE(
 ) {
   try {
     const { id } = await context.params;
-    const data = await readPlaylists();
-    const playlistIndex = data.playlists.findIndex(p => p.id === id);
 
-    if (playlistIndex === -1) {
-      return NextResponse.json(
-        { error: 'Playlist not found' },
-        { status: 404 }
-      );
-    }
+    // First delete all playlist tracks
+    const { error: deleteTracksError } = await supabase
+      .from('playlist_tracks')
+      .delete()
+      .eq('playlist_id', id);
 
-    // Remove the playlist
-    const [removedPlaylist] = data.playlists.splice(playlistIndex, 1);
+    if (deleteTracksError) throw deleteTracksError;
 
-    // If there's a cover image, delete it
-    if (removedPlaylist.coverImage) {
-      const imagePath = path.join(process.cwd(), 'public', removedPlaylist.coverImage);
-      try {
-        await fs.unlink(imagePath);
-      } catch (error) {
-        console.error('Error deleting cover image:', error);
-      }
-    }
+    // Then delete the playlist
+    const { error: deletePlaylistError } = await supabase
+      .from('playlists')
+      .delete()
+      .eq('id', id);
 
-    await fs.writeFile(playlistsPath, JSON.stringify(data, null, 2));
+    if (deletePlaylistError) throw deletePlaylistError;
+
+    // Note: Cover image deletion from storage will be handled later
+    // when we implement Supabase storage
+
 
     return NextResponse.json({ success: true });
   } catch (error) {

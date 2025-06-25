@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { useAuth } from '@/contexts/auth-context'
 import type { Track, Playlist } from '@/lib/types'
 
 interface AddToPlaylistDialogProps {
@@ -16,6 +17,7 @@ interface AddToPlaylistDialogProps {
 }
 
 export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDialogProps) {
+  const { user } = useAuth()
   const [playlists, setPlaylists] = useState<Playlist[]>([])
   const [loading, setLoading] = useState(true)
   const [newPlaylistTitle, setNewPlaylistTitle] = useState('')
@@ -29,10 +31,13 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
   }, [isOpen])
 
   const fetchPlaylists = async () => {
+    if (!user) return
     try {
       const response = await fetch('/api/playlists')
       const data = await response.json()
-      setPlaylists(data)
+      // Filter playlists to only show the current user's
+      const userPlaylists = data.filter((p: Playlist) => p.user_id === user.id)
+      setPlaylists(userPlaylists)
     } catch (error) {
       console.error('Error fetching playlists:', error)
       toast.error('Failed to load playlists')
@@ -42,20 +47,23 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
   }
 
   const handleCreatePlaylist = async () => {
-    if (!newPlaylistTitle.trim()) return
+    if (!newPlaylistTitle.trim() || !user) return
 
     setCreating(true)
     try {
-      // Create the playlist
+      // First create the playlist
+      const formData = new FormData()
+      formData.append('title', newPlaylistTitle.trim())
+      formData.append('user_id', user.id)
+
+      console.log('Creating playlist with:', {
+        title: newPlaylistTitle.trim(),
+        user_id: user.id
+      })
+
       const createResponse = await fetch('/api/playlists', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: newPlaylistTitle.trim(),
-          tracks: [track]
-        }),
+        body: formData
       })
 
       if (!createResponse.ok) {
@@ -63,6 +71,20 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
       }
 
       const newPlaylist = await createResponse.json()
+
+      // Then add the track to the new playlist
+      const addTrackResponse = await fetch(`/api/playlists/${newPlaylist.id}/tracks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ track })
+      })
+
+      if (!addTrackResponse.ok) {
+        throw new Error('Failed to add track to playlist')
+      }
+
       setPlaylists([...playlists, newPlaylist])
       setNewPlaylistTitle('')
       
@@ -99,10 +121,13 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md mx-auto" aria-describedby="playlist-dialog-description">
         <DialogHeader>
           <DialogTitle>Add to Playlist</DialogTitle>
+          <p id="playlist-dialog-description" className="text-sm text-gray-500">
+            Choose a playlist or create a new one to add this track.
+          </p>
         </DialogHeader>
         
         <div className="flex items-center gap-2 mb-4">
@@ -137,9 +162,9 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
                   onClick={() => handleAddToPlaylist(playlist.id)}
                 >
                   <div className="flex items-center gap-3">
-                    {playlist.coverImage ? (
+                    {playlist.cover_image ? (
                       <img
-                        src={playlist.coverImage}
+                        src={playlist.cover_image}
                         alt={playlist.title}
                         className="h-10 w-10 object-cover rounded"
                       />

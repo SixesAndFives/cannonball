@@ -1,38 +1,42 @@
 import { NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
-import albumsData from '@/lib/albums.json'
+import { supabase } from '@/lib/supabase'
 
 export async function POST(request: Request) {
   try {
     const { albumId, trackId } = await request.json()
-    console.log('Deleting track:', { albumId, trackId })
+    console.log('DELETE TRACK - Request received:', { albumId, trackId })
     
-    // Find the album
-    const album = albumsData.albums.find(a => a.id === albumId)
-    if (!album) {
-      console.log('Album not found:', albumId)
-      return NextResponse.json({ error: 'Album not found' }, { status: 404 })
-    }
+    // Verify track exists before deletion
+    const { data: track, error: findError } = await supabase
+      .from('tracks')
+      .select('*')
+      .eq('id', trackId)
+      .eq('album_id', albumId)
+      .single()
     
-    // Remove the track
-    const trackIndex = album.tracks.findIndex(t => t.id === trackId)
-    if (trackIndex === -1) {
-      console.log('Track not found:', trackId)
+    if (findError || !track) {
+      console.error('DELETE TRACK - Track not found:', { trackId, albumId, error: findError })
       return NextResponse.json({ error: 'Track not found' }, { status: 404 })
     }
+
+    console.log('DELETE TRACK - Found track:', track)
     
-    album.tracks.splice(trackIndex, 1)
-    console.log('Track removed, saving file...')
+    // Delete the track from Supabase
+    const { error: deleteError } = await supabase
+      .from('tracks')
+      .delete()
+      .eq('id', trackId)
+      .eq('album_id', albumId)
     
-    // Save the updated albums.json
-    const albumsPath = path.join(process.cwd(), 'lib', 'albums.json')
-    await fs.writeFile(albumsPath, JSON.stringify(albumsData, null, 2))
-    console.log('File saved successfully')
+    if (deleteError) {
+      console.error('DELETE TRACK - Supabase error:', deleteError)
+      return NextResponse.json({ error: deleteError.message }, { status: 500 })
+    }
     
+    console.log('DELETE TRACK - Success: track deleted from database')
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting track:', error)
+    console.error('DELETE TRACK - Unexpected error:', error)
     return NextResponse.json({ error: String(error) }, { status: 500 })
   }
 }

@@ -18,7 +18,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
   // Function to load gallery items with retry for new uploads
   const loadGallery = async (isRetry = false) => {
     try {
-      const response = await fetch(`/api/gallery/album/${albumId}`)
+      const response = await fetch(`/api/albums/${albumId}/gallery`)
       if (!response.ok) throw new Error('Failed to load gallery items')
       const items = await response.json()
       setItems(items)
@@ -78,13 +78,30 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
     )
   }
 
+  const handleDelete = async (itemId: string) => {
+    try {
+      const response = await fetch(`/api/albums/${albumId}/gallery/${itemId}`, {
+        method: 'DELETE'
+      })
+      
+      if (!response.ok) throw new Error('Failed to delete gallery item')
+      
+      // Update local state
+      setItems(prevItems => prevItems.filter(item => item.id !== itemId))
+    } catch (error) {
+      console.error('Error deleting gallery item:', error)
+      throw error
+    }
+  }
+
   return (
     <div>
       <GalleryGrid
         items={items}
+        onItemDelete={handleDelete}
         onItemUpdate={async (itemId: string, updates: Partial<GalleryItem>) => {
           try {
-            const response = await fetch(`/api/gallery/${itemId}`, {
+            const response = await fetch(`/api/albums/${albumId}/gallery/${itemId}`, {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(updates)

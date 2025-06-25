@@ -20,7 +20,7 @@ async function generateThumbnailsForExistingVideos() {
 
   // Find all video items without thumbnails
   const videoItems = galleryData.items.filter(
-    (item: GalleryItem) => item.type === 'video' && !item.thumbnailUrl
+    (item: GalleryItem) => item.type === 'video' && !item.thumbnail_url
   )
 
   console.log(`Found ${videoItems.length} videos without thumbnails`)

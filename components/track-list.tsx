@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, forwardRef, useImperativeHandle } from "react"
+import { updateTrackTitle } from "@/lib/track-client"
 import { Pencil, Play, Pause, Trash2, ListPlus, Heart } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AudioPlayer } from "@/components/audio-player"
@@ -67,10 +69,19 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
     setEditedTitle(track.title)
   }
 
-  const handleSave = (track: Track) => {
-    if (!onUpdateTrack) return
-    onUpdateTrack(track.id, { ...track, title: editedTitle })
-    setEditingTrackId(null)
+  const handleSave = async (track: Track) => {
+    try {
+      const success = await updateTrackTitle(track.id, editedTitle)
+      if (success) {
+        onUpdateTrack(track.id, { ...track, title: editedTitle })
+        setEditingTrackId(null)
+      } else {
+        throw new Error('Failed to update track')
+      }
+    } catch (error) {
+      console.error('Error updating track:', error)
+      toast.error('Failed to update track title')
+    }
   }
 
   const handleCancel = () => {
@@ -167,7 +178,10 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => toggleFavorite(track)}
+                            onClick={() => {
+                              console.log('Heart clicked for track:', track)
+                              toggleFavorite(track)
+                            }}
                             className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
                             <Heart className={cn(
@@ -200,7 +214,7 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                         </>
                       )}
                     </Button>
-                    <span className="text-sm text-gray-500 w-16 text-right">{formatDuration(track.duration)}</span>
+                    <span className="text-sm text-gray-500 w-16 text-right">{formatDuration(track.duration ? parseFloat(track.duration) : 0)}</span>
                   </div>
                 </div>
               )}
