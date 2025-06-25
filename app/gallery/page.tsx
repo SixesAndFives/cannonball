@@ -7,6 +7,19 @@ import { X } from 'lucide-react';
 import Image from 'next/image';
 import type { GalleryItem } from '@/lib/types';
 
+// Ensure TypeScript knows we're using snake_case for these properties
+declare module '@/lib/types' {
+  interface GalleryItem {
+    album_id: string;
+    thumbnail_url?: string;
+    tagged_users: string[];
+    uploaded_by: string;
+    created_at: string;
+    file_name: string;
+    content_type: string;
+  }
+}
+
 export default function GalleryPage() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
