@@ -13,7 +13,7 @@ export function AlbumHeader({ album }: AlbumHeaderProps) {
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
       <div className="relative w-full max-w-[300px] mx-auto aspect-square">
         <Image
-          src={album.coverImage || '/images/playlists/EmptyCover.png'}
+          src={album.cover_image || '/images/playlists/EmptyCover.png'}
           alt={album.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
