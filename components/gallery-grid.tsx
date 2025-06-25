@@ -9,10 +9,11 @@ import type { GalleryItem } from '@/lib/types';
 interface GalleryGridProps {
   items: GalleryItem[]
   onItemUpdate?: (itemId: string, updates: Partial<GalleryItem>) => Promise<void>
+  onItemDelete?: (itemId: string) => Promise<void>
   onItemSelect?: (item: GalleryItem) => void
 }
 
-export function GalleryGrid({ items, onItemUpdate, onItemSelect }: GalleryGridProps) {
+export function GalleryGrid({ items, onItemUpdate, onItemDelete, onItemSelect }: GalleryGridProps) {
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
 
@@ -67,13 +68,30 @@ export function GalleryGrid({ items, onItemUpdate, onItemSelect }: GalleryGridPr
                 className="relative w-full h-full"
                 onClick={() => onItemSelect ? onItemSelect(item) : openLightbox(item)}
               >
-                <Image
-                  src={item.type === 'video' ? (item.thumbnailUrl || item.url) : item.url}
-                  alt={item.caption || ''}
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  fill
-                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                />
+                {item.type === 'video' ? (
+                  <div className="relative w-full h-full">
+                    <video
+                      src={item.url}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      muted
+                      playsInline
+                      loop
+                      autoPlay
+                    />
+                  </div>
+                ) : item.url ? (
+                  <Image
+                    src={item.url}
+                    alt={item.caption || ''}
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                    <div className="text-gray-400">No preview</div>
+                  </div>
+                )}
                 {item.type === 'video' && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                     <Film className="w-8 h-8 text-white" />
@@ -159,18 +177,18 @@ export function GalleryGrid({ items, onItemUpdate, onItemSelect }: GalleryGridPr
       {editingItem && (
         <GalleryItemEditor
           item={editingItem}
-          isOpen={true}
+          isOpen={!!editingItem}
           onClose={() => setEditingItem(null)}
           onSave={async (updates) => {
-            if (onItemUpdate) {
-              await onItemUpdate(editingItem.id, updates);
-              // Update the selected item if it's being edited
-              if (selectedItem?.id === editingItem.id) {
-                setSelectedItem({ ...selectedItem, ...updates });
-              }
-            }
-            setEditingItem(null);
+            if (!editingItem || !onItemUpdate) return
+            await onItemUpdate(editingItem.id, updates)
+            setEditingItem(null)
           }}
+          onDelete={onItemDelete ? async () => {
+            if (!editingItem) return
+            await onItemDelete(editingItem.id)
+            setEditingItem(null)
+          } : undefined}
         />
       )}
     </>

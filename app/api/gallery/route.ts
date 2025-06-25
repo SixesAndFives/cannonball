@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { readGalleryData } from '@/lib/gallery-service'
+import { getAllGalleryItems } from '@/lib/gallery-service-supabase'
 
 export async function GET() {
   try {
-    const { items } = await readGalleryData()
+    const items = await getAllGalleryItems()
     return NextResponse.json(items)
   } catch (error) {
     console.error('Error reading gallery data:', error)
