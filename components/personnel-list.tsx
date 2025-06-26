@@ -62,14 +62,14 @@ export function PersonnelList({ album, users, onUpdate }: PersonnelListProps) {
             >
               <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
                 <Image
-                  src={user.profileImage || ''}
-                  alt={user.fullName}
+                  src={user.profile_image || ''}
+                  alt={user.full_name}
                   fill
                   className="object-cover"
                 />
               </div>
               <div className="flex-grow">
-                <h4 className="font-medium text-gray-900">{user.fullName}</h4>
+                <div className="font-medium">{user.full_name}</div>
                 {user.instruments && (
                   <p className="text-sm text-gray-600">{user.instruments}</p>
                 )}
