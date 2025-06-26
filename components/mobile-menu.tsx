@@ -37,13 +37,13 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               <div className="flex items-center gap-3 pb-4 mb-4 border-b">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden">
                   <Image
-                    src={user.profileImage || ''}
-                    alt={user.fullName}
+                    src={user.profile_image || ''}
+                    alt={user.full_name}
                     fill
                     className="object-cover"
                   />
                 </div>
-                <span className="text-gray-900 font-medium">{user.fullName}</span>
+                <span className="text-gray-900 font-medium">{user.full_name}</span>
               </div>
             )}
 
