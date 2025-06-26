@@ -157,17 +157,17 @@ export default function PlaylistPage(
                                   {
                                     id: track.id,
                                     title: track.title,
-                                    audioUrl: track.audio_url!,
-                                    albumId: track.album_id,
-                                    coverImage: track.cover_image,
+                                    audio_url: track.audio_url!,
+                                    album_id: track.album_id,
+                                    cover_image: track.cover_image,
                                   },
                                   trackIndex,
                                   playableTracks.map(t => ({
                                     id: t.id,
                                     title: t.title,
-                                    audioUrl: t.audio_url!,
-                                    albumId: t.album_id,
-                                    coverImage: t.cover_image
+                                    audio_url: t.audio_url!,
+                                    album_id: t.album_id,
+                                    cover_image: t.cover_image
                                   }))
                                 );
                               }

@@ -28,16 +28,45 @@ interface AlbumDetailClientProps {
 
 export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDetailClientProps) {
   const { toast } = useToast()
-  const { setUser } = useAuth()
+  const { user, setUser } = useAuth()
   const [album, setAlbum] = useState<Album | null>(initialAlbum)
   const [galleryKey, setGalleryKey] = useState(0)
+  const [isEditing, setIsEditing] = useState(false)
 
-  // Initialize auth context with server user
+  const handleUpdateAlbum = async (updates: { title?: string; cover_image?: File; year?: string }) => {
+    if (!album) return
+
+    try {
+      const formData = new FormData()
+      if (updates.title) formData.append('title', updates.title)
+      if (updates.year) formData.append('year', updates.year)
+      if (updates.cover_image) formData.append('cover_image', updates.cover_image)
+
+      const response = await fetch(`/api/albums/${album.id}`, {
+        method: 'PATCH',
+        body: formData
+      })
+
+      if (!response.ok) throw new Error('Failed to update album')
+      const updatedAlbum = await response.json()
+      
+      // Update local state
+      setAlbum(updatedAlbum)
+      
+      // Force a page refresh to get fresh image
+      window.location.reload()
+    } catch (error) {
+      console.error('Error updating album:', error)
+      throw error
+    }
+  }
+
+  // Initialize auth context with server user only if not already set
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && !user) {
       setUser(currentUser)
     }
-  }, [currentUser, setUser])
+  }, [currentUser, setUser, user])
 
   const [isPending, startTransition] = useTransition()
   const { playTrack, currentTrack } = usePlayer()
@@ -135,7 +164,7 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
     <div className="container mx-auto py-6 space-y-8">
       <main className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6">
         <div className="space-y-6">
-          <AlbumHeader album={album} />
+          <AlbumHeader album={album} onUpdate={handleUpdateAlbum} />
           <PersonnelList 
             album={album}
             users={users}
@@ -189,7 +218,7 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
                         ...t,
                         album_id: album.id,
                         album_title: album.title,
-                        cover_image: album.cover_image || null
+                        cover_image: album.cover_image
                       }))
 
                     playTrack(
@@ -199,7 +228,7 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
                     )
                   }
                 }}
-                currentTrackIndex={currentTrack.albumId === album.id ? currentTrack.trackIndex : null}
+                currentTrackIndex={currentTrack.album_id === album.id ? currentTrack.trackIndex : null}
               />
             </TabsContent>
 

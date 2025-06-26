@@ -47,13 +47,14 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
                     <div className="flex items-center gap-2">
                       <div className="relative w-8 h-8 rounded-full overflow-hidden">
                         <Image
-                          src={user.profileImage || ''}
-                          alt={user.fullName}
-                          fill
+                          src={user.profile_image || '/images/default-avatar.png'}
+                          alt={user.full_name}
+                          width={32}
+                          height={32}
                           className="object-cover"
                         />
                       </div>
-                      <span className="text-gray-600 hover:text-gray-900">{user.fullName}</span>
+                      <span className="text-gray-600 hover:text-gray-900">{user.full_name}</span>
                     </div>
                     <span className="text-gray-300">|</span>
                   </>

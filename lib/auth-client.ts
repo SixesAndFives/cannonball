@@ -1,12 +1,12 @@
 import type { User } from './types'
 
-export async function login(userName: string, password: string): Promise<Omit<User, 'password'>> {
+export async function login(user_name: string, password: string): Promise<Omit<User, 'password'>> {
   const response = await fetch('/api/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ userName, password }),
+    body: JSON.stringify({ user_name, password }),
   })
 
   if (!response.ok) {

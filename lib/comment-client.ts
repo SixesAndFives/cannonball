@@ -1,13 +1,13 @@
 import type { Comment } from "./types"
 
-export async function addComment(albumId: string, author: string, content: string, userId: string, profileImage?: string): Promise<Comment | null> {
+export async function addComment(albumId: string, author: string, content: string, user_id: string, profile_image?: string): Promise<Comment | null> {
   try {
     const response = await fetch(`/api/albums/${albumId}/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ author, content, userId, profileImage }),
+      body: JSON.stringify({ author, content, user_id, profile_image }),
     })
 
     if (!response.ok) {

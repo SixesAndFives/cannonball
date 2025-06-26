@@ -2,22 +2,14 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { FooterPlayer } from '@/components/footer-player'
-
-interface Track {
-  id: string
-  title: string
-  audioUrl: string
-  albumId?: string
-  albumTitle?: string
-  coverImage?: string | null
-}
+import { Track } from '@/lib/types'
 
 interface PlayerContextType {
   currentTrack: {
     track: Track | null
-    albumId: string | null
-    albumTitle: string | null
-    coverImage: string | null
+    album_id: string | null
+    album_title: string | null
+    cover_image: string | null
     trackIndex: number | null
   }
   playlist: Track[]
@@ -46,9 +38,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   ) => {
     setCurrentTrack({
       track,
-      albumId: track.albumId || null,
-      albumTitle: track.albumTitle || null,
-      coverImage: track.coverImage || null,
+      album_id: track.album_id || null,
+      album_title: track.album_title || null,
+      cover_image: track.cover_image || null,
       trackIndex
     })
     setPlaylist(newPlaylist)
@@ -81,9 +73,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const clearTrack = () => {
     setCurrentTrack({
       track: null,
-      albumId: null,
-      albumTitle: null,
-      coverImage: null,
+      album_id: null,
+      album_title: null,
+      cover_image: null,
       trackIndex: null
     })
     setPlaylist([])
@@ -101,10 +93,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       {children}
       {currentTrack.track && (
         <FooterPlayer
-          src={currentTrack.track.audioUrl}
+          src={currentTrack.track.audio_url}
           title={currentTrack.track.title}
-          albumTitle={currentTrack.albumTitle || ''}
-          coverImage={currentTrack.coverImage || undefined}
+          albumTitle={currentTrack.album_title || ''}
+          coverImage={currentTrack.cover_image || undefined}
           onNext={currentTrack.trackIndex !== null && currentTrack.trackIndex < playlist.length - 1 ? playNext : undefined}
           onPrevious={currentTrack.trackIndex !== null && currentTrack.trackIndex > 0 ? playPrevious : undefined}
           autoPlay={true}

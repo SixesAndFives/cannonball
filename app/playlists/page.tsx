@@ -183,7 +183,11 @@ export default function PlaylistsPage() {
                         {/* Edit button - only show for non-Favorites playlists */}
                         {!playlist.title.includes('Favorites') && (
                           <button
-                            onClick={() => setEditingPlaylist(playlist)}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              setEditingPlaylist(playlist)
+                            }}
                             className="absolute top-2 right-2 z-10 p-2 bg-black/50 rounded-full text-white hover:bg-black/75 transition-colors duration-200"
                           >
                             <Pencil className="w-4 h-4" />

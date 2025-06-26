@@ -21,15 +21,15 @@ export function useFavorites(albumId: string) {
       const response = await fetch('/api/playlists')
       const data = await response.json()
       // Find favorites playlist by username (e.g. 'daniel-favorites')
-      console.log('Searching for favorites playlist with user:', user?.userName);
+      console.log('Searching for favorites playlist with user:', user?.user_name);
       const userFavorites = data.find((p: Playlist) => {
-        if (!user?.userName) {
+        if (!user?.user_name) {
           console.log('No username found in user object');
           return false;
         }
         // Check both formats: 'dminton-favorites' and 'daniel-favorites'
-        const shortNameId = `${user.userName.toLowerCase()}-favorites`;
-        const fullNameId = `${user.fullName?.split(' ')[0].toLowerCase()}-favorites`;
+        const shortNameId = `${user.user_name.toLowerCase()}-favorites`;
+        const fullNameId = `${user.full_name?.split(' ')[0].toLowerCase()}-favorites`;
         const found = p.id === shortNameId || p.id === fullNameId;
         console.log('Checking playlist:', { 
           playlistId: p.id, 
@@ -59,7 +59,7 @@ export function useFavorites(albumId: string) {
       return
     }
     if (!favorites) {
-      console.log('Early return - no favorites playlist found. User:', user.userName)
+      console.log('Early return - no favorites playlist found. User:', user.user_name)
       return
     }
 

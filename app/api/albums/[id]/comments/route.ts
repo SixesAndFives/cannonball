@@ -33,9 +33,13 @@ export async function POST(
 ) {
   try {
     const { id } = await params
-    const { author, content, userId, profileImage } = await request.json()
+    const body = await request.json()
+    console.log('Request body:', JSON.stringify(body, null, 2))
+    
+    const { author, content, user_id, profile_image } = body
     
     if (!author || !content) {
+      console.log('Missing required fields:', { author, content })
       return NextResponse.json(
         { error: 'Author and content are required' },
         { status: 400 }
@@ -46,8 +50,8 @@ export async function POST(
       id: uuidv4(),
       author,
       content,
-      user_id: userId,
-      profile_image: profileImage || null,
+      user_id,
+      profile_image: profile_image || undefined,
       created_at: new Date().toISOString()
     }
 

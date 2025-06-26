@@ -25,7 +25,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
           audio_url: t.audio_url!,
           album_id: album.id,
           album_title: album.title,
-          cover_image: album.cover_image || null
+          cover_image: album.cover_image
         }))
 
       playTrack(

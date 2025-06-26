@@ -1,17 +1,31 @@
 "use client"
 
 import Image from "next/image"
+import { useState } from "react"
+import { Button } from "./ui/button"
+import { PencilIcon } from "lucide-react"
+import { AlbumEditor } from "./album-editor"
 import type { Album } from "@/lib/types"
 
 interface AlbumHeaderProps {
   album: Album
+  onUpdate: (updates: { title?: string; cover_image?: File; year?: string }) => Promise<void>
 }
 
-export function AlbumHeader({ album }: AlbumHeaderProps) {
+export function AlbumHeader({ album, onUpdate }: AlbumHeaderProps) {
+  const [isEditing, setIsEditing] = useState(false)
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
-      <div className="relative w-full max-w-[300px] mx-auto aspect-square">
+      <div className="relative w-full max-w-[300px] mx-auto aspect-square group">
+        <Button
+          variant="secondary"
+          size="icon"
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          onClick={() => setIsEditing(true)}
+        >
+          <PencilIcon className="h-4 w-4" />
+        </Button>
         <Image
           src={album.cover_image || '/images/playlists/EmptyCover.png'}
           alt={album.title}
@@ -33,6 +47,13 @@ export function AlbumHeader({ album }: AlbumHeaderProps) {
           )}
         </div>
       </div>
+
+      <AlbumEditor
+        album={album}
+        isOpen={isEditing}
+        onClose={() => setIsEditing(false)}
+        onSave={onUpdate}
+      />
     </div>
   )
 }

@@ -20,14 +20,16 @@ export async function GET() {
     // Transform to match our User type
     const safeUsers = users.map(user => ({
       id: user.id,
-      userName: user.user_name,
-      fullName: user.full_name,
+      user_name: user.user_name,
+      full_name: user.full_name,
       password: '', // We don't return passwords in the list
-      profileImage: user.profile_image,
+      profile_image: user.profile_image,
       instruments: user.instruments,
-      createdAt: user.created_at
+      created_at: user.created_at
     }))
 
+    console.log('Raw users from DB:', users)
+    console.log('Transformed users:', safeUsers)
     return NextResponse.json(safeUsers)
   } catch (error) {
     console.error('Error fetching users:', error)

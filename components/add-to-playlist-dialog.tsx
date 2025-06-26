@@ -98,14 +98,27 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
     }
   }
 
+  const normalizeTrack = (track: Track) => ({
+    id: track.id,
+    title: track.title,
+    audio_url: track.audio_url,
+    duration: track.duration,
+    album_id: track.album_id,
+    album_title: track.album_title,
+    cover_image: track.cover_image
+  })
+
   const handleAddToPlaylist = async (playlistId: string) => {
     try {
+      const normalizedTrack = normalizeTrack(track)
+      console.log('Adding track to playlist:', { playlistId, track: normalizedTrack })
+      
       const response = await fetch(`/api/playlists/${playlistId}/tracks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ track }),
+        body: JSON.stringify({ track: normalizedTrack }),
       })
 
       if (!response.ok) {
@@ -162,17 +175,15 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
                   onClick={() => handleAddToPlaylist(playlist.id)}
                 >
                   <div className="flex items-center gap-3">
-                    {playlist.cover_image ? (
-                      <img
-                        src={playlist.cover_image}
-                        alt={playlist.title}
-                        className="h-10 w-10 object-cover rounded"
-                      />
-                    ) : (
-                      <div className="h-10 w-10 bg-gray-100 rounded flex items-center justify-center">
-                        <span className="text-gray-400">🎵</span>
-                      </div>
-                    )}
+                    <img
+                      src={playlist.cover_image || '/images/playlists/EmptyCover.png'}
+                      alt={playlist.title}
+                      className="h-10 w-10 object-cover rounded"
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement
+                        img.src = '/images/playlists/EmptyCover.png'
+                      }}
+                    />
                     <span>{playlist.title}</span>
                   </div>
                 </Button>

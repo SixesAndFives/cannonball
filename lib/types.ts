@@ -28,6 +28,7 @@ export interface Track {
   bitrate?: number;
   sample_rate?: number;
   channels?: number;
+  cover_image?: string;
   lossless?: boolean;
 }
 

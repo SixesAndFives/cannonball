@@ -11,8 +11,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     console.log('Raw request body:', body)
-    const { userName, password } = body
-    console.log('Login attempt:', { userName, password })
+    const { user_name, password } = body
+    console.log('Login attempt:', { user_name, password })
 
     // Debug: Get all users first
     const { data: allUsers } = await supabase
@@ -21,13 +21,13 @@ export async function POST(request: Request) {
     console.log('All usernames:', allUsers)
 
     // Try to find user with exact username match
-    console.log('Looking for user_name exactly matching:', userName)
+    console.log('Looking for user_name exactly matching:', user_name)
     const { data: foundUser, error: userError } = await supabase
       .from('users')
       .select('id, user_name, password')
-      .eq('user_name', userName)
+      .eq('user_name', user_name)
 
-    console.log('Found user query:', { userName })
+    console.log('Found user query:', { user_name })
     console.log('Found user result:', foundUser)
     if (userError) console.log('User error:', userError)
 
@@ -59,12 +59,12 @@ export async function POST(request: Request) {
     // Transform to match our User type
     const user: User = {
       id: fullUser.id,
-      userName: fullUser.user_name,
-      fullName: fullUser.full_name,
+      user_name: fullUser.user_name,
+      full_name: fullUser.full_name,
       password: fullUser.password,
-      profileImage: fullUser.profile_image,
+      profile_image: fullUser.profile_image,
       instruments: fullUser.instruments,
-      createdAt: fullUser.created_at
+      created_at: fullUser.created_at
     }
 
     const response = NextResponse.json(user)

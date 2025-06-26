@@ -17,6 +17,7 @@ interface UserGridProps {
 }
 
 export function UserGrid({ users }: UserGridProps) {
+  console.log('UserGrid received users:', users)
   const [selectedUser, setSelectedUser] = useState<Omit<User, 'password'> | null>(null)
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -30,9 +31,9 @@ export function UserGrid({ users }: UserGridProps) {
     try {
       if (!selectedUser) return
       
-      const user = await login(selectedUser.userName, password)
+      const user = await login(selectedUser.user_name, password)
       setUser(user)
-      toast.success(`Welcome back, ${user.fullName}!`)
+      toast.success(`Welcome back, ${user.full_name}!`)
       router.push('/albums')
     } catch (error) {
       toast.error('Invalid password')
@@ -52,14 +53,16 @@ export function UserGrid({ users }: UserGridProps) {
             className={styles.userButton}
           >
             <Image
-              src={user.profileImage || ''}
-              alt={user.fullName}
-              fill
+              src={user.profile_image || '/images/default-avatar.png'}
+              alt={user.full_name || 'User profile'}
+              width={200}
+              height={200}
               className={styles.userImage}
+              style={{ objectFit: 'cover' }}
             />
             <div className={styles.userOverlay}>
               <div className={styles.userInfo}>
-                <span className={styles.userName}>{user.fullName}</span>
+                <span className={styles.userName}>{user.full_name}</span>
                 <span className={styles.userInstruments}>{user.instruments}</span>
               </div>
             </div>
@@ -72,13 +75,13 @@ export function UserGrid({ users }: UserGridProps) {
           {selectedUser && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-center">{selectedUser.fullName}</DialogTitle>
+                <DialogTitle className="text-center">{selectedUser.full_name}</DialogTitle>
               </DialogHeader>
               <div className="space-y-6 py-4">
                 <div className="relative w-32 h-32 mx-auto">
                   <Image
-                    src={selectedUser.profileImage || ''}
-                    alt={selectedUser.fullName}
+                    src={selectedUser.profile_image || '/images/default-avatar.png'}
+                    alt={selectedUser.full_name}
                     fill
                     className="rounded-full object-cover"
                   />

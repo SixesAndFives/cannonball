@@ -1,19 +1,18 @@
-import { readFileSync } from 'fs'
-import path from 'path'
 import { HomeClient } from "./home-client"
-import type { User } from '@/lib/types'
 
 async function getUsers() {
   try {
-    const usersPath = path.join(process.cwd(), 'lib/users.json')
-    const content = readFileSync(usersPath, 'utf-8')
-    const { users } = JSON.parse(content)
-    return users.map((user: User) => {
-      const { password: _, ...userWithoutPassword } = user
-      return userWithoutPassword
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const url = new URL('/api/auth/users', baseUrl)
+    const response = await fetch(url, {
+      cache: 'no-store' // Don't cache user list
     })
+    if (!response.ok) {
+      throw new Error('Failed to fetch users')
+    }
+    return response.json()
   } catch (error) {
-    console.error('Error reading users:', error)
+    console.error('Error fetching users:', error)
     return []
   }
 }

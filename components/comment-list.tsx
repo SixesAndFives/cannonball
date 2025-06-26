@@ -35,7 +35,8 @@ export function CommentList({ albumId, comments, onCommentAdded, onCommentDelete
     }
 
     setIsSubmitting(true)
-    const newComment = await addComment(albumId, user.fullName, content, user.id, user.profileImage)
+    console.log('Submitting comment with user:', JSON.stringify(user, null, 2))
+    const newComment = await addComment(albumId, user.full_name, content, user.id, user.profile_image)
     setIsSubmitting(false)
 
     if (newComment) {
@@ -97,7 +98,7 @@ export function CommentList({ albumId, comments, onCommentAdded, onCommentDelete
                 <div className="flex items-start gap-3">
                   {comment.profile_image && (
                     <Image
-                      src={comment.profile_image}
+                      src={comment.profile_image || '/images/default-avatar.png'}
                       alt={comment.author}
                       width={40}
                       height={40}
@@ -128,17 +129,17 @@ export function CommentList({ albumId, comments, onCommentAdded, onCommentDelete
       {user ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-start gap-3">
-            {user.profileImage && (
+            {user.profile_image && (
               <Image
-                src={user.profileImage}
-                alt={user.fullName}
+                src={user.profile_image}
+                alt={user.full_name}
                 width={40}
                 height={40}
                 className="rounded-full"
               />
             )}
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900 mb-2">{user.fullName}</p>
+              <p className="text-sm font-medium text-gray-900 mb-2">{user.full_name}</p>
               <Textarea
                 placeholder="Write a comment..."
                 value={content}
