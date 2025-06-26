@@ -147,11 +147,11 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: G
                   className="h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500"
                 />
                 <div className="flex items-center gap-2 flex-1">
-                  {user.profileImage && (
+                  {user.profile_image && (
                     <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gray-100">
                       <Image
-                        src={user.profileImage}
-                        alt={user.fullName}
+                        src={user.profile_image}
+                        alt={user.full_name}
                         className="object-cover"
                         fill
                         sizes="32px"
@@ -159,7 +159,7 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: G
                     </div>
                   )}
                   <div>
-                    <div className="font-medium">{user.fullName}</div>
+                    <span className="text-sm">{user.full_name}</span>
                     <div className="text-sm text-gray-500">{user.instruments}</div>
                   </div>
                 </div>
