@@ -133,7 +133,29 @@ export async function getAlbumGallery(albumId: string): Promise<GalleryItem[]> {
     .single()
 
   if (error) throw error
-  return album?.gallery || []
+  
+  // Normalize gallery items to ensure snake_case
+  const normalizedGallery = (album?.gallery || []).map((item: any) => ({
+    ...item,
+    thumbnail_url: item.thumbnailUrl || item.thumbnail_url,
+    tagged_users: item.taggedUsers || item.tagged_users,
+    album_id: item.albumId || item.album_id,
+    file_name: item.fileName || item.file_name,
+    content_type: item.contentType || item.content_type,
+    upload_timestamp: item.uploadTimestamp || item.upload_timestamp
+  }))
+
+  // Remove camelCase fields
+  normalizedGallery.forEach((item: any) => {
+    delete item.thumbnailUrl
+    delete item.taggedUsers
+    delete item.albumId
+    delete item.fileName
+    delete item.contentType
+    delete item.uploadTimestamp
+  })
+
+  return normalizedGallery
 }
 
 export async function deleteGalleryItem(albumId: string, itemId: string): Promise<boolean> {
@@ -203,39 +225,88 @@ export async function deleteGalleryItem(albumId: string, itemId: string): Promis
 }
 
 export async function updateGalleryItem(
-  albumId: string,
   itemId: string,
-  updates: Partial<Pick<GalleryItem, 'caption' | 'tagged_users'>>
+  updates: { caption?: string; taggedUsers?: string[] }
 ): Promise<GalleryItem | null> {
   try {
-    // Get album gallery data
-    const { data: album, error: getError } = await supabase
-      .from('albums')
-      .select('gallery')
-      .eq('id', albumId)
-      .single()
+    console.log('Service: Updating gallery item:', itemId);
+    console.log('Service: Updates:', updates);
+    
+    // Convert camelCase to snake_case and filter out undefined values
+    const normalizedUpdates: Partial<Pick<GalleryItem, 'caption' | 'tagged_users'>> = {};
+    if (updates.caption !== undefined) normalizedUpdates.caption = updates.caption;
+    if (updates.taggedUsers !== undefined) normalizedUpdates.tagged_users = updates.taggedUsers;
 
-    if (getError) throw getError
-    if (!album?.gallery) return null
+    // First find which album contains this gallery item
+    const { data: albums, error: getError } = await supabase
+      .from('albums')
+      .select('id, gallery')
+      .not('gallery', 'is', null)
+
+    if (getError) {
+      console.error('Service: Error fetching albums:', getError);
+      throw getError;
+    }
+
+    console.log('Service: Found', albums?.length, 'albums with gallery items');
+    if (!albums?.length) return null;
+
+    // Find the album containing this item
+    const album = albums.find(a => 
+      a.gallery?.some((item: GalleryItem) => {
+        console.log('Service: Comparing item:', item.id, 'with', itemId);
+        return item.id === itemId;
+      })
+    );
+
+    console.log('Service: Found album:', album?.id);
+    if (!album) return null;
 
     // Find and update the item
     const updatedGallery = album.gallery.map((item: GalleryItem) => {
       if (item.id === itemId) {
-        return { ...item, ...updates }
+        console.log('Service: Updating item:', item.id);
+        return { ...item, ...normalizedUpdates };
       }
-      return item
-    })
+      return item;
+    });
 
     // Update the gallery in Supabase
     const { error: updateError } = await supabase
       .from('albums')
       .update({ gallery: updatedGallery })
-      .eq('id', albumId)
+      .eq('id', album.id);
 
-    if (updateError) throw updateError
+    if (updateError) {
+      console.error('Service: Error updating gallery:', updateError);
+      throw updateError;
+    }
 
-    // Return the updated item
-    return updatedGallery.find((item: GalleryItem) => item.id === itemId) || null
+    // Return the updated item with consistent snake_case
+    const updatedItem = updatedGallery.find((item: GalleryItem) => item.id === itemId);
+    if (!updatedItem) return null;
+
+    // Ensure response uses snake_case
+    const normalizedItem = {
+      ...updatedItem,
+      album_id: updatedItem.albumId || updatedItem.album_id,
+      tagged_users: updatedItem.taggedUsers || updatedItem.tagged_users,
+      file_name: updatedItem.fileName || updatedItem.file_name,
+      content_type: updatedItem.contentType || updatedItem.content_type,
+      upload_timestamp: updatedItem.uploadTimestamp || updatedItem.upload_timestamp,
+      thumbnail_url: updatedItem.thumbnailUrl || updatedItem.thumbnail_url
+    };
+    
+    // Remove any camelCase fields
+    delete (normalizedItem as any).albumId;
+    delete (normalizedItem as any).taggedUsers;
+    delete (normalizedItem as any).fileName;
+    delete (normalizedItem as any).contentType;
+    delete (normalizedItem as any).uploadTimestamp;
+    delete (normalizedItem as any).thumbnailUrl;
+
+    console.log('Service: Updated item:', normalizedItem);
+    return normalizedItem
   } catch (error) {
     console.error('Error updating gallery item:', error)
     throw error
@@ -251,14 +322,39 @@ export async function getAllGalleryItems(): Promise<GalleryItem[]> {
     .not('gallery', 'is', null)
 
   if (error) throw error
+  if (!albums) return []
 
-  // Flatten all gallery arrays into a single array
-  const allItems = albums
-    .flatMap(album => album.gallery || [])
-    .filter(item => item) // Remove any null/undefined items
-    .sort((a: GalleryItem, b: GalleryItem) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )
+  // Combine all gallery items from all albums
+  const allItems: GalleryItem[] = albums.reduce((items: GalleryItem[], album) => {
+    if (album.gallery) {
+      // Normalize each gallery item
+      const normalizedItems = album.gallery.map((item: any) => ({
+        ...item,
+        thumbnail_url: item.thumbnailUrl || item.thumbnail_url,
+        tagged_users: item.taggedUsers || item.tagged_users,
+        album_id: item.albumId || item.album_id,
+        file_name: item.fileName || item.file_name,
+        content_type: item.contentType || item.content_type,
+        upload_timestamp: item.uploadTimestamp || item.upload_timestamp
+      }))
 
-  return allItems
+      // Remove camelCase fields
+      normalizedItems.forEach((item: any) => {
+        delete item.thumbnailUrl
+        delete item.taggedUsers
+        delete item.albumId
+        delete item.fileName
+        delete item.contentType
+        delete item.uploadTimestamp
+      })
+
+      items.push(...normalizedItems)
+    }
+    return items
+  }, [])
+
+  // Sort by created_at in descending order (newest first)
+  return allItems.sort((a, b) => {
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  })
 }

@@ -68,20 +68,9 @@ export function GalleryGrid({ items, onItemUpdate, onItemDelete, onItemSelect }:
                 className="relative w-full h-full"
                 onClick={() => onItemSelect ? onItemSelect(item) : openLightbox(item)}
               >
-                {item.type === 'video' ? (
-                  <div className="relative w-full h-full">
-                    <video
-                      src={item.url}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      muted
-                      playsInline
-                      loop
-                      autoPlay
-                    />
-                  </div>
-                ) : item.url ? (
+                {item.url ? (
                   <Image
-                    src={item.url}
+                    src={item.type === 'video' ? (item.thumbnail_url || item.url) : item.url}
                     alt={item.caption || ''}
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     fill

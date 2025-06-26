@@ -1,29 +1,30 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { supabase } from './supabase';
 import type { User } from './types';
 
-const usersPath = path.join(process.cwd(), 'lib', 'users.json');
-
-export interface UsersData {
-  users: User[];
-}
-
-export async function readUsersData(): Promise<UsersData> {
-  try {
-    const data = await fs.readFile(usersPath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading users.json:', error);
-    return { users: [] };
-  }
-}
-
 export async function getAllUsers(): Promise<User[]> {
-  const data = await readUsersData();
-  return data.users;
+  const { data: users, error } = await supabase
+    .from('users')
+    .select('id, user_name, full_name, profile_image, created_at')
+    .order('full_name');
+
+  if (error) {
+    console.error('Error fetching users:', error);
+    return [];
+  }
+
+  return users as User[];
 }
 
 export async function getUsersByIds(userIds: string[]): Promise<User[]> {
-  const data = await readUsersData();
-  return data.users.filter(user => userIds.includes(user.id));
+  const { data: users, error } = await supabase
+    .from('users')
+    .select('id, user_name, full_name, profile_image, created_at')
+    .in('id', userIds);
+
+  if (error) {
+    console.error('Error fetching users by ids:', error);
+    return [];
+  }
+
+  return users as User[];
 }

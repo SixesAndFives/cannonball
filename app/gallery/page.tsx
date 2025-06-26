@@ -7,19 +7,6 @@ import { X } from 'lucide-react';
 import Image from 'next/image';
 import type { GalleryItem } from '@/lib/types';
 
-// Ensure TypeScript knows we're using snake_case for these properties
-declare module '@/lib/types' {
-  interface GalleryItem {
-    album_id: string;
-    thumbnail_url?: string;
-    tagged_users: string[];
-    uploaded_by: string;
-    created_at: string;
-    file_name: string;
-    content_type: string;
-  }
-}
-
 export default function GalleryPage() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,14 +42,17 @@ export default function GalleryPage() {
       <div className="container mx-auto px-4 py-4">
         <GalleryGrid
             items={items}
-            onItemUpdate={async (itemId: string, updates: Partial<GalleryItem>) => {
+            onItemUpdate={async (itemId: string, updates: { caption?: string; taggedUsers?: string[] }) => {
               const item = items.find(i => i.id === itemId)
               if (!item) return
               try {
-                const response = await fetch(`/api/gallery/${item.album_id}/gallery/${itemId}`, {
+                const response = await fetch(`/api/gallery/${itemId}`, {
                   method: 'PATCH',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(updates)
+                  body: JSON.stringify({
+                    ...updates,
+                    tagged_users: updates.taggedUsers,
+                  })
                 });
                 
                 if (!response.ok) throw new Error('Failed to update gallery item');

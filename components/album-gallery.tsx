@@ -99,12 +99,15 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
       <GalleryGrid
         items={items}
         onItemDelete={handleDelete}
-        onItemUpdate={async (itemId: string, updates: Partial<GalleryItem>) => {
+        onItemUpdate={async (itemId: string, updates: { caption?: string; taggedUsers?: string[] }) => {
           try {
             const response = await fetch(`/api/albums/${albumId}/gallery/${itemId}`, {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(updates)
+              body: JSON.stringify({
+                ...updates,
+                tagged_users: updates.taggedUsers
+              })
             })
             
             if (!response.ok) throw new Error('Failed to update gallery item')
@@ -113,7 +116,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
             setItems(prevItems =>
               prevItems.map(item =>
                 item.id === itemId
-                  ? { ...item, ...updates }
+                  ? { ...item, caption: updates.caption || item.caption, tagged_users: updates.taggedUsers || item.tagged_users }
                   : item
               )
             )

@@ -35,13 +35,8 @@ export async function PATCH(
     const { id, itemId } = await params
     const updates = await request.json()
     
-    // Only allow updating caption and tagged_users
-    const allowedUpdates = {
-      caption: updates.caption,
-      tagged_users: updates.taggedUsers // Convert from client-side name to server-side name
-    }
-    
-    const updated = await updateGalleryItem(id, itemId, allowedUpdates)
+    // Pass through updates (conversion happens in service)
+    const updated = await updateGalleryItem(itemId, updates)
     if (!updated) {
       return NextResponse.json(
         { error: 'Gallery item not found' },

@@ -158,10 +158,7 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: G
                       />
                     </div>
                   )}
-                  <div>
-                    <span className="text-sm">{user.full_name}</span>
-                    <div className="text-sm text-gray-500">{user.instruments}</div>
-                  </div>
+                  <div className="font-medium">{user.full_name}</div>
                 </div>
               </label>
             ))}

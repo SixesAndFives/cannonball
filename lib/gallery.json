@@ -5,7 +5,7 @@
       "albumId": "live---polebridge-052425",
       "type": "image",
       "url": "https://f004.backblazeb2.com/file/cannonball-music/Images/957ac929-fb6a-467d-9a25-29064a9f6593-1000011774.jpg",
-      "caption": "Jeremy and Juan are working on the sub.",
+      "caption": "Jeremy and Juan working on the sub.",
       "fileName": "Images/957ac929-fb6a-467d-9a25-29064a9f6593-1000011774.jpg",
       "contentType": "image/jpeg",
       "uploadTimestamp": 1750445542789,
@@ -28,12 +28,7 @@
       "contentType": "image/jpeg",
       "uploadTimestamp": 1750445821202,
       "taggedUsers": [
-        "1",
-        "2",
-        "4",
-        "6",
-        "7",
-        "8"
+        "2"
       ]
     },
     {
@@ -46,12 +41,12 @@
       "contentType": "image/jpeg",
       "uploadTimestamp": 1750445966315,
       "taggedUsers": [
-        "1",
         "2",
-        "4",
-        "6",
-        "7",
-        "8"
+        "4"
+      ],
+      "tagged_users": [
+        "2",
+        "4"
       ]
     },
     {
