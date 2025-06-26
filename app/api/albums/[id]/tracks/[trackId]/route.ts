@@ -10,14 +10,14 @@ export async function DELETE(
   console.log('Deleting track:', params)
   try {
     const { id, trackId } = await params
-    const albumId = decodeURIComponent(id)
+    const album_id = decodeURIComponent(id)
     const decodedTrackId = decodeURIComponent(trackId)
     
     // Find the album
-    console.log('Looking for album:', albumId)
+    console.log('Looking for album:', album_id)
     const albumIndex = albumsData.albums.findIndex(album => {
       console.log('Checking album:', album.id)
-      return album.id === albumId
+      return album.id === album_id
     })
     if (albumIndex === -1) {
       return NextResponse.json({ error: 'Album not found' }, { status: 404 })

@@ -1,8 +1,8 @@
 import type { Comment } from "./types"
 
-export async function addComment(albumId: string, author: string, content: string, user_id: string, profile_image?: string): Promise<Comment | null> {
+export async function addComment(album_id: string, author: string, content: string, user_id: string, profile_image?: string): Promise<Comment | null> {
   try {
-    const response = await fetch(`/api/albums/${albumId}/comments`, {
+    const response = await fetch(`/api/albums/${album_id}/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,9 +21,9 @@ export async function addComment(albumId: string, author: string, content: strin
   }
 }
 
-export async function deleteComment(albumId: string, commentId: string): Promise<boolean> {
+export async function deleteComment(album_id: string, commentId: string): Promise<boolean> {
   try {
-    const response = await fetch(`/api/albums/${albumId}/comments/${commentId}`, {
+    const response = await fetch(`/api/albums/${album_id}/comments/${commentId}`, {
       method: 'DELETE',
     })
 

@@ -89,12 +89,12 @@ export async function uploadGalleryItem({
 }
 
 export async function deleteGalleryItem(
-  albumId: string,
+  album_id: string,
   itemId: string,
   fileUrl: string
 ): Promise<boolean> {
   try {
-    const response = await fetch(`/api/albums/${albumId}/gallery/${itemId}`, {
+    const response = await fetch(`/api/albums/${album_id}/gallery/${itemId}`, {
       method: 'DELETE',
       headers: {
         'x-file-url': fileUrl

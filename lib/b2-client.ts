@@ -121,7 +121,7 @@ export async function getFolders(): Promise<string[]> {
   return Array.from(folders);
 }
 
-async function downloadCoverImage(fileName: string, albumId: string): Promise<string> {
+async function downloadCoverImage(fileName: string, album_id: string): Promise<string> {
   const { downloadUrl, authToken } = await authorize();
   const b2Url = `${downloadUrl}/file/cannonball-music/${fileName}`;
   
@@ -137,25 +137,25 @@ async function downloadCoverImage(fileName: string, albumId: string): Promise<st
   }
 
   const buffer = Buffer.from(await response.arrayBuffer());
-  const localPath = `public/images/${albumId}-cover.jpg`;
+  const localPath = `public/images/${album_id}-cover.jpg`;
   await fs.writeFile(localPath, buffer);
   console.log('Saved cover image to:', localPath);
   
-  return `/images/${albumId}-cover.jpg`;
+  return `/images/${album_id}-cover.jpg`;
 }
 
-export async function getTracksFromB2(albumName: string): Promise<{ tracks: Track[], coverImage?: string }> {
+export async function getTracksFromB2(albumName: string): Promise<{ tracks: Track[], cover_image?: string }> {
   console.log('Getting tracks for album:', albumName);
   const response = await listFiles(albumName + '/');
   console.log('Files found:', response.files.map(f => f.fileName));
   
   // Find cover image
   const coverFile = response.files.find(file => file.fileName.toLowerCase().endsWith('/cover.jpg'));
-  let coverImage: string | undefined;
+  let cover_image: string | undefined;
   if (coverFile) {
     try {
-      const albumId = albumName.toLowerCase().replace(/\s+/g, '-');
-      coverImage = await downloadCoverImage(coverFile.fileName, albumId);
+      const album_id = albumName.toLowerCase().replace(/\s+/g, '-');
+      cover_image = await downloadCoverImage(coverFile.fileName, album_id);
     } catch (error) {
       console.error('Error downloading cover image:', error);
     }
@@ -178,7 +178,7 @@ export async function getTracksFromB2(albumName: string): Promise<{ tracks: Trac
 
   return {
     tracks,
-    coverImage
+    cover_image
   };
 }
 
@@ -278,7 +278,7 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
   return tracks;
 }
 
-export async function getAlbumFiles(albumName: string): Promise<{ tracks: Track[], coverImage?: string }> {
+export async function getAlbumFiles(albumName: string): Promise<{ tracks: Track[], cover_image?: string }> {
   try {
     const result = await getTracksFromB2(albumName);
     return result;
@@ -288,7 +288,7 @@ export async function getAlbumFiles(albumName: string): Promise<{ tracks: Track[
   }
 }
 
-export async function getBighornStudiosAlbum(albumName: string): Promise<{ tracks: Track[], coverImage?: string }> {
+export async function getBighornStudiosAlbum(albumName: string): Promise<{ tracks: Track[], cover_image?: string }> {
   return await getAlbumFiles(albumName);
 }
 
@@ -315,16 +315,16 @@ export async function syncAlbums(): Promise<void> {
     // Remove albums that no longer exist in B2
     const originalLength = albumsData.albums.length;
     albumsData.albums = albumsData.albums.filter((album: Album) => {
-      const exists = b2Folders.has(album.originalAlbumName);
+      const exists = b2Folders.has(album.original_album_name);
       if (!exists) {
-        console.log(`Removing album no longer in B2: ${album.originalAlbumName}`);
+        console.log(`Removing album no longer in B2: ${album.original_album_name}`);
       }
       return exists;
     });
     console.log(`Removed ${originalLength - albumsData.albums.length} albums that no longer exist in B2`);
 
     // Create a set of existing albums for quick lookup
-    const existingAlbums = new Set(albumsData.albums.map((album: Album) => album.originalAlbumName));
+    const existingAlbums = new Set(albumsData.albums.map((album: Album) => album.original_album_name));
 
     // Add new albums from B2
     for (const folder of folders) {
@@ -342,15 +342,15 @@ export async function syncAlbums(): Promise<void> {
       console.log(`Processing new album: ${folder}`);
       
       // Get tracks and cover image from the folder
-      const { tracks, coverImage } = await getTracksFromB2(folder);
+      const { tracks, cover_image } = await getTracksFromB2(folder);
       
       // Create new album entry
       const newAlbum: Album = {
         id: folder.toLowerCase().replace(/\s+/g, '-'),
-        originalAlbumName: folder,
+        original_album_name: folder,
         title: folder,
         tracks,
-        coverImage,
+        cover_image,
         personnel: []  // Initialize with empty personnel array
       };
 

@@ -70,17 +70,17 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
 
   const [isPending, startTransition] = useTransition()
   const { playTrack, currentTrack } = usePlayer()
-  const currentTrackIndex = currentTrack.trackIndex
+  const currentTrackIndex = currentTrack.track_index
 
   const handleDeleteTrack = async (trackId: string) => {
     if (!album) return
-    console.log('CLIENT - Deleting track:', { albumId: album.id, trackId })
+    console.log('CLIENT - Deleting track:', { album_id: album.id, trackId })
 
     try {
       const response = await fetch('/api/delete-track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ albumId: album.id, trackId })
+        body: JSON.stringify({ album_id: album.id, trackId })
       })
 
       const data = await response.json()
@@ -206,10 +206,10 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
             <TabsContent value="tracks" className="space-y-4">
               <TrackList
                 tracks={album.tracks}
-                albumId={album.id}
-                onUpdateTrack={handleUpdateTrack}
-                onDeleteTrack={handleDeleteTrack}
-                onPlayTrack={(index) => {
+                album_id={album.id}
+                on_update_track={handleUpdateTrack}
+                on_delete_track={handleDeleteTrack}
+                on_play_track={(index: number) => {
                   const track = album.tracks[index]
                   if (track.audio_url) {
                     const tracksWithAlbumInfo = album.tracks
@@ -228,13 +228,13 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
                     )
                   }
                 }}
-                currentTrackIndex={currentTrack.album_id === album.id ? currentTrack.trackIndex : null}
+                current_track_index={currentTrack.album_id === album.id ? currentTrack.track_index : null}
               />
             </TabsContent>
 
             <TabsContent value="comments" className="space-y-4">
               <CommentList
-                albumId={album.id}
+                album_id={album.id}
                 comments={album.comments || []}
                 onCommentAdded={(newComment: Comment) => {
                   setAlbum({
@@ -253,7 +253,7 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
 
             <TabsContent value="gallery" className="space-y-6">
               <GalleryUploader 
-                albumId={album.id}
+                album_id={album.id}
                 users={users}
                 userId={currentUser?.id || ''}
                 onSuccess={() => {
@@ -261,7 +261,7 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
                   setGalleryKey(prev => prev + 1)
                 }}
               />
-              <AlbumGallery key={galleryKey} albumId={album.id} />
+              <AlbumGallery key={galleryKey} album_id={album.id} />
             </TabsContent>
           </Tabs>
         </div>

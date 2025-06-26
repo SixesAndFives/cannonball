@@ -3,19 +3,19 @@ import { supabase } from '@/lib/supabase'
 
 export async function POST(request: Request) {
   try {
-    const { albumId, trackId } = await request.json()
-    console.log('DELETE TRACK - Request received:', { albumId, trackId })
+    const { album_id, trackId } = await request.json()
+    console.log('DELETE TRACK - Request received:', { album_id, trackId })
     
     // Verify track exists before deletion
     const { data: track, error: findError } = await supabase
       .from('tracks')
       .select('*')
       .eq('id', trackId)
-      .eq('album_id', albumId)
+      .eq('album_id', album_id)
       .single()
     
     if (findError || !track) {
-      console.error('DELETE TRACK - Track not found:', { trackId, albumId, error: findError })
+      console.error('DELETE TRACK - Track not found:', { trackId, album_id, error: findError })
       return NextResponse.json({ error: 'Track not found' }, { status: 404 })
     }
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       .from('tracks')
       .delete()
       .eq('id', trackId)
-      .eq('album_id', albumId)
+      .eq('album_id', album_id)
     
     if (deleteError) {
       console.error('DELETE TRACK - Supabase error:', deleteError)

@@ -26,7 +26,10 @@ async function normalizeAlbum(album: any): Promise<Album> {
       id: track.id,
       title: track.title,
       duration: typeof track.duration === 'number' ? track.duration.toString() : '0:00',
-      audio_url: await getAuthorizedUrl(track.audio_url)
+      audio_url: await getAuthorizedUrl(track.audio_url),
+      album_id: album.id,
+      album_title: album.title,
+      cover_image: album.cover_image
     }))),
     gallery: album.gallery || [],
     comments: album.comments || [],

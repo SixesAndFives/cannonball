@@ -9,9 +9,14 @@ export async function PATCH(
     const { id } = await params;
     console.log('API: Received PATCH request for gallery item:', id);
     const updates = await request.json();
-    console.log('API: Updates to apply:', updates);
+    // Normalize updates to use snake_case
+    const normalizedUpdates = {
+      caption: updates.caption,
+      tagged_users: updates.taggedUsers || updates.tagged_users
+    };
+    console.log('API: Updates to apply:', normalizedUpdates);
 
-    const updatedItem = await updateGalleryItem(id, updates);
+    const updatedItem = await updateGalleryItem(id, normalizedUpdates);
     console.log('API: Result from updateGalleryItem:', updatedItem);
     
     if (!updatedItem) {

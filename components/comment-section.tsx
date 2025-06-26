@@ -9,10 +9,10 @@ import type { Comment } from "@/lib/types"
 
 interface CommentSectionProps {
   comments: Comment[]
-  albumId: string
+  album_id: string
 }
 
-export function CommentSection({ comments: initialComments, albumId }: CommentSectionProps) {
+export function CommentSection({ comments: initialComments, album_id }: CommentSectionProps) {
   const { toast } = useToast()
   const [comments, setComments] = useState<Comment[]>(initialComments)
   const [newComment, setNewComment] = useState("")

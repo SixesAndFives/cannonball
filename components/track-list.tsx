@@ -17,11 +17,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 interface TrackListProps {
   tracks: Track[]
-  albumId: string
-  onUpdateTrack: (trackId: string, updatedTrack: Track) => Promise<void>
-  onDeleteTrack: (trackId: string) => void
-  onPlayTrack: (index: number) => void
-  currentTrackIndex: number | null
+  album_id: string
+  on_update_track: (trackId: string, updatedTrack: Track) => Promise<void>
+  on_delete_track: (trackId: string) => void
+  on_play_track: (index: number) => void
+  current_track_index: number | null
 }
 
 export interface TrackListRef {
@@ -29,24 +29,24 @@ export interface TrackListRef {
 }
 
 export const TrackList = forwardRef<TrackListRef, TrackListProps>(function TrackList(
-  { tracks, albumId, onUpdateTrack, onDeleteTrack, onPlayTrack, currentTrackIndex },
+  { tracks, album_id, on_update_track, on_delete_track, on_play_track, current_track_index },
   ref
 ) {
   const [editingTrackId, setEditingTrackId] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState("")
   const [deleteTrackId, setDeleteTrackId] = useState<string | null>(null)
   const [addToPlaylistTrack, setAddToPlaylistTrack] = useState<Track | null>(null)
-  const { isInFavorites, toggleFavorite } = useFavorites(albumId)
+  const { isInFavorites, toggleFavorite } = useFavorites(album_id)
 
   const handleDeleteClick = async (trackId: string) => {
     try {
-      console.log('Deleting track', { albumId, trackId })
+      console.log('Deleting track', { album_id, trackId })
       const response = await fetch('/api/delete-track', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ albumId, trackId })
+        body: JSON.stringify({ album_id, trackId })
       })
 
       const data = await response.json()
@@ -55,7 +55,7 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
         throw new Error(data.error || 'Failed to delete track')
       }
 
-      onDeleteTrack?.(trackId)
+      on_delete_track?.(trackId)
     } catch (error) {
       console.error('Error deleting track:', error)
       alert(error instanceof Error ? error.message : 'Failed to delete track')
@@ -73,7 +73,7 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
     try {
       const success = await updateTrackTitle(track.id, editedTitle)
       if (success) {
-        onUpdateTrack(track.id, { ...track, title: editedTitle })
+        on_update_track(track.id, { ...track, title: editedTitle })
         setEditingTrackId(null)
       } else {
         throw new Error('Failed to update track')
@@ -90,25 +90,25 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
   }
 
   useImperativeHandle(ref, () => ({
-    playTrack: (index: number) => onPlayTrack(index)
+    playTrack: (index: number) => on_play_track(index)
   }))
 
   const handlePlayClick = (index: number) => {
-    onPlayTrack(index)
+    on_play_track(index)
   }
 
   const handleNextTrack = () => {
-    if (currentTrackIndex === null || currentTrackIndex >= tracks.length - 1) {
+    if (current_track_index === null || current_track_index >= tracks.length - 1) {
       return
     }
-    onPlayTrack(currentTrackIndex + 1)
+    on_play_track(current_track_index + 1)
   }
 
   const handlePreviousTrack = () => {
-    if (currentTrackIndex === null || currentTrackIndex <= 0) {
+    if (current_track_index === null || current_track_index <= 0) {
       return
     }
-    onPlayTrack(currentTrackIndex - 1)
+    on_play_track(current_track_index - 1)
   }
 
   return (
@@ -119,7 +119,7 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
             key={`${track.id}-${index}`}
             className={cn(
               "flex items-center justify-between p-4 hover:bg-gray-50",
-              currentTrackIndex === index && "bg-gray-50"
+              current_track_index === index && "bg-gray-50"
             )}
           >
             <div className="flex items-center gap-4 flex-1">
@@ -196,13 +196,13 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                       </Tooltip>
                     </TooltipProvider>
                     <Button
-                      variant={currentTrackIndex === index ? "default" : "ghost"}
+                      variant={current_track_index === index ? "default" : "ghost"}
                       size="icon"
                       onClick={() => handlePlayClick(index)}
                       data-track-index={index}
                       className="h-8 w-8 md:h-auto md:w-auto md:px-4"
                     >
-                      {currentTrackIndex === index ? (
+                      {current_track_index === index ? (
                         <>
                           <span className="hidden md:inline">Now Playing</span>
                           <Pause className="h-4 w-4 md:hidden" />
@@ -227,7 +227,7 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
         onOpenChange={(open) => !open && setDeleteTrackId(null)}
         onConfirm={() => {
           if (deleteTrackId) {
-            onDeleteTrack(deleteTrackId)
+            on_delete_track(deleteTrackId)
             setDeleteTrackId(null)
           }
         }}

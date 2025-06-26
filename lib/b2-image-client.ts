@@ -19,7 +19,7 @@ interface UploadResult {
 export async function uploadToB2(
   file: Buffer | Uint8Array,
   originalFilename: string,
-  albumId: string
+  album_id: string
 ): Promise<UploadResult> {
   try {
     console.log('Starting B2 upload for:', originalFilename)
@@ -33,7 +33,7 @@ export async function uploadToB2(
     // Generate a unique filename
     const fileId = randomUUID()
     const extension = originalFilename.split('.').pop()
-    const fileName = `images/${albumId}/${fileId}.${extension}`
+    const fileName = `images/${album_id}/${fileId}.${extension}`
 
     // Get upload URL
     const { data: { uploadUrl, authorizationToken } } = await b2.getUploadUrl({
@@ -90,14 +90,14 @@ export async function deleteFromB2(fileName: string): Promise<boolean> {
 }
 
 // List files in an album's directory
-export async function listAlbumFiles(albumId: string): Promise<string[]> {
+export async function listAlbumFiles(album_id: string): Promise<string[]> {
   try {
     // Authenticate with B2
     await b2.authorize()
 
     const { data: { files } } = await b2.listFileNames({
       bucketId: BUCKET_ID,
-      prefix: `images/${albumId}/`,
+      prefix: `images/${album_id}/`,
       maxFileCount: 1000
     })
 

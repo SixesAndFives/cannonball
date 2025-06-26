@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const title = formData.get('title') as string;
-    const coverImage = formData.get('coverImage') as File;
+    const cover_image = formData.get('cover_image') as File;
     const userId = formData.get('user_id') as string;
 
     if (!title || !userId) {
@@ -36,24 +36,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let coverImagePath = '';
-    if (coverImage) {
+    let cover_image_path = '';
+    if (cover_image) {
       // Create playlists directory if it doesn't exist
       const playlistsDir = path.join(process.cwd(), 'public', 'images', 'playlists');
       await fs.mkdir(playlistsDir, { recursive: true });
 
       // Generate unique filename using playlist ID
       const playlistId = uuidv4();
-      const ext = path.extname(coverImage.name);
+      const ext = path.extname(cover_image.name);
       const filename = `${playlistId}${ext}`;
       const filepath = path.join(playlistsDir, filename);
 
       // Convert File to Buffer and save
-      const bytes = await coverImage.arrayBuffer();
+      const bytes = await cover_image.arrayBuffer();
       const buffer = Buffer.from(bytes);
       await writeFile(filepath, buffer);
 
-      coverImagePath = `/images/playlists/${filename}`;
+      cover_image_path = `/images/playlists/${filename}`;
     }
 
     const { data: playlist, error } = await supabase
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       .insert({
         id: uuidv4(),
         title,
-        cover_image: coverImagePath,
+        cover_image: cover_image_path,
         user_id: userId,
         created_at: new Date().toISOString()
       })

@@ -50,18 +50,20 @@ export default function GalleryPage() {
                   method: 'PATCH',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    ...updates,
-                    tagged_users: updates.taggedUsers,
+                    caption: updates.caption,
+                    tagged_users: updates.taggedUsers
                   })
                 });
                 
                 if (!response.ok) throw new Error('Failed to update gallery item');
                 
-                // Update local state
+                const updatedItem = await response.json();
+                
+                // Update local state with the normalized response
                 setItems(prevItems =>
                   prevItems.map(item =>
                     item.id === itemId
-                      ? { ...item, ...updates }
+                      ? updatedItem
                       : item
                   )
                 );

@@ -7,10 +7,10 @@ import { GalleryGrid } from '@/components/gallery-grid'
 import type { GalleryItem } from '@/lib/types'
 
 interface AlbumGalleryProps {
-  albumId: string
+  album_id: string
 }
 
-export function AlbumGallery({ albumId }: AlbumGalleryProps) {
+export function AlbumGallery({ album_id }: AlbumGalleryProps) {
   const [items, setItems] = useState<GalleryItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null)
@@ -18,7 +18,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
   // Function to load gallery items with retry for new uploads
   const loadGallery = async (isRetry = false) => {
     try {
-      const response = await fetch(`/api/albums/${albumId}/gallery`)
+      const response = await fetch(`/api/albums/${album_id}/gallery`)
       if (!response.ok) throw new Error('Failed to load gallery items')
       const items = await response.json()
       setItems(items)
@@ -37,7 +37,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
   useEffect(() => {
     setIsLoading(true)
     loadGallery()
-  }, [albumId])
+  }, [album_id])
 
   // Retry mechanism for new uploads
   useEffect(() => {
@@ -59,7 +59,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
     }, 1000)
 
     return () => clearInterval(retryTimer)
-  }, [isLoading, albumId])
+  }, [isLoading, album_id])
 
   if (isLoading) {
     return (
@@ -80,7 +80,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
 
   const handleDelete = async (itemId: string) => {
     try {
-      const response = await fetch(`/api/albums/${albumId}/gallery/${itemId}`, {
+      const response = await fetch(`/api/albums/${album_id}/gallery/${itemId}`, {
         method: 'DELETE'
       })
       
@@ -101,7 +101,7 @@ export function AlbumGallery({ albumId }: AlbumGalleryProps) {
         onItemDelete={handleDelete}
         onItemUpdate={async (itemId: string, updates: { caption?: string; taggedUsers?: string[] }) => {
           try {
-            const response = await fetch(`/api/albums/${albumId}/gallery/${itemId}`, {
+            const response = await fetch(`/api/albums/${album_id}/gallery/${itemId}`, {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

@@ -7,10 +7,10 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
-    const albumId = formData.get('albumId') as string
+    const album_id = formData.get('album_id') as string
 
-    if (!file || !albumId) {
-      return NextResponse.json({ error: 'File and albumId are required' }, { status: 400 })
+    if (!file || !album_id) {
+      return NextResponse.json({ error: 'File and album_id are required' }, { status: 400 })
     }
 
     // Create images directory if it doesn't exist
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Generate unique filename
     const ext = path.extname(file.name)
-    const filename = `${albumId}-cover${ext}`
+    const filename = `${album_id}-cover${ext}`
     const filepath = path.join(imagesDir, filename)
 
     // Convert File to Buffer and save
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Find and update the album
     const album = albumsData.albums.find((a: any) => 
-      a.originalAlbumName.toLowerCase().replace(/\s+/g, '-') === albumId
+      a.original_album_name.toLowerCase().replace(/\s+/g, '-') === album_id
     )
     if (album) {
       album.coverImage = `/images/covers/${filename}`

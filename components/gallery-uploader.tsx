@@ -13,13 +13,13 @@ import { uploadGalleryItem } from '@/lib/gallery-client'
 import type { User } from '@/lib/types'
 
 interface GalleryUploaderProps {
-  albumId: string
+  album_id: string
   users: Omit<User, 'password'>[]
   userId: string
   onSuccess?: () => void
 }
 
-export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUploaderProps) {
+export function GalleryUploader({ album_id, users, userId, onSuccess }: GalleryUploaderProps) {
   const { toast } = useToast()
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string>('')
@@ -70,7 +70,7 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
         caption: caption.trim(),
         tagged_users: taggedUsers,
         uploaded_by: userId,
-        album_id: albumId
+        album_id
       })
 
       if (!result) {

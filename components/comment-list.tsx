@@ -11,13 +11,13 @@ import { addComment, deleteComment } from '@/lib/comment-client'
 import type { Comment } from '@/lib/types'
 
 interface CommentListProps {
-  albumId: string
+  album_id: string
   comments: Comment[]
   onCommentAdded: (comment: Comment) => void
   onCommentDeleted: (commentId: string) => void
 }
 
-export function CommentList({ albumId, comments, onCommentAdded, onCommentDeleted }: CommentListProps) {
+export function CommentList({ album_id, comments, onCommentAdded, onCommentDeleted }: CommentListProps) {
   const { toast } = useToast()
   const { user } = useAuth()
   const [content, setContent] = useState('')
@@ -36,7 +36,7 @@ export function CommentList({ albumId, comments, onCommentAdded, onCommentDelete
 
     setIsSubmitting(true)
     console.log('Submitting comment with user:', JSON.stringify(user, null, 2))
-    const newComment = await addComment(albumId, user.full_name, content, user.id, user.profile_image)
+    const newComment = await addComment(album_id, user.full_name, content, user.id, user.profile_image)
     setIsSubmitting(false)
 
     if (newComment) {
@@ -56,7 +56,7 @@ export function CommentList({ albumId, comments, onCommentAdded, onCommentDelete
   }
 
   const handleDelete = async (commentId: string) => {
-    const success = await deleteComment(albumId, commentId)
+    const success = await deleteComment(album_id, commentId)
     if (success) {
       onCommentDeleted(commentId)
       toast({

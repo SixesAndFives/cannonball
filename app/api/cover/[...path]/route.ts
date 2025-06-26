@@ -16,8 +16,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   // Get a fresh download URL with authorization
   const { downloadUrl, authToken } = await authorize();
-  const [albumId, filename] = path;
-  const b2Url = `${downloadUrl}/file/cannonball-music/${albumId}/${filename}`;
+  const [album_id, filename] = path;
+  const b2Url = `${downloadUrl}/file/cannonball-music/${album_id}/${filename}`;
   
   console.log('Fetching image from:', b2Url);
   console.log('Using download URL:', b2Url);

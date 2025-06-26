@@ -27,7 +27,7 @@ export async function uploadGalleryItem(
   file: Buffer,
   fileName: string,
   contentType: string,
-  albumId: string,
+  album_id: string,
   caption: string,
   taggedUsers: string[] = [],
   uploadedBy: string
@@ -84,7 +84,7 @@ export async function uploadGalleryItem(
 
     const newItem: GalleryItem = {
       id: randomUUID(),
-      album_id: albumId,
+      album_id,
       type: contentType.startsWith('video/') ? 'video' : 'image',
       url: downloadUrl,
       thumbnail_url: thumbnailUrl,
@@ -101,7 +101,7 @@ export async function uploadGalleryItem(
     const { data: album, error: fetchError } = await supabase
       .from('albums')
       .select('gallery')
-      .eq('id', albumId)
+      .eq('id', album_id)
       .single()
 
     if (fetchError) throw fetchError
@@ -114,7 +114,7 @@ export async function uploadGalleryItem(
       .update({
         gallery: [...currentGallery, newItem]
       })
-      .eq('id', albumId)
+      .eq('id', album_id)
 
     if (updateError) throw updateError
 
@@ -158,13 +158,13 @@ export async function getAlbumGallery(albumId: string): Promise<GalleryItem[]> {
   return normalizedGallery
 }
 
-export async function deleteGalleryItem(albumId: string, itemId: string): Promise<boolean> {
+export async function deleteGalleryItem(album_id: string, itemId: string): Promise<boolean> {
   try {
     // Get album gallery data
     const { data: album, error: getError } = await supabase
       .from('albums')
       .select('gallery')
-      .eq('id', albumId)
+      .eq('id', album_id)
       .single()
 
     if (getError) throw getError
@@ -213,7 +213,7 @@ export async function deleteGalleryItem(albumId: string, itemId: string): Promis
       .update({
         gallery: album.gallery.filter((i: GalleryItem) => i.id !== itemId)
       })
-      .eq('id', albumId)
+      .eq('id', album_id)
 
     if (updateError) throw updateError
 
@@ -262,19 +262,52 @@ export async function updateGalleryItem(
     console.log('Service: Found album:', album?.id);
     if (!album) return null;
 
-    // Find and update the item
-    const updatedGallery = album.gallery.map((item: GalleryItem) => {
+    // Normalize and update the gallery items
+    const updatedGallery = album.gallery.map((item: any) => {
+      const normalizedItem = {
+        id: item.id,
+        album_id: item.albumId || item.album_id,
+        type: item.type,
+        url: item.url,
+        thumbnail_url: item.thumbnailUrl || item.thumbnail_url,
+        title: item.title,
+        caption: item.caption,
+        tagged_users: item.tagged_users || item.taggedUsers || [],
+        uploaded_by: item.uploadedBy || item.uploaded_by,
+        created_at: item.createdAt || item.created_at,
+        file_name: item.fileName || item.file_name,
+        content_type: item.contentType || item.content_type
+      };
+
       if (item.id === itemId) {
         console.log('Service: Updating item:', item.id);
-        return { ...item, ...normalizedUpdates };
+        if (normalizedUpdates.caption !== undefined) {
+          normalizedItem.caption = normalizedUpdates.caption;
+        }
+        if (normalizedUpdates.tagged_users !== undefined) {
+          normalizedItem.tagged_users = normalizedUpdates.tagged_users;
+        }
       }
-      return item;
+
+      return normalizedItem;
     });
 
     // Update the gallery in Supabase
     const { error: updateError } = await supabase
       .from('albums')
-      .update({ gallery: updatedGallery })
+      .update({
+        gallery: updatedGallery.map(item => ({
+          ...item,
+          // Remove any camelCase duplicates
+          albumId: undefined,
+          thumbnailUrl: undefined,
+          taggedUsers: undefined,
+          uploadedBy: undefined,
+          createdAt: undefined,
+          fileName: undefined,
+          contentType: undefined
+        }))
+      })
       .eq('id', album.id);
 
     if (updateError) {
@@ -288,22 +321,19 @@ export async function updateGalleryItem(
 
     // Ensure response uses snake_case
     const normalizedItem = {
-      ...updatedItem,
+      id: updatedItem.id,
       album_id: updatedItem.albumId || updatedItem.album_id,
-      tagged_users: updatedItem.taggedUsers || updatedItem.tagged_users,
+      type: updatedItem.type,
+      url: updatedItem.url,
+      thumbnail_url: updatedItem.thumbnailUrl || updatedItem.thumbnail_url,
+      title: updatedItem.title,
+      caption: updatedItem.caption,
+      tagged_users: updatedItem.tagged_users,
+      uploaded_by: updatedItem.uploaded_by,
+      created_at: updatedItem.created_at,
       file_name: updatedItem.fileName || updatedItem.file_name,
-      content_type: updatedItem.contentType || updatedItem.content_type,
-      upload_timestamp: updatedItem.uploadTimestamp || updatedItem.upload_timestamp,
-      thumbnail_url: updatedItem.thumbnailUrl || updatedItem.thumbnail_url
+      content_type: updatedItem.contentType || updatedItem.content_type
     };
-    
-    // Remove any camelCase fields
-    delete (normalizedItem as any).albumId;
-    delete (normalizedItem as any).taggedUsers;
-    delete (normalizedItem as any).fileName;
-    delete (normalizedItem as any).contentType;
-    delete (normalizedItem as any).uploadTimestamp;
-    delete (normalizedItem as any).thumbnailUrl;
 
     console.log('Service: Updated item:', normalizedItem);
     return normalizedItem
@@ -332,7 +362,7 @@ export async function getAllGalleryItems(): Promise<GalleryItem[]> {
         ...item,
         thumbnail_url: item.thumbnailUrl || item.thumbnail_url,
         tagged_users: item.taggedUsers || item.tagged_users,
-        album_id: item.albumId || item.album_id,
+        album_id: item.album_id,
         file_name: item.fileName || item.file_name,
         content_type: item.contentType || item.content_type,
         upload_timestamp: item.uploadTimestamp || item.upload_timestamp
@@ -342,7 +372,7 @@ export async function getAllGalleryItems(): Promise<GalleryItem[]> {
       normalizedItems.forEach((item: any) => {
         delete item.thumbnailUrl
         delete item.taggedUsers
-        delete item.albumId
+
         delete item.fileName
         delete item.contentType
         delete item.uploadTimestamp
