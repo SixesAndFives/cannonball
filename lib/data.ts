@@ -3,25 +3,25 @@ import albumsData from './albums.json'
 
 type RawAlbum = {
   id?: string
-  originalAlbumName?: string
+  original_album_name?: string
   title?: string
   year?: number
-  coverImage?: string
+  cover_image?: string
   notes?: string
   tracks: Array<{
     id: string
     title: string
     duration: number
-    audioUrl: string
+    audio_url: string
     artist?: string
     album?: string
     year?: number
-    trackNumber?: number
+    track_number?: number
     genre?: string
     comment?: string
     composer?: string
     bitrate?: number
-    sampleRate?: number
+    sample_rate?: number
     channels?: number
     lossless?: boolean
   }>
@@ -31,37 +31,37 @@ type RawAlbum = {
 }
 
 // Map the albums from our JSON file to match the UI's expectations
-export const albums: Album[] = (albumsData.albums as RawAlbum[]).map(album => {
+export const albums: Album[] = (albumsData.albums as unknown as RawAlbum[]).map(album => {
   // Handle both old and new album formats
-  const id = album.id || album.originalAlbumName?.toLowerCase().replace(/\s+/g, '-') || ''
-  const title = album.title || album.originalAlbumName || ''
-  const originalAlbumName = album.originalAlbumName || album.title || ''
+  const id = album.id || album.original_album_name?.toLowerCase().replace(/\s+/g, '-') || ''
+  const title = album.title || album.original_album_name || ''
+  const original_album_name = album.original_album_name || album.title || ''
 
   // Map tracks to our Track type
   const tracks: Track[] = album.tracks.map((track: any) => ({
     id: track.id,
     title: track.title,
     duration: track.duration,
-    audioUrl: track.audioUrl,
+    audio_url: track.audio_url || track.audioUrl,
     artist: track.artist,
     album: track.album,
     year: track.year,
-    trackNumber: track.trackNumber,
+    track_number: track.track_number || track.trackNumber,
     genre: track.genre,
     comment: track.comment,
     composer: track.composer,
     bitrate: track.bitrate,
-    sampleRate: track.sampleRate,
+    sample_rate: track.sample_rate || track.sampleRate,
     channels: track.channels,
     lossless: track.lossless
   }))
 
   return {
     id,
-    originalAlbumName,
+    original_album_name,
     title,
-    year: album.year,
-    coverImage: album.coverImage,
+    year: album.year?.toString(),
+    cover_image: album.cover_image,
     notes: album.notes,
     tracks,
     gallery: album.gallery,

@@ -14,7 +14,7 @@ async function main() {
       console.log('Tracks:');
       tracks.forEach(track => {
         console.log(`- ${track.title}`);
-        console.log(`  URL: ${track.audioUrl}`);
+        console.log(`  URL: ${track.audio_url}`);
       });
     }
   } catch (error: any) {
