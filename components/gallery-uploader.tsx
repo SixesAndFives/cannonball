@@ -68,9 +68,9 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
       const result = await uploadGalleryItem({
         file,
         caption: caption.trim(),
-        taggedUsers,
-        uploadedBy: userId,
-        albumId
+        tagged_users: taggedUsers,
+        uploaded_by: userId,
+        album_id: albumId
       })
 
       if (!result) {
@@ -184,7 +184,7 @@ export function GalleryUploader({ albumId, users, userId, onSuccess }: GalleryUp
                       htmlFor={`user-${user.id}`}
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      {user.fullName}
+                      {user.full_name}
                     </label>
                   </div>
                 ))}

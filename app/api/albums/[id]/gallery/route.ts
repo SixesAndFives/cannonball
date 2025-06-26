@@ -32,8 +32,8 @@ export async function POST(
     const formData = await request.formData()
     const file = formData.get('file') as File
     const caption = formData.get('caption') as string
-    const taggedUsersJson = formData.get('taggedUsers') as string
-    const taggedUsers = taggedUsersJson ? JSON.parse(taggedUsersJson) : []
+    const taggedUsersJson = formData.get('tagged_users') as string
+    const tagged_users = taggedUsersJson ? JSON.parse(taggedUsersJson) : []
     
     if (!file) {
       return NextResponse.json(
@@ -44,11 +44,11 @@ export async function POST(
 
     // Convert File to Buffer
     const buffer = Buffer.from(await file.arrayBuffer())
-    const fileName = file.name
-    const contentType = file.type
-    const uploadedBy = formData.get('uploadedBy') as string
+    const file_name = file.name
+    const content_type = file.type
+    const uploaded_by = formData.get('uploaded_by') as string
     
-    if (!uploadedBy) {
+    if (!uploaded_by) {
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 }
@@ -58,12 +58,12 @@ export async function POST(
     // Upload to B2 and create gallery item
     const item = await uploadGalleryItem(
       buffer,
-      fileName,
-      contentType,
+      file_name,
+      content_type,
       id,
       caption,
-      taggedUsers,
-      uploadedBy
+      tagged_users,
+      uploaded_by
     )
     
     return NextResponse.json(item)

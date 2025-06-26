@@ -32,9 +32,9 @@ interface UploadGalleryItemParams {
   file: File
   title?: string
   caption?: string
-  taggedUsers?: string[]
-  uploadedBy: string
-  albumId: string
+  tagged_users?: string[]
+  uploaded_by: string
+  album_id: string
   onProgress?: (progress: number) => void
 }
 
@@ -42,9 +42,9 @@ export async function uploadGalleryItem({
   file,
   title,
   caption = '',
-  taggedUsers = [],
-  uploadedBy,
-  albumId,
+  tagged_users = [],
+  uploaded_by,
+  album_id,
   onProgress
 }: UploadGalleryItemParams): Promise<GalleryItem | null> {
   try {
@@ -52,8 +52,8 @@ export async function uploadGalleryItem({
     formData.append('file', file)
     if (title) formData.append('title', title)
     formData.append('caption', caption)
-    formData.append('taggedUsers', JSON.stringify(taggedUsers))
-    formData.append('uploadedBy', uploadedBy)
+    formData.append('tagged_users', JSON.stringify(tagged_users))
+    formData.append('uploaded_by', uploaded_by)
 
     const xhr = new XMLHttpRequest()
     const promise = new Promise<GalleryItem | null>((resolve, reject) => {
@@ -78,7 +78,7 @@ export async function uploadGalleryItem({
       })
     })
 
-    xhr.open('POST', `/api/albums/${albumId}/gallery`)
+    xhr.open('POST', `/api/albums/${album_id}/gallery`)
     xhr.send(formData)
 
     return await promise
@@ -116,7 +116,7 @@ export async function deleteGalleryItem(
 interface UpdateGalleryItemParams {
   title?: string
   caption?: string
-  taggedUsers?: string[]
+  tagged_users?: string[]
 }
 
 export async function updateGalleryItem(
