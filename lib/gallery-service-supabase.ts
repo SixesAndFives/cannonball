@@ -296,7 +296,7 @@ export async function updateGalleryItem(
     const { error: updateError } = await supabase
       .from('albums')
       .update({
-        gallery: updatedGallery.map(item => ({
+        gallery: updatedGallery.map((item: GalleryItem) => ({
           ...item,
           // Remove any camelCase duplicates
           albumId: undefined,
