@@ -5,10 +5,23 @@ import { parseBuffer, IAudioMetadata, ICommonTagsResult } from 'music-metadata';
 import { Album, Track } from './types';
 import { fileURLToPath } from 'url';
 
-const keyID = '004b14fc428245a0000000004';
-const applicationKey = 'K004XVtx2YqASONarnOJmDZ8Y+uT6xg';
-const bucketName = 'cannonball-music';
-const bucketId = '3b31f47f3c6472889264051a';
+if (!process.env.B2_KEY_ID) {
+  throw new Error('Missing env.B2_KEY_ID');
+}
+if (!process.env.B2_APPLICATION_KEY) {
+  throw new Error('Missing env.B2_APPLICATION_KEY');
+}
+if (!process.env.B2_BUCKET_NAME) {
+  throw new Error('Missing env.B2_BUCKET_NAME');
+}
+if (!process.env.B2_BUCKET_ID) {
+  throw new Error('Missing env.B2_BUCKET_ID');
+}
+
+const keyID = process.env.B2_KEY_ID;
+const applicationKey = process.env.B2_APPLICATION_KEY;
+const bucketName = process.env.B2_BUCKET_NAME;
+const bucketId = process.env.B2_BUCKET_ID;
 
 interface B2AuthResponse {
   authorizationToken: string;
