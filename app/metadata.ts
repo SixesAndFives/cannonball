@@ -1,15 +1,13 @@
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
+
+export const viewport: Viewport = {
+  themeColor: '#eff6ff'
+}
 
 export const metadata: Metadata = {
   title: 'Cannonball Archive',
   description: 'Music archive for Cannonball - you have reached the center of the universe',
-  manifest: '/manifest.json',
-  themeColor: '#eff6ff',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Cannonball',
-  },
+
   icons: {
     icon: '/icons/favicon.ico',
     shortcut: '/icons/favicon.ico',

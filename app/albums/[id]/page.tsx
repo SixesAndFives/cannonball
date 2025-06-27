@@ -28,10 +28,10 @@ export default async function AlbumDetailPage(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const [album, users, currentUser] = await Promise.all([
+  const [album, users, current_user] = await Promise.all([
     getAlbumById(id),
     getAllUsers(),
     getCurrentUser()
   ])
-  return <AlbumDetailClient initialAlbum={album} users={users as UserWithoutPassword[]} currentUser={currentUser as UserWithoutPassword | null} />
+  return <AlbumDetailClient initial_album={album} users={users as UserWithoutPassword[]} current_user={current_user as UserWithoutPassword | null} />
 }

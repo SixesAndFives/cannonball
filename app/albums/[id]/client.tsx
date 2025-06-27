@@ -21,15 +21,15 @@ import type { Album, Track, Comment, User } from "@/lib/types"
 type UserWithoutPassword = Omit<User, 'password'>
 
 interface AlbumDetailClientProps {
-  initialAlbum: Album | null
+  initial_album: Album | null
   users: UserWithoutPassword[]
-  currentUser: UserWithoutPassword | null
+  current_user: UserWithoutPassword | null
 }
 
-export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDetailClientProps) {
+export function AlbumDetailClient({ initial_album, users, current_user }: AlbumDetailClientProps) {
   const { toast } = useToast()
   const { user, setUser } = useAuth()
-  const [album, setAlbum] = useState<Album | null>(initialAlbum)
+  const [album, setAlbum] = useState<Album | null>(initial_album)
   const [galleryKey, setGalleryKey] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
 
@@ -63,10 +63,10 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
 
   // Initialize auth context with server user only if not already set
   useEffect(() => {
-    if (currentUser && !user) {
-      setUser(currentUser)
+    if (!current_user) {
+      setUser(current_user)
     }
-  }, [currentUser, setUser, user])
+  }, [current_user, setUser, user])
 
   const [isPending, startTransition] = useTransition()
   const { playTrack, currentTrack } = usePlayer()
@@ -255,7 +255,7 @@ export function AlbumDetailClient({ initialAlbum, users, currentUser }: AlbumDet
               <GalleryUploader 
                 album_id={album.id}
                 users={users}
-                userId={currentUser?.id || ''}
+                userId={current_user?.id || ''}
                 onSuccess={() => {
                   // Force gallery to refresh by remounting it with a key
                   setGalleryKey(prev => prev + 1)

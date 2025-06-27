@@ -2,9 +2,9 @@ export type UserRole = 'super_admin' | 'band_member' | 'public';
 
 export interface User {
   id: string;
-  username: string;
+  user_name: string;
   role: UserRole;
-  name?: string;
+  full_name?: string;
 }
 
 // These will be used later when we add authentication
