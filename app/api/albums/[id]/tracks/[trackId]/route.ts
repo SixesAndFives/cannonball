@@ -31,5 +31,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Failed to delete track' }, { status: 500 })
   }
 }
-  }
-}
