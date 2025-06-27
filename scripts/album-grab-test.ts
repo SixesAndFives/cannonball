@@ -9,8 +9,8 @@ async function main() {
 
     for (const folder of folders) {
       console.log('\n=== Album:', folder, '===');
-      const { tracks, coverImage } = await getTracksFromB2(folder);
-      console.log('Cover image:', coverImage);
+      const { tracks, cover_image } = await getTracksFromB2(folder);
+      console.log('Cover image:', cover_image);
       console.log('Tracks:');
       tracks.forEach(track => {
         console.log(`- ${track.title}`);
