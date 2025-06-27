@@ -1,49 +1,48 @@
 import { NextRequest } from 'next/server';
-import { authorize } from '@/lib/b2-client';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  const { path } = await params
-  const fullPath = decodeURIComponent(path.join('/'));
-  
-  // Extract the file name from the full B2 URL if present
-  const fileName = fullPath.includes('backblazeb2.com') 
-    ? fullPath.split('/file/cannonball-music/')[1]
-    : fullPath;
-
-  if (!fileName) {
-    return new Response('Invalid file path', { status: 400 });
-  }
-
-  // Get a fresh download URL with authorization
-  const { downloadUrl, authToken } = await authorize();
-  const [album_id, filename] = path;
-  const b2Url = `${downloadUrl}/file/cannonball-music/${album_id}/${filename}`;
-  
-  console.log('Fetching image from:', b2Url);
-  console.log('Using download URL:', b2Url);
-  const response = await fetch(b2Url, {
-    headers: {
-      'Authorization': authToken,
-      'Accept': 'image/*'
+  try {
+    const { path: pathSegments } = await params;
+    const fileName = pathSegments.join('/');
+    
+    // Construct the path to the image in the public directory
+    const imagePath = path.join(process.cwd(), 'public', 'images', fileName);
+    
+    try {
+      const imageData = await fs.readFile(imagePath);
+      
+      // Determine content type based on file extension
+      const ext = path.extname(imagePath).toLowerCase();
+      const contentType = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.gif': 'image/gif'
+      }[ext] || 'image/jpeg';
+      
+      return new Response(imageData, {
+        headers: {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=31536000' // Cache for 1 year
+        }
+      });
+    } catch (error) {
+      console.error('Error reading image file:', error);
+      // If file not found, try to serve the placeholder
+      const placeholderPath = path.join(process.cwd(), 'public', 'images', 'placeholder-album.jpg');
+      const placeholderData = await fs.readFile(placeholderPath);
+      
+      return new Response(placeholderData, {
+        headers: {
+          'Content-Type': 'image/jpeg',
+          'Cache-Control': 'public, max-age=31536000'
+        }
+      });
     }
-  });
-
-  if (!response.ok) {
-    console.error('B2 response error:', {
-      status: response.status,
-      statusText: response.statusText,
-      body: await response.text()
-    });
-    return new Response('Failed to fetch image', { status: response.status });
+  } catch (error) {
+    console.error('Error serving image:', error);
+    return new Response('Error serving image', { status: 500 });
   }
-
-  // Forward the image response
-  const headers = new Headers();
-  headers.set('Content-Type', response.headers.get('Content-Type') || 'image/jpeg');
-  headers.set('Cache-Control', 'public, max-age=31536000');
-  
-  return new Response(response.body, {
-    status: response.status,
-    headers
-  });
 }
