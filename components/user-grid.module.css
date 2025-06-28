@@ -17,14 +17,23 @@
   border-radius: 9999px;
   border: 4px solid transparent;
   transition: all 0.2s ease-in-out;
+  width: 100%;
 }
 
 .userButton:hover {
   border-color: rgb(59 130 246);
 }
 
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .userImage {
   object-fit: cover;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .userOverlay {

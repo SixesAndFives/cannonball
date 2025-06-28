@@ -52,14 +52,16 @@ export function UserGrid({ users }: UserGridProps) {
             onClick={() => setSelectedUser(user)}
             className={styles.userButton}
           >
-            <Image
-              src={user.profile_image || '/images/default-avatar.png'}
-              alt={user.full_name || 'User profile'}
-              width={200}
-              height={200}
-              className={styles.userImage}
-              style={{ objectFit: 'cover' }}
-            />
+            <div className={styles.imageContainer}>
+              <Image
+                src={user.profile_image || '/images/default-avatar.png'}
+                alt={user.full_name || 'User profile'}
+                fill
+                sizes="(max-width: 768px) 50vw, 25vw"
+                className={styles.userImage}
+                priority
+              />
+            </div>
             <div className={styles.userOverlay}>
               <div className={styles.userInfo}>
                 <span className={styles.userName}>{user.full_name}</span>
