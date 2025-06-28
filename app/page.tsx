@@ -6,9 +6,19 @@ export const dynamic = 'force-dynamic'
 
 async function getUsers() {
   try {
-    console.log('=== Fetching users ===', { NODE_ENV: process.env.NODE_ENV })
+    // In production, we need to use the full URL
+    const baseUrl = process.env.VERCEL_URL ? 
+      `https://${process.env.VERCEL_URL}` : 
+      'http://localhost:3000'
+    const url = `${baseUrl}/api/auth/users`
     
-    const response = await fetch('/api/auth/users', {
+    console.log('=== Fetching users ===', { 
+      NODE_ENV: process.env.NODE_ENV,
+      VERCEL_URL: process.env.VERCEL_URL,
+      url
+    })
+    
+    const response = await fetch(url, {
       cache: 'no-store',
       method: 'GET'
     })

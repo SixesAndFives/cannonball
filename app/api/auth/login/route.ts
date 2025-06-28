@@ -11,9 +11,18 @@ export async function POST(request: Request) {
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 10) + '...',
       NODE_ENV: process.env.NODE_ENV
     })
+    console.log('Raw request body:', body)
     
-    const { user_name, password } = body
-    console.log('Login attempt for user:', user_name)
+    // Handle both camelCase and snake_case field names
+    const user_name = body.user_name || body.userName
+    const { password } = body
+    
+    if (!user_name || !password) {
+      console.error('Missing credentials:', { user_name, password })
+      return NextResponse.json({ error: 'Missing credentials' }, { status: 400 })
+    }
+    
+    console.log('Login attempt:', { user_name, password })
 
     // Debug: Get all users first
     const { data: allUsers } = await supabase

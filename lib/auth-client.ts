@@ -6,7 +6,8 @@ export async function login(user_name: string, password: string): Promise<Omit<U
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ user_name, password }),
+    body: JSON.stringify({ user_name, password }), // Use snake_case to match API expectations
+    cache: 'no-store'
   })
 
   if (!response.ok) {
