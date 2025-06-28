@@ -2,8 +2,8 @@ import { HomeClient } from "./home-client"
 
 async function getUsers() {
   try {
-    // Use relative URL instead of absolute
-    const response = await fetch('/api/auth/users', {
+    // Use absolute URL
+    const response = await fetch('http://localhost:3000/api/auth/users', {
       cache: 'no-store' // Don't cache user list
     })
     if (!response.ok) {
