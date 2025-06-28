@@ -6,21 +6,15 @@ export const dynamic = 'force-dynamic'
 
 async function getUsers() {
   try {
-    // In production, we need to use the full URL
-    const baseUrl = process.env.VERCEL_URL ? 
-      `https://${process.env.VERCEL_URL}` : 
-      'http://localhost:3000'
-    const url = `${baseUrl}/api/auth/users`
+    console.log('=== Fetching users ===')
     
-    console.log('=== Fetching users ===', { 
-      NODE_ENV: process.env.NODE_ENV,
-      VERCEL_URL: process.env.VERCEL_URL,
-      url
-    })
-    
-    const response = await fetch(url, {
+    // In Next.js app router, we can use absolute URLs with the request URL
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/auth/users`, {
       cache: 'no-store',
-      method: 'GET'
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
 
     if (!response.ok) {
