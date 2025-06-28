@@ -6,26 +6,20 @@ export const dynamic = 'force-dynamic'
 
 async function getUsers() {
   try {
-    const url = '/api/auth/users' // Use relative URL
     console.log('=== Fetching users ===', { NODE_ENV: process.env.NODE_ENV })
     
-    console.log('Fetching users from:', url)
-    console.log('Environment:', {
-      NODE_ENV: process.env.NODE_ENV,
-      url
-    })
-    
-    const response = await fetch(url, {
-      cache: 'no-store' // Don't cache user list
+    const response = await fetch('/api/auth/users', {
+      cache: 'no-store',
+      method: 'GET'
     })
 
     if (!response.ok) {
-      console.error('Failed to fetch users:', {
-        status: response.status,
-        statusText: response.statusText
-      })
       const errorText = await response.text()
-      console.error('Error response:', errorText)
+      console.error('Users API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      })
       throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`)
     }
 
