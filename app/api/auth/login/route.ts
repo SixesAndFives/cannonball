@@ -1,24 +1,26 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import type { User } from '@/lib/types'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { supabase } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    console.log('Raw request body:', body)
+    console.log('=== Starting login request ===');
+    console.log('Environment check:', {
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 10) + '...',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 10) + '...',
+      NODE_ENV: process.env.NODE_ENV
+    })
+    
     const { user_name, password } = body
-    console.log('Login attempt:', { user_name, password })
+    console.log('Login attempt for user:', user_name)
 
     // Debug: Get all users first
     const { data: allUsers } = await supabase
       .from('users')
       .select('user_name')
-    console.log('All usernames:', allUsers)
+    console.log('Found usernames count:', allUsers?.length)
+    console.log('Sample of usernames:', allUsers?.slice(0, 3))
 
     // Try to find user with exact username match
     console.log('Looking for user_name exactly matching:', user_name)

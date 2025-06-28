@@ -5,6 +5,11 @@ import { PostgrestError } from '@supabase/supabase-js'
 
 export async function GET() {
   console.log('=== Starting users API request ===')
+  console.log('Environment check:', {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 10) + '...',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 10) + '...',
+    NODE_ENV: process.env.NODE_ENV
+  })
   try {
     // First try a simple count to test access
     const { count, error: countError } = await supabase

@@ -6,11 +6,8 @@ export const dynamic = 'force-dynamic'
 
 async function getUsers() {
   try {
-    // Get the host from the request headers
-    const headersList = headers()
-    const url = '/api/auth/users' // Use relative URL instead
-    
-    console.log('Request headers:', headersList)
+    const url = '/api/auth/users' // Use relative URL
+    console.log('=== Fetching users ===', { NODE_ENV: process.env.NODE_ENV })
     
     console.log('Fetching users from:', url)
     console.log('Environment:', {
