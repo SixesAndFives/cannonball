@@ -1,20 +1,22 @@
 import { HomeClient } from "./home-client"
+import { headers } from 'next/headers'
+
+// Mark this page as dynamic
+export const dynamic = 'force-dynamic'
 
 async function getUsers() {
   try {
-    // In Next.js server components, we need to use absolute URLs
+    // Get the host from the request headers
+    const host = headers().get('host') || 'localhost:3000'
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
-    const host = process.env.VERCEL_URL || 'localhost:3000'
-    const baseUrl = `${protocol}://${host}`
-    const url = `${baseUrl}/api/auth/users`
+    const url = `${protocol}://${host}/api/auth/users`
     
     console.log('Fetching users from:', url)
     console.log('Environment:', {
       NODE_ENV: process.env.NODE_ENV,
-      VERCEL_URL: process.env.VERCEL_URL,
       protocol,
       host,
-      baseUrl
+      url
     })
     
     const response = await fetch(url, {
