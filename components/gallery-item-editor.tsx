@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Drawer } from './drawer';
+import { Drawer } from '@/components/drawer';
 import type { GalleryItem, User } from '@/lib/types';
 import { Film } from 'lucide-react';
 
@@ -48,15 +48,27 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: G
   }, [taggedUsers]);
 
   const handleSave = async () => {
+    if (isSaving) return;
+    
     try {
+      console.log('[Editor] Starting save...');
+      console.log('[Editor] Saving with caption:', caption);
+      console.log('[Editor] Saving with taggedUsers:', taggedUsers);
       setIsSaving(true);
+      
+      console.log('[Editor] Calling onSave with:', { caption, taggedUsers });
       await onSave({ caption, taggedUsers });
+      
+      console.log('[Editor] Save successful');
+      setIsSaving(false);
+      
+      // Only close after save is complete
+      console.log('[Editor] Closing editor');
       onClose();
     } catch (error) {
-      console.error('Failed to save gallery item:', error);
-      // TODO: Add error toast
-    } finally {
+      console.error('[Editor] Failed to save gallery item:', error);
       setIsSaving(false);
+      // TODO: Add error toast
     }
   };
 
@@ -83,7 +95,8 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: G
     >
       <div className="space-y-6">
         {/* Image Preview */}
-        <div className="aspect-video relative rounded-lg overflow-hidden bg-gray-100">
+        {/* Image Preview */}
+        <div className="relative w-60 h-60 mx-auto rounded-lg overflow-hidden bg-gray-100">
           {item.type === 'image' ? (
             <Image
               src={item.url}
@@ -101,38 +114,35 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: G
                 fill
                 sizes="400px"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                <Film className="w-8 h-8 text-white" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Film className="w-12 h-12 text-white opacity-75" />
               </div>
             </div>
           )}
         </div>
 
         {/* Caption */}
-        <div>
-          <label htmlFor="caption" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="caption" className="text-sm font-bold">
             Caption
           </label>
           <textarea
             id="caption"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            rows={3}
+            className="w-full h-24 px-3 py-2 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="Add a caption..."
           />
         </div>
 
         {/* Tagged Users */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Tagged Individuals
-          </label>
-          <div className="space-y-2 max-h-[200px] overflow-y-auto">
+        <div className="space-y-2">
+          <label className="text-sm font-bold">Tagged Users</label>
+          <div className="space-y-2 max-h-[200px] overflow-y-auto border rounded-md p-2">
             {users.map((user) => (
-              <label 
-                key={user.id} 
-                className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer group"
+              <label
+                key={user.id}
+                className="flex items-center gap-3 px-2 py-1.5 hover:bg-gray-50 cursor-pointer"
               >
                 <input
                   type="checkbox"
@@ -144,73 +154,63 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: G
                       setTaggedUsers(prev => prev.filter(id => id !== user.id));
                     }
                   }}
-                  className="h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                 />
-                <div className="flex items-center gap-2 flex-1">
-                  {user.profile_image && (
-                    <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gray-100">
-                      <Image
-                        src={user.profile_image}
-                        alt={user.full_name}
-                        className="object-cover"
-                        fill
-                        sizes="32px"
-                      />
-                    </div>
-                  )}
-                  <div className="font-medium">{user.full_name}</div>
-                </div>
+                <span className="text-sm">{user.full_name}</span>
               </label>
             ))}
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-6 flex justify-between">
-          {/* Delete Button */}
-          {onDelete && (
+        {/* Actions */}
+        <div className="flex justify-between pt-4 border-t">
+          <div className="flex gap-2">
             <button
-              type="button"
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={isDeleting || isSaving}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSave();
+              }}
+              disabled={isSaving}
+              className="px-4 py-2 text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50"
             >
-              {isDeleting ? 'Deleting...' : 'Delete Item'}
+              {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
-          )}
-
-          {/* Save Button */}
+            {onDelete && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="px-4 py-2 text-red-600 bg-red-50 rounded-md hover:bg-red-100"
+              >
+                Delete
+              </button>
+            )}
+          </div>
           <button
-            type="button"
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleSave}
-            disabled={isSaving || isDeleting}
+            onClick={onClose}
+            className="px-4 py-2 text-gray-600 hover:text-gray-800"
           >
-            {isSaving ? 'Saving...' : 'Save Changes'}
+            Cancel
           </button>
         </div>
 
-        {/* Delete Confirmation Dialog */}
+        {/* Delete Confirmation */}
         {showDeleteConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="fixed inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
-            <div className="relative bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+            <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
               <h3 className="text-lg font-medium mb-4">Delete Gallery Item?</h3>
-              <p className="text-gray-600 mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
-              <div className="flex justify-end space-x-4">
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to delete this item? This action cannot be undone.
+              </p>
+              <div className="flex justify-end gap-2">
                 <button
-                  type="button"
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                   onClick={() => setShowDeleteConfirm(false)}
-                  disabled={isDeleting}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
                 >
                   Cancel
                 </button>
                 <button
-                  type="button"
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
                   onClick={handleDelete}
                   disabled={isDeleting}
+                  className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50"
                 >
                   {isDeleting ? 'Deleting...' : 'Delete'}
                 </button>

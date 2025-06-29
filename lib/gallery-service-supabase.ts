@@ -132,8 +132,9 @@ export async function getAlbumGallery(albumId: string): Promise<GalleryItem[]> {
 
   if (error) throw error
   
-  // Normalize gallery items to ensure snake_case
-  const normalizedGallery = (album?.gallery || []).map((item: any) => ({
+  // Parse and normalize gallery items to ensure snake_case
+  const galleryArray = typeof album?.gallery === 'string' ? JSON.parse(album.gallery) : (album?.gallery || [])
+  const normalizedGallery = galleryArray.map((item: any) => ({
     ...item,
     thumbnail_url: item.thumbnailUrl || item.thumbnail_url,
     tagged_users: item.taggedUsers || item.tagged_users,
@@ -223,121 +224,89 @@ export async function deleteGalleryItem(album_id: string, itemId: string): Promi
 }
 
 export async function updateGalleryItem(
+  album_id: string,
   itemId: string,
   updates: { caption?: string; taggedUsers?: string[] }
 ): Promise<GalleryItem | null> {
   try {
-    console.log('Service: Updating gallery item:', itemId);
-    console.log('Service: Updates:', updates);
-    
-    // Convert camelCase to snake_case and filter out undefined values
-    const normalizedUpdates: Partial<Pick<GalleryItem, 'caption' | 'tagged_users'>> = {};
-    if (updates.caption !== undefined) normalizedUpdates.caption = updates.caption;
-    if (updates.taggedUsers !== undefined) normalizedUpdates.tagged_users = updates.taggedUsers;
+    console.error('\n[Service] ====== Update Gallery Item Start ======')
+    console.error('[Service] Item ID:', itemId)
+    console.error('[Service] Updates:', JSON.stringify(updates, null, 2))
 
-    // First find which album contains this gallery item
-    const { data: albums, error: getError } = await supabase
+    const { data: albums, error: fetchError } = await supabase
       .from('albums')
       .select('id, gallery')
-      .not('gallery', 'is', null)
+      .eq('id', album_id)
+      .neq('gallery', '[]')
 
-    if (getError) {
-      console.error('Service: Error fetching albums:', getError);
-      throw getError;
+    if (fetchError) {
+      console.error('[Service] Error fetching albums:', fetchError)
+      throw fetchError
     }
 
-    console.log('Service: Found', albums?.length, 'albums with gallery items');
-    if (!albums?.length) return null;
+    if (!albums || !albums.length) {
+      console.error('[Service] No albums found')
+      return null
+    }
 
-    // Find the album containing this item
-    const album = albums.find(a => 
-      a.gallery?.some((item: GalleryItem) => {
-        console.log('Service: Comparing item:', item.id, 'with', itemId);
-        return item.id === itemId;
-      })
-    );
+    console.error('[Service] Found', albums.length, 'albums')
 
-    console.log('Service: Found album:', album?.id);
-    if (!album) return null;
+    // Parse gallery JSON and find the album containing this gallery item
+    const album = albums.find(a => {
+      const gallery = typeof a.gallery === 'string' ? JSON.parse(a.gallery) : a.gallery
+      return gallery?.some((item: GalleryItem) => item.id === itemId)
+    })
+    
+    // Parse gallery JSON for the found album
+    const albumGallery = album?.gallery ? JSON.parse(album.gallery) : null
+    if (!album?.id || !albumGallery) {
+      console.error('[Service] Gallery item not found in any album')
+      return null
+    }
 
-    // Normalize and update the gallery items
-    const updatedGallery = album.gallery.map((item: any) => {
-      const normalizedItem = {
-        id: item.id,
-        album_id: item.albumId || item.album_id,
-        type: item.type,
-        url: item.url,
-        thumbnail_url: item.thumbnailUrl || item.thumbnail_url,
-        title: item.title,
-        caption: item.caption,
-        tagged_users: item.tagged_users || item.taggedUsers || [],
-        uploaded_by: item.uploadedBy || item.uploaded_by,
-        created_at: item.createdAt || item.created_at,
-        file_name: item.fileName || item.file_name,
-        content_type: item.contentType || item.content_type
-      };
+    console.error('[Service] Found item in album:', album.id)
+    const currentItem = albumGallery.find((item: GalleryItem) => item.id === itemId)
+    console.error('[Service] Current item state:', JSON.stringify(currentItem, null, 2))
 
+    // Update the gallery item
+    const updatedGallery = albumGallery.map((item: GalleryItem) => {
       if (item.id === itemId) {
-        console.log('Service: Updating item:', item.id);
-        if (normalizedUpdates.caption !== undefined) {
-          normalizedItem.caption = normalizedUpdates.caption;
+        const updated: GalleryItem = {
+          ...item,
+          caption: updates.caption ?? item.caption,
+          tagged_users: updates.taggedUsers ?? item.tagged_users
         }
-        if (normalizedUpdates.tagged_users !== undefined) {
-          normalizedItem.tagged_users = normalizedUpdates.tagged_users;
-        }
+        console.error('[Service] Updated item state:', JSON.stringify(updated, null, 2))
+        return updated
       }
+      return item
+    })
 
-      return normalizedItem;
-    });
-
-    // Update the gallery in Supabase
+    console.error('[Service] Updating album in Supabase...')
+    // Update the album
     const { error: updateError } = await supabase
       .from('albums')
-      .update({
-        gallery: updatedGallery.map((item: GalleryItem) => ({
-          ...item,
-          // Remove any camelCase duplicates
-          albumId: undefined,
-          thumbnailUrl: undefined,
-          taggedUsers: undefined,
-          uploadedBy: undefined,
-          createdAt: undefined,
-          fileName: undefined,
-          contentType: undefined
-        }))
-      })
-      .eq('id', album.id);
+      .update({ gallery: JSON.stringify(updatedGallery) })
+      .eq('id', album.id)
 
     if (updateError) {
-      console.error('Service: Error updating gallery:', updateError);
-      throw updateError;
+      console.error('[Service] Error updating album:', updateError)
+      throw updateError
     }
 
-    // Return the updated item with consistent snake_case
-    const updatedItem = updatedGallery.find((item: GalleryItem) => item.id === itemId);
-    if (!updatedItem) return null;
+    // Return the updated item
+    const updatedItem = updatedGallery.find((item: GalleryItem) => item.id === itemId)
+    if (!updatedItem) {
+      console.error('[Service] Updated item not found in gallery')
+      return null
+    }
 
-    // Ensure response uses snake_case
-    const normalizedItem = {
-      id: updatedItem.id,
-      album_id: updatedItem.albumId || updatedItem.album_id,
-      type: updatedItem.type,
-      url: updatedItem.url,
-      thumbnail_url: updatedItem.thumbnailUrl || updatedItem.thumbnail_url,
-      title: updatedItem.title,
-      caption: updatedItem.caption,
-      tagged_users: updatedItem.tagged_users,
-      uploaded_by: updatedItem.uploaded_by,
-      created_at: updatedItem.created_at,
-      file_name: updatedItem.fileName || updatedItem.file_name,
-      content_type: updatedItem.contentType || updatedItem.content_type
-    };
-
-    console.log('Service: Updated item:', normalizedItem);
-    return normalizedItem
+    console.error('[Service] Successfully updated item')
+    console.error('[Service] ====== Update Gallery Item End ======\n')
+    return updatedItem
   } catch (error) {
-    console.error('Error updating gallery item:', error)
-    throw error
+    console.error('[Service] Error updating gallery item:', error)
+    return null
   }
 }
 

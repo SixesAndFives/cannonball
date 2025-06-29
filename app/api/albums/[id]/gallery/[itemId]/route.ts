@@ -33,20 +33,30 @@ export async function PATCH(
 ) {
   try {
     const { id, itemId } = await params
+    console.error('\n[API] ====== PATCH Request Start ======')
+    console.error('[API] Album ID:', id)
+    console.error('[API] Item ID:', itemId)
+    
     const updates = await request.json()
+    console.error('[API] Updates:', JSON.stringify(updates, null, 2))
     
     // Pass through updates (conversion happens in service)
-    const updated = await updateGalleryItem(itemId, updates)
+    console.error('[API] Calling updateGalleryItem...')
+    const updated = await updateGalleryItem(id, itemId, updates)
+    
     if (!updated) {
+      console.error('[API] Gallery item not found')
       return NextResponse.json(
         { error: 'Gallery item not found' },
         { status: 404 }
       )
     }
     
+    console.error('[API] Successfully updated item:', JSON.stringify(updated, null, 2))
+    console.error('[API] ====== PATCH Request End ======\n')
     return NextResponse.json(updated)
   } catch (error) {
-    console.error('Error updating gallery item:', error)
+    console.error('[API] Error updating gallery item:', error)
     return NextResponse.json(
       { error: 'Failed to update gallery item' },
       { status: 500 }
