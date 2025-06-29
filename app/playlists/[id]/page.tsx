@@ -127,13 +127,13 @@ export default function PlaylistPage(
                       >
                         <div className="relative w-16 h-16 flex-shrink-0">
                           <Image
-                            src={track.cover_image || '/images/playlists/EmptyCover.png'}
+                            src={track.cover_image || '/images/EmptyCover.png'}
                             alt={track.album_title || ''}
                             fill
                             className="object-cover rounded"
                             onError={(e) => {
                               if (e.target instanceof HTMLImageElement) {
-                                e.target.src = '/images/playlists/EmptyCover.png';
+                                e.target.src = '/images/EmptyCover.png';
                               }
                             }}
                           />

@@ -3,7 +3,7 @@ import { getFolders, getTracksFromB2 } from '../lib/b2-client'
 import type { Album, Track } from '../lib/types'
 
 // Folders to exclude from album sync
-const EXCLUDED_FOLDERS = ['Images', 'thumbnails', 'gallery', 'JSON']
+const EXCLUDED_FOLDERS = ['Images', 'images', 'thumbnails', 'gallery', 'JSON']
 
 export async function syncAlbums(): Promise<void> {
   console.log('Starting album sync with Supabase...')

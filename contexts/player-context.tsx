@@ -98,6 +98,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           album_title={currentTrack.album_title || ''}
           cover_image={currentTrack.cover_image || undefined}
           onNext={currentTrack.track_index !== null && currentTrack.track_index < playlist.length - 1 ? playNext : undefined}
+          onClose={clearTrack}
           onPrevious={currentTrack.track_index !== null && currentTrack.track_index > 0 ? playPrevious : undefined}
           autoPlay={true}
         />

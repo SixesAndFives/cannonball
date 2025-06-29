@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Play, Pause, SkipBack, SkipForward, Loader2 } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Loader2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Progress } from '@/components/ui/progress'
@@ -12,11 +12,12 @@ interface AudioPlayerProps {
   title: string
   onNext?: () => void
   onPrevious?: () => void
+  onClose?: () => void
   className?: string
   autoPlay?: boolean
 }
 
-export function AudioPlayer({ src, title, onNext, onPrevious, className, autoPlay }: AudioPlayerProps) {
+export function AudioPlayer({ src, title, onNext, onPrevious, onClose, className, autoPlay }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -102,6 +103,13 @@ export function AudioPlayer({ src, title, onNext, onPrevious, className, autoPla
     }
   }
 
+  const handleClose = () => {
+    if (!audioRef.current) return
+    audioRef.current.pause()
+    setIsPlaying(false)
+    onClose?.()
+  }
+
   const handleSeek = (value: number[]) => {
     if (!audioRef.current) return
     audioRef.current.currentTime = value[0]
@@ -115,7 +123,15 @@ export function AudioPlayer({ src, title, onNext, onPrevious, className, autoPla
   }
 
   return (
-    <div className={cn("bg-white p-4 rounded-lg shadow-sm border border-gray-200", className)}>
+    <div className={cn("bg-white p-4 rounded-lg shadow-sm border border-gray-200 relative", className)}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleClose}
+        className="absolute top-2 right-2 h-6 w-6 hover:bg-gray-100"
+      >
+        <X className="h-4 w-4" />
+      </Button>
       {isLoading && (
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2 text-sm text-gray-500">

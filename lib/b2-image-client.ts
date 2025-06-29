@@ -30,10 +30,8 @@ export async function uploadToB2(
     // Authenticate with B2
     await b2.authorize()
 
-    // Generate a unique filename
-    const fileId = randomUUID()
-    const extension = originalFilename.split('.').pop()
-    const fileName = `images/${album_id}/${fileId}.${extension}`
+    // Use the original filename directly in Images/
+    const fileName = `Images/${originalFilename}`
 
     // Get upload URL
     const { data: { uploadUrl, authorizationToken } } = await b2.getUploadUrl({
@@ -50,7 +48,7 @@ export async function uploadToB2(
     })
 
     return {
-      fileId,
+      fileId: data.fileId,
       fileName: data.fileName,
       url: `https://f004.backblazeb2.com/file/${BUCKET_NAME}/${fileName}`
     }
@@ -97,7 +95,7 @@ export async function listAlbumFiles(album_id: string): Promise<string[]> {
 
     const { data: { files } } = await b2.listFileNames({
       bucketId: BUCKET_ID,
-      prefix: `images/${album_id}/`,
+      prefix: `Images/${album_id}-`,
       maxFileCount: 1000
     })
 

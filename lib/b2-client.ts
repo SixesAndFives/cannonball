@@ -134,29 +134,6 @@ export async function getFolders(): Promise<string[]> {
   return Array.from(folders);
 }
 
-async function downloadCoverImage(fileName: string, album_id: string): Promise<string> {
-  const { downloadUrl, authToken } = await authorize();
-  const b2Url = `${downloadUrl}/file/cannonball-music/${fileName}`;
-  
-  console.log('Downloading cover image:', b2Url);
-  const response = await fetch(b2Url, {
-    headers: {
-      'Authorization': authToken
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to download cover image: ${response.statusText}`);
-  }
-
-  const buffer = Buffer.from(await response.arrayBuffer());
-  const localPath = `public/images/${album_id}-cover.jpg`;
-  await fs.writeFile(localPath, buffer);
-  console.log('Saved cover image to:', localPath);
-  
-  return `/images/${album_id}-cover.jpg`;
-}
-
 export async function getTracksFromB2(albumName: string): Promise<{ tracks: Track[], cover_image?: string }> {
   console.log('Getting tracks for album:', albumName);
   const response = await listFiles(albumName + '/');
@@ -168,9 +145,29 @@ export async function getTracksFromB2(albumName: string): Promise<{ tracks: Trac
   if (coverFile) {
     try {
       const album_id = albumName.toLowerCase().replace(/\s+/g, '-');
-      cover_image = await downloadCoverImage(coverFile.fileName, album_id);
+      
+      // Download cover from album folder
+      const { downloadUrl, authToken } = await authorize();
+      const b2Url = `${downloadUrl}/file/cannonball-music/${coverFile.fileName}`;
+      console.log('Downloading cover image:', b2Url);
+      
+      const response = await fetch(b2Url, {
+        headers: {
+          'Authorization': authToken
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to download cover image: ${response.statusText}`);
+      }
+
+      // Upload to Images/ folder with standardized name
+      const buffer = Buffer.from(await response.arrayBuffer());
+      const { uploadToB2 } = await import('@/lib/b2-image-client');
+      const { url } = await uploadToB2(buffer, `${album_id}-cover.jpg`, album_id);
+      cover_image = url;
     } catch (error) {
-      console.error('Error downloading cover image:', error);
+      console.error('Error processing cover image:', error);
     }
   }
 

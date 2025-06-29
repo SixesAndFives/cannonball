@@ -2,10 +2,13 @@ import { Playlist, PlaylistTrack } from './types'
 import { supabase } from './supabase/server'
 
 async function getAuthorizedUrl(url: string, type: 'audio' | 'cover' = 'audio'): Promise<string> {
-  // Convert direct B2 URL to a relative API route
+  // For cover images, return the B2 URL directly
+  if (type === 'cover') return url
+  
+  // For audio files, convert direct B2 URL to a relative API route
   const fileName = url.split('/file/cannonball-music/')[1]
   if (!fileName) return url
-  return `/${type === 'audio' ? 'api/audio' : 'api/cover'}/${encodeURIComponent(fileName)}`
+  return `/api/audio/${encodeURIComponent(fileName)}`
 }
 
 export async function normalizePlaylist(playlist: any): Promise<Playlist> {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Play, Pause, SkipBack, SkipForward, Loader2, ChevronUp, ChevronDown } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Loader2, ChevronUp, ChevronDown, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Progress } from '@/components/ui/progress'
@@ -14,6 +14,7 @@ interface FooterPlayerProps {
   cover_image?: string
   onNext?: () => void
   onPrevious?: () => void
+  onClose?: () => void
   className?: string
   autoPlay?: boolean
 }
@@ -25,6 +26,7 @@ export function FooterPlayer({
   cover_image,
   onNext, 
   onPrevious, 
+  onClose,
   className, 
   autoPlay 
 }: FooterPlayerProps) {
@@ -155,14 +157,24 @@ export function FooterPlayer({
                   <div className="truncate text-sm font-medium text-gray-900">{title}</div>
                   <div className="truncate text-xs text-gray-500">{album_title}</div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="h-10 w-10"
-                >
-                  <ChevronDown className="h-5 w-5" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onClose}
+                    className="h-8 w-8 hover:bg-gray-100"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="h-10 w-10"
+                  >
+                    <ChevronDown className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
 
               {/* Progress Bar Row */}
@@ -345,8 +357,16 @@ export function FooterPlayer({
             </div>
           </div>
 
-          {/* Expand/Collapse Button */}
-          <div className="flex-1 flex justify-end">
+          {/* Expand/Collapse and Close Buttons */}
+          <div className="flex-1 flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-8 w-8 hover:bg-gray-100"
+            >
+              <X className="h-4 w-4" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
