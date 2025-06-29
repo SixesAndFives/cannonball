@@ -36,6 +36,16 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
   const handleUpdateAlbum = async (updates: { title?: string; cover_image?: File; year?: string }) => {
     if (!album) return
 
+    console.log('=== Album Update Request ===', {
+      time: new Date().toISOString(),
+      albumId: album.id,
+      updates: {
+        hasTitle: !!updates.title,
+        hasCoverImage: !!updates.cover_image,
+        hasYear: !!updates.year
+      }
+    })
+
     try {
       const formData = new FormData()
       if (updates.title) formData.append('title', updates.title)
@@ -45,6 +55,13 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
       const response = await fetch(`/api/albums/${album.id}`, {
         method: 'PATCH',
         body: formData
+      })
+
+      console.log('=== Album Update Response ===', {
+        time: new Date().toISOString(),
+        albumId: album.id,
+        status: response.status,
+        ok: response.ok
       })
 
       if (!response.ok) throw new Error('Failed to update album')

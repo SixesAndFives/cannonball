@@ -5,10 +5,24 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { path } = await params
     const filePath = path.join('/')
-    console.log('Audio request for:', filePath)
+    
+    console.log('=== Audio API Request ===', {
+      time: new Date().toISOString(),
+      rawPath: path,
+      filePath,
+      url: request.url,
+      stage: 'start'
+    })
 
     // Get a signed URL from Supabase storage
     const signedUrl = await getAudioUrl(filePath)
+
+    console.log('=== Audio API Success ===', {
+      time: new Date().toISOString(),
+      filePath,
+      hasSignedUrl: !!signedUrl,
+      stage: 'complete'
+    })
 
     // Redirect to the signed URL
     return Response.redirect(signedUrl)
