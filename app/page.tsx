@@ -6,10 +6,21 @@ export const dynamic = 'force-dynamic'
 
 async function getUsers() {
   try {
-    console.log('=== Fetching users ===')
+    // Determine if we're running on server or client
+    const isServer = typeof window === 'undefined'
     
-    // In Next.js app router, we can use absolute URLs with the request URL
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/auth/users`, {
+    console.log('=== Fetching users ===', {
+      environment: isServer ? 'server-side' : 'client-side',
+      nodeEnv: process.env.NODE_ENV
+    })
+    
+    // Use absolute URL for server-side calls, relative for client-side
+    const baseUrl = isServer ? 'https://www.cannonball.rocks' : ''
+    const url = `${baseUrl}/api/auth/users`
+    
+    console.log('Making request to:', url)
+    
+    const response = await fetch(url, {
       cache: 'no-store',
       method: 'GET',
       headers: {
@@ -22,7 +33,8 @@ async function getUsers() {
       console.error('Users API error:', {
         status: response.status,
         statusText: response.statusText,
-        body: errorText
+        body: errorText,
+        url
       })
       throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`)
     }
@@ -30,7 +42,8 @@ async function getUsers() {
     const data = await response.json()
     console.log('Successfully fetched users:', {
       count: data.length,
-      firstUser: data[0] ? { id: data[0].id, user_name: data[0].user_name } : null
+      firstUser: data[0] ? { id: data[0].id, user_name: data[0].user_name } : null,
+      url
     })
     return data
   } catch (err) {
@@ -38,7 +51,8 @@ async function getUsers() {
     console.error('Error fetching users:', {
       name: error.name,
       message: error.message,
-      cause: error.cause
+      cause: error.cause,
+      environment: typeof window === 'undefined' ? 'server-side' : 'client-side'
     })
     return []
   }
