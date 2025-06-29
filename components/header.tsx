@@ -13,8 +13,31 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    console.log('=== Header Component Mount ===', {
+      time: new Date().toISOString(),
+      mounted: false,
+      hasUser: !!user,
+      user: user ? {
+        id: user.id,
+        full_name: user.full_name,
+        profile_image: user.profile_image,
+      } : null
+    })
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    console.log('=== Header User Update ===', {
+      time: new Date().toISOString(),
+      mounted,
+      hasUser: !!user,
+      user: user ? {
+        id: user.id,
+        full_name: user.full_name,
+        profile_image: user.profile_image,
+      } : null
+    })
+  }, [user, mounted])
 
   return (
     <header className="border-b border-blue-200 bg-blue-50/95 backdrop-blur-md sticky top-0 z-50">
@@ -52,6 +75,21 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
                           width={32}
                           height={32}
                           className="object-cover"
+                          onError={() => {
+                            console.log('=== Header Profile Image Error ===', {
+                              time: new Date().toISOString(),
+                              userId: user.id,
+                              profileImage: user.profile_image,
+                              fallback: '/images/default-avatar.png'
+                            })
+                          }}
+                          onLoad={() => {
+                            console.log('=== Header Profile Image Load Success ===', {
+                              time: new Date().toISOString(),
+                              userId: user.id,
+                              profileImage: user.profile_image || '/images/default-avatar.png'
+                            })
+                          }}
                         />
                       </div>
                       <span className="text-gray-600 hover:text-gray-900">{user.full_name}</span>
