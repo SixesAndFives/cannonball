@@ -5,8 +5,8 @@ import { parseBuffer, IAudioMetadata, ICommonTagsResult } from 'music-metadata';
 import { Album, Track } from './types';
 import { fileURLToPath } from 'url';
 
-if (!process.env.B2_KEY_ID) {
-  throw new Error('Missing env.B2_KEY_ID');
+if (!process.env.B2_APPLICATION_KEY_ID) {
+  throw new Error('Missing env.B2_APPLICATION_KEY_ID');
 }
 if (!process.env.B2_APPLICATION_KEY) {
   throw new Error('Missing env.B2_APPLICATION_KEY');
@@ -18,7 +18,7 @@ if (!process.env.B2_BUCKET_ID) {
   throw new Error('Missing env.B2_BUCKET_ID');
 }
 
-const keyID = process.env.B2_KEY_ID;
+const keyID = process.env.B2_APPLICATION_KEY_ID;
 const applicationKey = process.env.B2_APPLICATION_KEY;
 const bucketName = process.env.B2_BUCKET_NAME;
 const bucketId = process.env.B2_BUCKET_ID;
