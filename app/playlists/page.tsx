@@ -211,7 +211,7 @@ export default function PlaylistsPage() {
                           {playlist.tracks?.length || 0} tracks
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                          created by: {playlistUsers[playlist.user_id]?.fullName || 'Unknown'}
+                          created by: {playlistUsers[playlist.user_id]?.full_name || 'Unknown'}
                         </p>
                       </div>
                     </Link>
@@ -252,7 +252,7 @@ export default function PlaylistsPage() {
                         </div>
                         {playlistUsers[playlist.user_id] && (
                           <p className={`text-gray-500 pb-3 ${isMobile ? 'text-sm' : 'text-xs'}`}>
-                            created by: {playlistUsers[playlist.user_id].fullName}
+                            created by: {playlistUsers[playlist.user_id].full_name}
                           </p>
                         )}
                       </div>

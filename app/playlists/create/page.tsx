@@ -32,9 +32,30 @@ export default function CreatePlaylistPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    console.log('=== Playlist Create Submit ===', {
+      time: new Date().toISOString(),
+      hasUser: !!user,
+      userId: user?.id,
+      title,
+      hasCoverImage: !!coverImage,
+      stage: 'start'
+    });
+
+    if (!user) {
+      console.error('=== Playlist Create Error ===', {
+        time: new Date().toISOString(),
+        error: 'No user found',
+        stage: 'validation'
+      });
+      return;
+    }
 
     if (!title.trim()) {
+      console.error('=== Playlist Create Error ===', {
+        time: new Date().toISOString(),
+        error: 'Empty title',
+        stage: 'validation'
+      });
       toast({
         title: 'Error',
         description: 'Please enter a playlist title',
@@ -45,32 +66,60 @@ export default function CreatePlaylistPage() {
 
     setIsSubmitting(true);
     try {
+      console.log('=== Playlist Create Request ===', {
+        time: new Date().toISOString(),
+        title: title.trim(),
+        hasCoverImage: !!coverImage,
+        stage: 'request'
+      });
+
       const formData = new FormData();
       formData.append('title', title.trim());
+      formData.append('user_id', user.id);
       if (coverImage) {
-        formData.append('coverImage', coverImage);
+        formData.append('cover_image', coverImage);
       }
-      formData.append('createdBy', user.id);
 
       const response = await fetch('/api/playlists', {
         method: 'POST',
         body: formData,
       });
 
+      const data = await response.json();
+      
+      console.log('=== Playlist Create Response ===', {
+        time: new Date().toISOString(),
+        status: response.status,
+        ok: response.ok,
+        data,
+        stage: 'response'
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to create playlist');
+        throw new Error(data.error || 'Failed to create playlist');
       }
 
-      const playlist = await response.json();
+      console.log('=== Playlist Create Success ===', {
+        time: new Date().toISOString(),
+        playlistId: data.id,
+        stage: 'success'
+      });
+
       toast({
         title: 'Success',
         description: 'Playlist created successfully',
       });
-      router.push(`/playlists/${playlist.id}`);
+
+      router.push('/playlists');
     } catch (error) {
+      console.error('=== Playlist Create Error ===', {
+        time: new Date().toISOString(),
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stage: 'request'
+      });
       toast({
         title: 'Error',
-        description: 'Failed to create playlist. Please try again.',
+        description: 'Failed to create playlist',
         variant: 'destructive',
       });
     } finally {
