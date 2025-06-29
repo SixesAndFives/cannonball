@@ -31,9 +31,9 @@ export function Drawer({ isOpen, onClose, title, children }: DrawerProps) {
       />
       
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-[400px] bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-medium">{title}</h2>
+      <div className="fixed right-0 top-0 h-full w-full sm:w-[400px] bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b">
+          <h2 className="text-lg font-medium truncate">{title}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -41,7 +41,7 @@ export function Drawer({ isOpen, onClose, title, children }: DrawerProps) {
             <X size={20} />
           </button>
         </div>
-        <div className="p-4">
+        <div className="p-3 sm:p-4 overflow-y-auto max-h-[calc(100vh-64px)]">
           {children}
         </div>
       </div>

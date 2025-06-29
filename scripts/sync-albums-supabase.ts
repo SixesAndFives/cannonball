@@ -77,6 +77,9 @@ export async function syncAlbums(): Promise<void> {
       // Create new album entry
       const albumId = folder.toLowerCase().replace(/\s+/g, '-')
       
+      // Get year from first track's metadata if available
+      const albumYear = tracks[0]?.year
+      
       // Insert the new album into Supabase
       const { error: insertAlbumError } = await supabase
         .from('albums')
@@ -85,7 +88,8 @@ export async function syncAlbums(): Promise<void> {
           original_album_name: folder,
           title: folder,
           cover_image,
-          personnel: '[]'  // Empty JSON array
+          personnel: '[]',  // Empty JSON array
+          year: albumYear || null  // Use track year or null if not available
         })
 
       if (insertAlbumError) {
