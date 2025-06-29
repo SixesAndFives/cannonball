@@ -93,7 +93,7 @@ export function GalleryItemEditor({ item, isOpen, onClose, onSave, onDelete }: G
       onClose={onClose}
       title="Edit Gallery Item"
     >
-      <div className="space-y-6">
+      <div className="flex flex-col gap-6">
         {/* Image Preview */}
         {/* Image Preview */}
         <div className="relative w-60 h-60 mx-auto rounded-lg overflow-hidden bg-gray-100">
