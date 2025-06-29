@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Film, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { GalleryItemEditor } from './gallery-item-editor';
+import { useRouter } from 'next/navigation';
 import type { GalleryItem } from '@/lib/types';
 
 interface GalleryGridProps {
@@ -15,7 +15,7 @@ interface GalleryGridProps {
 
 export function GalleryGrid({ items, onItemUpdate, onItemDelete, onItemSelect }: GalleryGridProps) {
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
-  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
+  const router = useRouter();
 
   const openLightbox = (item: GalleryItem) => {
     setSelectedItem(item);
@@ -56,7 +56,7 @@ export function GalleryGrid({ items, onItemUpdate, onItemDelete, onItemSelect }:
                   className="text-xs bg-black/50 text-white px-2 py-1 rounded hover:bg-black/75 transition-colors duration-200"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setEditingItem(item);
+                    router.push(`/gallery/${item.id}/edit`);
                   }}
                 >
                   EDIT
@@ -68,9 +68,45 @@ export function GalleryGrid({ items, onItemUpdate, onItemDelete, onItemSelect }:
                 className="relative w-full h-full"
                 onClick={() => onItemSelect ? onItemSelect(item) : openLightbox(item)}
               >
-                {item.url ? (
+                {item.type === 'video' ? (() => {
+                  console.log('Video item:', {
+                    id: item.id,
+                    type: item.type,
+                    url: item.url,
+                    thumbnail_url: item.thumbnail_url
+                  });
+                  
+                  return (
+                    <div className="relative w-full h-full">
+                      {item.thumbnail_url ? (
+                        <>
+                          <Image
+                            src={item.thumbnail_url}
+                            alt={item.caption || ''}
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            fill
+                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                            onError={(e) => {
+                              console.error('Error loading thumbnail:', e);
+                              // Fall back to video icon
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                            <Film className="w-8 h-8 text-white" />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+                          <Film className="w-12 h-12 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })() : item.url ? (
                   <Image
-                    src={item.type === 'video' ? (item.thumbnail_url || item.url) : item.url}
+                    src={item.url}
                     alt={item.caption || ''}
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     fill
@@ -79,11 +115,6 @@ export function GalleryGrid({ items, onItemUpdate, onItemDelete, onItemSelect }:
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
                     <div className="text-gray-400">No preview</div>
-                  </div>
-                )}
-                {item.type === 'video' && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                    <Film className="w-8 h-8 text-white" />
                   </div>
                 )}
               </div>
@@ -162,24 +193,7 @@ export function GalleryGrid({ items, onItemUpdate, onItemDelete, onItemSelect }:
         </div>
       )}
 
-      {/* Gallery Item Editor */}
-      {editingItem && (
-        <GalleryItemEditor
-          item={editingItem}
-          isOpen={!!editingItem}
-          onClose={() => setEditingItem(null)}
-          onSave={async (updates) => {
-            if (!editingItem || !onItemUpdate) return
-            await onItemUpdate(editingItem.id, updates)
-            setEditingItem(null)
-          }}
-          onDelete={onItemDelete ? async () => {
-            if (!editingItem) return
-            await onItemDelete(editingItem.id)
-            setEditingItem(null)
-          } : undefined}
-        />
-      )}
+
     </>
   );
 }

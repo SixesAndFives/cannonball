@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getAlbumGallery, uploadGalleryItem } from '@/lib/gallery-service-supabase'
+import { generateVideoThumbnail } from '@/lib/video-utils'
 import type { GalleryItem } from '@/lib/gallery-service-supabase'
 
 // GET /api/albums/[id]/gallery
@@ -45,10 +46,21 @@ export async function POST(
 
     // Convert files to Buffer
     const buffer = Buffer.from(await file.arrayBuffer())
-    const thumbnailBuffer = thumbnail ? Buffer.from(await thumbnail.arrayBuffer()) : null
+    let thumbnailBuffer = thumbnail ? Buffer.from(await thumbnail.arrayBuffer()) : null
     const file_name = file.name
     const content_type = file.type
     const uploaded_by = formData.get('uploaded_by') as string
+
+    // Generate thumbnail for videos if not provided
+    if (content_type.startsWith('video/') && !thumbnailBuffer) {
+      console.log('Generating video thumbnail...')
+      thumbnailBuffer = await generateVideoThumbnail(buffer)
+      if (thumbnailBuffer) {
+        console.log('Video thumbnail generated successfully')
+      } else {
+        console.warn('Failed to generate video thumbnail')
+      }
+    }
     
     if (!uploaded_by) {
       return NextResponse.json(

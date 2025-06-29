@@ -11,7 +11,7 @@ export async function GET(
 
     const { data: album, error } = await supabase
       .from('albums')
-      .select('*, tracks(*), album_personnel(*)')
+      .select('*, tracks(*)')
       .eq('id', id)
       .single()
 
@@ -25,7 +25,13 @@ export async function GET(
 
     return NextResponse.json(album)
   } catch (error) {
-    console.error('Error fetching album:', error)
+    const supabaseError = error as any
+    console.error('Error fetching album:', {
+      error: supabaseError,
+      code: supabaseError.code,
+      message: supabaseError.message,
+      details: supabaseError.details
+    })
     return NextResponse.json(
       { error: 'Failed to fetch album' },
       { status: 500 }

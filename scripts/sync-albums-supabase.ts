@@ -105,7 +105,7 @@ export async function syncAlbums(): Promise<void> {
             id: track.id,
             album_id: albumId,
             title: track.title,
-            duration: parseFloat(track.duration || '0'),
+            duration: typeof track.duration === 'string' ? Math.round(Number(track.duration)) : track.duration,  // Ensure integer duration
             audio_url: track.audio_url,
             artist: track.artist,
             year: track.year,

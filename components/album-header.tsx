@@ -1,19 +1,17 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
 import { Button } from "./ui/button"
 import { PencilIcon } from "lucide-react"
-import { AlbumEditor } from "./album-editor"
+import { useRouter } from "next/navigation"
 import type { Album } from "@/lib/types"
 
 interface AlbumHeaderProps {
   album: Album
-  onUpdate: (updates: { title?: string; cover_image?: File; year?: string }) => Promise<void>
 }
 
-export function AlbumHeader({ album, onUpdate }: AlbumHeaderProps) {
-  const [isEditing, setIsEditing] = useState(false)
+export function AlbumHeader({ album }: AlbumHeaderProps) {
+  const router = useRouter()
 
   return (
     <>
@@ -23,7 +21,7 @@ export function AlbumHeader({ album, onUpdate }: AlbumHeaderProps) {
             variant="secondary"
             size="icon"
             className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-            onClick={() => setIsEditing(true)}
+            onClick={() => router.push(`/albums/${album.id}/edit`)}
           >
             <PencilIcon className="h-4 w-4" />
           </Button>
@@ -49,13 +47,10 @@ export function AlbumHeader({ album, onUpdate }: AlbumHeaderProps) {
           </div>
         </div>
       </div>
-
-      <AlbumEditor
-        album={album}
-        isOpen={isEditing}
-        onClose={() => setIsEditing(false)}
-        onSave={onUpdate}
-      />
     </>
   )
 }
+
+// Update AlbumHeader to use page navigation instead of drawer
+// Remove AlbumEditor component and use page navigation instead
+// Update Button onClick event to use page navigation

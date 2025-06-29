@@ -5,11 +5,11 @@ import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
 import { FooterPlayer } from '@/components/footer-player'
 import { TrackList } from '@/components/track-list'
 import { usePlayer } from '@/contexts/player-context'
 import { AlbumGallery } from "@/components/album-gallery"
+import { useRouter } from 'next/navigation'
 import { AlbumHeader } from "@/components/album-header"
 import { PersonnelList } from "@/components/personnel-list"
 import { GalleryUploader } from "@/components/gallery-uploader"
@@ -31,52 +31,9 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
   const { user, setUser } = useAuth()
   const [album, setAlbum] = useState<Album | null>(initial_album)
   const [galleryKey, setGalleryKey] = useState(0)
-  const [isEditing, setIsEditing] = useState(false)
+  const router = useRouter()
 
-  const handleUpdateAlbum = async (updates: { title?: string; cover_image?: File; year?: string }) => {
-    if (!album) return
 
-    console.log('=== Album Update Request ===', {
-      time: new Date().toISOString(),
-      albumId: album.id,
-      updates: {
-        hasTitle: !!updates.title,
-        hasCoverImage: !!updates.cover_image,
-        hasYear: !!updates.year
-      }
-    })
-
-    try {
-      const formData = new FormData()
-      if (updates.title) formData.append('title', updates.title)
-      if (updates.year) formData.append('year', updates.year)
-      if (updates.cover_image) formData.append('cover_image', updates.cover_image)
-
-      const response = await fetch(`/api/albums/${album.id}`, {
-        method: 'PATCH',
-        body: formData
-      })
-
-      console.log('=== Album Update Response ===', {
-        time: new Date().toISOString(),
-        albumId: album.id,
-        status: response.status,
-        ok: response.ok
-      })
-
-      if (!response.ok) throw new Error('Failed to update album')
-      const updatedAlbum = await response.json()
-      
-      // Update local state
-      setAlbum(updatedAlbum)
-      
-      // Force a page refresh to get fresh image
-      window.location.reload()
-    } catch (error) {
-      console.error('Error updating album:', error)
-      throw error
-    }
-  }
 
   // Initialize auth context with server user only if not already set
   useEffect(() => {
@@ -181,7 +138,7 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
     <div className="container mx-auto py-6 space-y-8">
       <main className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6">
         <div className="space-y-6">
-          <AlbumHeader album={album} onUpdate={handleUpdateAlbum} />
+          <AlbumHeader album={album} />
           <PersonnelList 
             album={album}
             users={users}
@@ -205,6 +162,12 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
               })
             }}
           />
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/albums/${album.id}/edit`)}
+          >
+            Edit Album
+          </Button>
         </div>
         <div>
           <Tabs defaultValue="tracks" className="w-full">

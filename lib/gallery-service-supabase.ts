@@ -64,19 +64,34 @@ export async function uploadGalleryItem(
 
     // Handle thumbnail for videos
     let thumbnailUrl = undefined
-    if (contentType.startsWith('video/') && thumbnailBuffer) {
-      try {
-        const thumbnailFileName = `thumbnails/${uniqueFileName}.jpg`
-        await b2.uploadFile({
-          uploadUrl,
-          uploadAuthToken: authorizationToken,
-          fileName: thumbnailFileName,
-          data: thumbnailBuffer,
-          contentType: 'image/jpeg'
-        })
-        thumbnailUrl = `https://f004.backblazeb2.com/file/cannonball-music/${thumbnailFileName}`
-      } catch (error) {
-        console.error('Error uploading thumbnail:', error)
+    if (contentType.startsWith('video/')) {
+      console.log('Processing video thumbnail...')
+      if (thumbnailBuffer) {
+        console.log(`Thumbnail buffer present (${thumbnailBuffer.length} bytes)`)
+        try {
+          const thumbnailFileName = `thumbnails/${uniqueFileName}.jpg`
+          console.log('Uploading thumbnail to B2:', thumbnailFileName)
+          
+          // Get fresh upload URL for thumbnail
+          const { data: thumbData } = await b2.getUploadUrl({
+            bucketId: process.env.B2_BUCKET_ID
+          })
+          
+          await b2.uploadFile({
+            uploadUrl: thumbData.uploadUrl,
+            uploadAuthToken: thumbData.authorizationToken,
+            fileName: thumbnailFileName,
+            data: thumbnailBuffer,
+            contentType: 'image/jpeg'
+          })
+          
+          thumbnailUrl = `https://f004.backblazeb2.com/file/cannonball-music/${thumbnailFileName}`
+          console.log('Thumbnail uploaded successfully:', thumbnailUrl)
+        } catch (error) {
+          console.error('Error uploading thumbnail:', error)
+        }
+      } else {
+        console.warn('No thumbnail buffer provided for video')
       }
     }
 
@@ -226,7 +241,7 @@ export async function deleteGalleryItem(album_id: string, itemId: string): Promi
 export async function updateGalleryItem(
   album_id: string,
   itemId: string,
-  updates: { caption?: string; taggedUsers?: string[] }
+  updates: { caption?: string; tagged_users?: string[] }
 ): Promise<GalleryItem | null> {
   try {
     console.error('\n[Service] ====== Update Gallery Item Start ======')
@@ -252,13 +267,18 @@ export async function updateGalleryItem(
     console.error('[Service] Found', albums.length, 'albums')
 
     // Parse gallery JSON and find the album containing this gallery item
+    let foundGallery = null;
     const album = albums.find(a => {
-      const gallery = typeof a.gallery === 'string' ? JSON.parse(a.gallery) : a.gallery
-      return gallery?.some((item: GalleryItem) => item.id === itemId)
+      const gallery = typeof a.gallery === 'string' ? JSON.parse(a.gallery) : a.gallery;
+      if (gallery?.some((item: GalleryItem) => item.id === itemId)) {
+        foundGallery = gallery;
+        return true;
+      }
+      return false;
     })
     
-    // Parse gallery JSON for the found album
-    const albumGallery = album?.gallery ? JSON.parse(album.gallery) : null
+    // Use the already parsed gallery
+    const albumGallery = foundGallery
     if (!album?.id || !albumGallery) {
       console.error('[Service] Gallery item not found in any album')
       return null
@@ -274,7 +294,7 @@ export async function updateGalleryItem(
         const updated: GalleryItem = {
           ...item,
           caption: updates.caption ?? item.caption,
-          tagged_users: updates.taggedUsers ?? item.tagged_users
+          tagged_users: updates.tagged_users ?? item.tagged_users
         }
         console.error('[Service] Updated item state:', JSON.stringify(updated, null, 2))
         return updated

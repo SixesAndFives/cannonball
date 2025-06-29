@@ -112,17 +112,14 @@ export function AlbumGallery({ album_id }: AlbumGalleryProps) {
             
             if (!response.ok) throw new Error('Failed to update gallery item')
             
-            // Update local state
+            const updatedItem = await response.json()
+            
+            // Update local state with the response from the server
             setItems(prevItems =>
               prevItems.map(item =>
-                item.id === itemId
-                  ? { ...item, caption: updates.caption || item.caption, tagged_users: updates.taggedUsers || item.tagged_users }
-                  : item
+                item.id === itemId ? updatedItem : item
               )
             )
-
-            // Refresh the gallery after update
-            loadGallery()
           } catch (error) {
             console.error('Failed to update gallery item:', error)
             // TODO: Add error toast

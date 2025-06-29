@@ -247,9 +247,9 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
       const title = metadata.common?.title || fileName.replace(/\.(mp3|wav|m4a)$/, '');
       
       tracks.push({
-        id: title.toLowerCase().replace(/\s+/g, '-'),
+        id: `${file.fileName.split('/')[0].toLowerCase().replace(/\s+/g, '-')}-${file.fileName.match(/^\d+/)?.[0] || '0'}-${title.toLowerCase().replace(/\s+/g, '-')}`,
         title,
-        duration: metadata.format.duration ? metadata.format.duration.toString() : '0:00',
+        duration: metadata.format.duration ? Math.round(metadata.format.duration) : 0,
         audio_url: file.url,
         artist: metadata.common?.artist || 'Cannonball',
         album: metadata.common?.album || fileName.split('/')[0],
@@ -270,9 +270,9 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
       
       // Set default metadata based on file name and album
       tracks.push({
-        id: title.toLowerCase().replace(/\s+/g, '-'),
+        id: `${file.fileName.split('/')[0].toLowerCase().replace(/\s+/g, '-')}-${file.fileName.match(/^\d+/)?.[0] || '0'}-${title.toLowerCase().replace(/\s+/g, '-')}`,
         title,
-        duration: '0:00',
+        duration: 0,
         audio_url: file.url,
         artist: 'Cannonball',
         album: file.fileName.split('/')[0] || '',

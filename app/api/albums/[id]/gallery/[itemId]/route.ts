@@ -4,7 +4,7 @@ import { deleteGalleryItem, updateGalleryItem } from '@/lib/gallery-service-supa
 // DELETE /api/albums/[id]/gallery/[itemId]
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string; itemId: string }> }
+  { params }: { params: { id: string; itemId: string } }
 ) {
   try {
     const { id, itemId } = await params
@@ -29,7 +29,7 @@ export async function DELETE(
 // PATCH /api/albums/[id]/gallery/[itemId]
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string; itemId: string }> }
+  { params }: { params: { id: string; itemId: string } }
 ) {
   try {
     const { id, itemId } = await params

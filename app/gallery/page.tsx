@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { GalleryGrid } from '@/components/gallery-grid';
-import { GalleryItemEditor } from '@/components/gallery-item-editor';
+
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
@@ -13,7 +13,7 @@ export default function GalleryPage() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
-  const [isEditorOpen, setIsEditorOpen] = useState(false)
+
 
   useEffect(() => {
     const loadGallery = async () => {
@@ -149,10 +149,7 @@ export default function GalleryPage() {
       <div className="container mx-auto px-4 py-4">
         <GalleryGrid
           items={items}
-          onItemSelect={(item) => {
-            setSelectedItem(item);
-            setIsEditorOpen(true);
-          }}
+          onItemSelect={setSelectedItem}
           onItemUpdate={async (itemId, updates: any) => {
             await handleSave(itemId, {
               caption: updates.caption || '',
@@ -165,38 +162,10 @@ export default function GalleryPage() {
         />
       </div>
 
-      {/* Gallery Item Editor */}
-      {selectedItem && (
-        <GalleryItemEditor
-          item={selectedItem}
-          isOpen={isEditorOpen}
-          onClose={() => {
-            setIsEditorOpen(false);
-            setSelectedItem(null);
-          }}
-          onSave={async (updates) => {
-            console.log('[Page] onSave starting...');
-            try {
-              if (!selectedItem?.id) {
-                console.error('[Page] No selected item ID');
-                throw new Error('No selected item ID');
-              }
-              console.log('[Page] onSave called with:', { id: selectedItem.id, updates });
-              await handleSave(selectedItem.id, updates);
-              console.log('[Page] Save completed successfully');
-            } catch (error) {
-              console.error('[Page] Error in onSave:', error);
-              throw error; // Re-throw to let editor handle it
-            }
-          }}
-          onDelete={async () => {
-            await handleDelete(selectedItem.id);
-          }}
-        />
-      )}
+
 
       {/* Lightbox */}
-      {selectedItem && !isEditorOpen && (
+      {selectedItem && (
         <div 
           className="fixed inset-0 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm z-50"
           onClick={(e: React.MouseEvent) => {
@@ -221,6 +190,8 @@ export default function GalleryPage() {
                   className="object-contain"
                   fill
                   sizes="90vw"
+                  priority
+                  quality={95}
                 />
               </div>
             ) : (
