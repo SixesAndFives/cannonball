@@ -30,6 +30,7 @@ export async function getAlbumGallery(albumId: string): Promise<GalleryItem[]> {
 
 interface UploadGalleryItemParams {
   file: File
+  thumbnailFile?: File
   title?: string
   caption?: string
   tagged_users?: string[]
@@ -40,6 +41,7 @@ interface UploadGalleryItemParams {
 
 export async function uploadGalleryItem({
   file,
+  thumbnailFile,
   title,
   caption = '',
   tagged_users = [],
@@ -50,6 +52,7 @@ export async function uploadGalleryItem({
   try {
     const formData = new FormData()
     formData.append('file', file)
+    if (thumbnailFile) formData.append('thumbnail', thumbnailFile)
     if (title) formData.append('title', title)
     formData.append('caption', caption)
     formData.append('tagged_users', JSON.stringify(tagged_users))

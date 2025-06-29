@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
 import { uploadGalleryItem } from '@/lib/gallery-client'
+import { generateVideoThumbnail, dataURLtoFile } from '@/lib/thumbnail-utils'
 import type { User } from '@/lib/types'
 
 interface GalleryUploaderProps {
@@ -65,8 +66,25 @@ export function GalleryUploader({ album_id, users, userId, onSuccess }: GalleryU
 
     setIsUploading(true)
     try {
+      let thumbnailFile: File | undefined;
+      
+      // Generate thumbnail for videos
+      if (file.type.startsWith('video/')) {
+        try {
+          const thumbnailDataUrl = await generateVideoThumbnail(file);
+          thumbnailFile = dataURLtoFile(
+            thumbnailDataUrl,
+            `${file.name.split('.')[0]}_thumb.jpg`
+          );
+        } catch (error) {
+          console.error('Failed to generate thumbnail:', error);
+          // Continue without thumbnail if generation fails
+        }
+      }
+
       const result = await uploadGalleryItem({
         file,
+        thumbnailFile,
         caption: caption.trim(),
         tagged_users: taggedUsers,
         uploaded_by: userId,

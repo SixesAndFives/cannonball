@@ -31,6 +31,7 @@ export async function POST(
     const { id } = await params
     const formData = await request.formData()
     const file = formData.get('file') as File
+    const thumbnail = formData.get('thumbnail') as File
     const caption = formData.get('caption') as string
     const taggedUsersJson = formData.get('tagged_users') as string
     const tagged_users = taggedUsersJson ? JSON.parse(taggedUsersJson) : []
@@ -42,8 +43,9 @@ export async function POST(
       )
     }
 
-    // Convert File to Buffer
+    // Convert files to Buffer
     const buffer = Buffer.from(await file.arrayBuffer())
+    const thumbnailBuffer = thumbnail ? Buffer.from(await thumbnail.arrayBuffer()) : null
     const file_name = file.name
     const content_type = file.type
     const uploaded_by = formData.get('uploaded_by') as string
@@ -63,7 +65,8 @@ export async function POST(
       id,
       caption,
       tagged_users,
-      uploaded_by
+      uploaded_by,
+      thumbnailBuffer
     )
     
     return NextResponse.json(item)

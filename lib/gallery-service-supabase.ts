@@ -30,7 +30,8 @@ export async function uploadGalleryItem(
   album_id: string,
   caption: string,
   taggedUsers: string[] = [],
-  uploadedBy: string
+  uploadedBy: string,
+  thumbnailBuffer?: Buffer | null
 ): Promise<GalleryItem> {
   try {
     // Initialize B2
@@ -61,24 +62,21 @@ export async function uploadGalleryItem(
     // Construct file URL using B2 bucket URL and file path
     const downloadUrl = `https://f004.backblazeb2.com/file/cannonball-music/${b2FileName}`
 
-    // Generate thumbnail for videos
+    // Handle thumbnail for videos
     let thumbnailUrl = undefined
-    if (contentType.startsWith('video/')) {
+    if (contentType.startsWith('video/') && thumbnailBuffer) {
       try {
-        const thumbnail = await generateVideoThumbnail(file)
-        if (thumbnail) {
-          const thumbnailFileName = `thumbnails/${uniqueFileName}.jpg`
-          await b2.uploadFile({
-            uploadUrl,
-            uploadAuthToken: authorizationToken,
-            fileName: thumbnailFileName,
-            data: thumbnail,
-            contentType: 'image/jpeg'
-          })
-          thumbnailUrl = `https://f004.backblazeb2.com/file/cannonball-music/${thumbnailFileName}`
-        }
+        const thumbnailFileName = `thumbnails/${uniqueFileName}.jpg`
+        await b2.uploadFile({
+          uploadUrl,
+          uploadAuthToken: authorizationToken,
+          fileName: thumbnailFileName,
+          data: thumbnailBuffer,
+          contentType: 'image/jpeg'
+        })
+        thumbnailUrl = `https://f004.backblazeb2.com/file/cannonball-music/${thumbnailFileName}`
       } catch (error) {
-        console.error('Error generating thumbnail:', error)
+        console.error('Error uploading thumbnail:', error)
       }
     }
 
