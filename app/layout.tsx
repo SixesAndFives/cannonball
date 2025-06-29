@@ -15,10 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/images/logo.jpg" />
-        <link rel="shortcut icon" href="/images/logo.jpg" />
-      </head>
+      <head />
       <body>
         <AuthProvider>
           <PlayerProvider>
