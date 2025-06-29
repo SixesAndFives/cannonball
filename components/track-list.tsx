@@ -214,7 +214,7 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                     </>
                   )}
                 </Button>
-                <span className="text-sm text-gray-500 w-16 text-right">{formatDuration(track.duration ? parseFloat(track.duration) : 0)}</span>
+                <span className="text-sm text-gray-500 w-16 text-right">{formatDuration(typeof track.duration === 'string' ? parseFloat(track.duration) : track.duration || 0)}</span>
               </div>
             </div>
           </div>

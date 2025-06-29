@@ -248,6 +248,11 @@ export async function updateGalleryItem(
     console.error('[Service] Item ID:', itemId)
     console.error('[Service] Updates:', JSON.stringify(updates, null, 2))
 
+    interface AlbumGallery {
+      id: string;
+      gallery: string | GalleryItem[];
+    }
+
     const { data: albums, error: fetchError } = await supabase
       .from('albums')
       .select('id, gallery')
@@ -267,9 +272,9 @@ export async function updateGalleryItem(
     console.error('[Service] Found', albums.length, 'albums')
 
     // Parse gallery JSON and find the album containing this gallery item
-    let foundGallery = null;
-    const album = albums.find(a => {
-      const gallery = typeof a.gallery === 'string' ? JSON.parse(a.gallery) : a.gallery;
+    let foundGallery: GalleryItem[] | null = null;
+    const album = (albums as AlbumGallery[]).find(a => {
+      const gallery: GalleryItem[] = typeof a.gallery === 'string' ? JSON.parse(a.gallery) : a.gallery;
       if (gallery?.some((item: GalleryItem) => item.id === itemId)) {
         foundGallery = gallery;
         return true;
@@ -278,12 +283,13 @@ export async function updateGalleryItem(
     })
     
     // Use the already parsed gallery
-    const albumGallery = foundGallery
-    if (!album?.id || !albumGallery) {
+    if (!album?.id || !foundGallery || !Array.isArray(foundGallery)) {
       console.error('[Service] Gallery item not found in any album')
       return null
     }
 
+    // At this point we know foundGallery is a GalleryItem[]
+    const albumGallery = foundGallery as GalleryItem[]
     console.error('[Service] Found item in album:', album.id)
     const currentItem = albumGallery.find((item: GalleryItem) => item.id === itemId)
     console.error('[Service] Current item state:', JSON.stringify(currentItem, null, 2))
