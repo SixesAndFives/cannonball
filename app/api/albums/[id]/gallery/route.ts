@@ -45,8 +45,13 @@ export async function POST(
     }
 
     // Convert files to Buffer
-    const buffer = Buffer.from(await file.arrayBuffer())
-    let thumbnailBuffer = thumbnail ? Buffer.from(await thumbnail.arrayBuffer()) : null
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    let thumbnailBuffer: Buffer | null = null
+    if (thumbnail) {
+      const thumbArrayBuffer = await thumbnail.arrayBuffer()
+      thumbnailBuffer = Buffer.from(thumbArrayBuffer)
+    }
     const file_name = file.name
     const content_type = file.type
     const uploaded_by = formData.get('uploaded_by') as string
