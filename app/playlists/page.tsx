@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Music, Plus, Pencil } from 'lucide-react';
 import Link from 'next/link';
@@ -9,15 +10,15 @@ import type { Playlist } from '@/lib/types';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/auth-context';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { PlaylistEditor } from '@/components/playlist-editor';
+
 
 export default function PlaylistsPage() {
+  const router = useRouter();
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [playlistUsers, setPlaylistUsers] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [editingPlaylist, setEditingPlaylist] = useState<Playlist | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -68,68 +69,12 @@ export default function PlaylistsPage() {
     ...myPlaylists.filter(p => !p.id.endsWith('-favorites'))
   ];
 
-  const handleUpdatePlaylist = async (updates: { title: string; cover_image?: File }) => {
-    if (!editingPlaylist) return;
 
-    const formData = new FormData();
-    formData.append('title', updates.title);
-    if (updates.cover_image) {
-      formData.append('file', updates.cover_image);
-    }
-
-    try {
-      const response = await fetch(`/api/playlists/${editingPlaylist.id}`, {
-        method: 'PATCH',
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error('Failed to update playlist');
-      const updatedPlaylist = await response.json();
-
-      // Update local state
-      setPlaylists(prevPlaylists =>
-        prevPlaylists.map(p =>
-          p.id === editingPlaylist.id ? updatedPlaylist : p
-        )
-      );
-    } catch (error) {
-      console.error('Error updating playlist:', error);
-      toast.error('Failed to update playlist');
-    }
-  };
-
-  const handleDeletePlaylist = async () => {
-    if (!editingPlaylist) return;
-
-    try {
-      const response = await fetch(`/api/playlists/${editingPlaylist.id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) throw new Error('Failed to delete playlist');
-
-      // Update local state
-      setPlaylists(prevPlaylists =>
-        prevPlaylists.filter(p => p.id !== editingPlaylist.id)
-      );
-    } catch (error) {
-      console.error('Error deleting playlist:', error);
-      toast.error('Failed to delete playlist');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       <div className="container mx-auto px-4 py-4">
-        {editingPlaylist && (
-          <PlaylistEditor
-            playlist={editingPlaylist}
-            isOpen={true}
-            onClose={() => setEditingPlaylist(null)}
-            onSave={handleUpdatePlaylist}
-            onDelete={handleDeletePlaylist}
-          />
-        )}
+
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-end mb-6">
             <Button asChild>
@@ -186,7 +131,7 @@ export default function PlaylistsPage() {
                             onClick={(e) => {
                               e.preventDefault()
                               e.stopPropagation()
-                              setEditingPlaylist(playlist)
+                              router.push(`/playlists/${playlist.id}/edit`)
                             }}
                             className="absolute top-2 right-2 z-10 p-2 bg-black/50 rounded-full text-white hover:bg-black/75 transition-colors duration-200"
                           >

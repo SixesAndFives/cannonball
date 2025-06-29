@@ -89,7 +89,14 @@ export default function PlaylistPage(
       <div className="container mx-auto px-4 py-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">{playlist.title}</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold">{playlist.title}</h1>
+              <Link href={`/playlists/${id}/edit`}>
+                <Button variant="outline" size="sm">
+                  Edit Playlist
+                </Button>
+              </Link>
+            </div>
             <Link 
               href="/playlists" 
               className="text-sm text-gray-600 hover:text-gray-900"

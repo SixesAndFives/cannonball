@@ -226,7 +226,8 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
                 album_id={album.id}
                 on_update_track={handleUpdateTrack}
                 on_delete_track={handleDeleteTrack}
-                on_play_track={(index: number) => {
+                on_play_track={(index: number | null) => {
+                  if (index === null) return;
                   const track = album.tracks[index]
                   if (track.audio_url) {
                     const tracksWithAlbumInfo = album.tracks
