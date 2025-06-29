@@ -49,21 +49,17 @@ export async function PATCH(
 
     let coverImagePath = undefined;
     if (coverImage) {
-      // Create playlists directory if it doesn't exist
-      const playlistsDir = path.join(process.cwd(), 'public', 'images', 'playlists');
-      await fs.mkdir(playlistsDir, { recursive: true });
-
-      // Generate unique filename
-      const ext = path.extname(coverImage.name);
-      const filename = `${id}${ext}`;
-      const filepath = path.join(playlistsDir, filename);
-
-      // Convert File to Buffer and save
-      const bytes = await coverImage.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      await writeFile(filepath, buffer);
-
-      coverImagePath = `/images/playlists/${filename}`;
+      // Convert File to Buffer
+      const buffer = Buffer.from(await coverImage.arrayBuffer())
+      const ext = path.extname(coverImage.name)
+      const filename = `${id}${ext}`
+      
+      // Upload to B2 using existing client
+      const { uploadToB2 } = await import('@/lib/b2-image-client')
+      const { url } = await uploadToB2(buffer, filename, 'playlists')
+      
+      // Use the B2 URL
+      coverImagePath = url
     }
 
     const { data: playlist, error } = await supabase

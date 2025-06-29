@@ -49,15 +49,13 @@ export async function PATCH(
     if (formData.has('cover_image')) {
       const file = formData.get('cover_image') as File
       const buffer = Buffer.from(await file.arrayBuffer())
-      const fs = require('fs')
-      const path = require('path')
       
-      // Save to public/images with the album ID
-      const imagePath = path.join(process.cwd(), 'public', 'images', `${id}-cover.jpg`)
-      await fs.promises.writeFile(imagePath, buffer)
+      // Upload to B2 using existing client
+      const { uploadToB2 } = await import('@/lib/b2-image-client')
+      const { url } = await uploadToB2(buffer, `${id}-cover.jpg`, id)
       
-      // Update the cover_image path in the database
-      updates.cover_image = `/images/${id}-cover.jpg`
+      // Update the cover_image path in the database with B2 URL
+      updates.cover_image = url
     }
 
     // Update album in database
