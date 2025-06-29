@@ -6,15 +6,32 @@ const supabase = createClient(
 )
 
 export async function getAudioUrl(filePath: string): Promise<string> {
-  // Get the signed URL from Supabase storage
-  const { data, error } = await supabase
-    .storage
-    .from('audio')
-    .createSignedUrl(filePath, 3600) // 1 hour expiry
+  console.log('=== Getting Audio URL ===', {
+    time: new Date().toISOString(),
+    filePath,
+    stage: 'start'
+  })
 
-  if (error || !data?.signedUrl) {
-    throw new Error('Failed to get signed URL for audio file')
+  // If it's already a full Backblaze URL, return it directly
+  if (filePath.startsWith('https://')) {
+    console.log('=== Audio URL Success ===', {
+      time: new Date().toISOString(),
+      filePath,
+      isBackblazeUrl: true,
+      stage: 'complete'
+    })
+    return filePath;
   }
 
-  return data.signedUrl
+  // Otherwise construct the Backblaze URL
+  const fullUrl = `https://f004.backblazeb2.com/file/cannonball-music/${filePath}`;
+  
+  console.log('=== Audio URL Success ===', {
+    time: new Date().toISOString(),
+    filePath,
+    fullUrl,
+    stage: 'complete'
+  })
+
+  return fullUrl
 }
