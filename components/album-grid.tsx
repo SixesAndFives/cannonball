@@ -6,29 +6,43 @@ interface AlbumGridProps {
 }
 
 export function AlbumGrid({ albums }: AlbumGridProps) {
-  console.log('=== AlbumGrid Component Render ===', {
-    albumCount: albums.length,
-    sampleAlbums: albums.slice(0, 2).map(a => ({
-      id: a.id,
-      title: a.title,
-      year: a.year,
-      trackCount: a.tracks.length
-    })),
-    time: new Date().toISOString(),
-    environment: typeof window === 'undefined' ? 'server-side' : 'client-side'
+  // Group albums by year
+  const albumsByYear = albums.reduce((acc, album) => {
+    const year = album.year || 'Unknown'
+    if (!acc[year]) {
+      acc[year] = []
+    }
+    acc[year].push(album)
+    return acc
+  }, {} as Record<string, Album[]>)
+
+  // Sort years in descending order
+  const sortedYears = Object.keys(albumsByYear)
+    .sort((a, b) => {
+      if (a === 'Unknown') return 1
+      if (b === 'Unknown') return -1
+      return parseInt(b) - parseInt(a)
+    })
+
+  // Sort albums within each year by title
+  sortedYears.forEach(year => {
+    albumsByYear[year].sort((a, b) => 
+      a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+    )
   })
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {albums.map((album) => {
-        console.log('Rendering album:', {
-          id: album.id,
-          title: album.title,
-          trackCount: album.tracks.length,
-          time: new Date().toISOString()
-        })
-        return <AlbumCard key={album.id} album={album} />
-      })}
+    <div className="space-y-6">
+      {sortedYears.map(year => (
+        <div key={year} className="space-y-3">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 px-1">{year}</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3">
+            {albumsByYear[year].map((album) => (
+              <AlbumCard key={album.id} album={album} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

@@ -37,7 +37,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 transition-shadow hover:shadow-md">
+    <div className="bg-white rounded overflow-hidden shadow-sm border border-gray-200 transition-shadow hover:shadow-md text-xs sm:text-sm">
       <div className="relative aspect-square">
         <Image
           src={album.cover_image || '/images/placeholder-album.jpg'}
@@ -50,22 +50,22 @@ export function AlbumCard({ album }: AlbumCardProps) {
 
       </div>
 
-      <div className="p-3">
+      <div className="p-2 sm:p-3">
         <h3 className="font-medium text-gray-900 truncate">{album.title}</h3>
-        <p className="text-sm text-gray-500 mb-3">{album.year}</p>
+        <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">{album.year}</p>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1 sm:gap-2">
           <Button 
-            className="flex-1 bg-gray-800 hover:bg-gray-700" 
+            className="flex-1 bg-gray-800 hover:bg-gray-700 text-xs sm:text-sm px-2 sm:px-3" 
             size="sm"
             onClick={handlePlayNow}
             disabled={album.tracks.length === 0}
           >
             <Play className="h-4 w-4 mr-1" />
-            Play Now
+            Play
           </Button>
 
-          <Button asChild variant="outline" className="flex-1" size="sm">
+          <Button asChild variant="outline" className="flex-1 text-xs sm:text-sm px-2 sm:px-3" size="sm">
             <Link href={`/albums/${album.id}`}>View More</Link>
           </Button>
         </div>
