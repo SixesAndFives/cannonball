@@ -312,7 +312,7 @@ export async function updateGalleryItem(
     // Update the album
     const { error: updateError } = await supabase
       .from('albums')
-      .update({ gallery: JSON.stringify(updatedGallery) })
+      .update({ gallery: updatedGallery })
       .eq('id', album.id)
 
     if (updateError) {
