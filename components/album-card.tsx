@@ -38,17 +38,15 @@ export function AlbumCard({ album }: AlbumCardProps) {
 
   return (
     <div className="bg-white rounded overflow-hidden shadow-sm border border-gray-200 transition-shadow hover:shadow-md text-xs sm:text-sm">
-      <div className="relative aspect-square">
+      <Link href={`/albums/${album.id}`} className="block relative aspect-square hover:opacity-95 transition-opacity">
         <Image
           src={album.cover_image || '/images/placeholder-album.jpg'}
           alt={album.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
-          // Images are now local, so we can use Next.js optimization
         />
-
-      </div>
+      </Link>
 
       <div className="p-2 sm:p-3">
         <h3 className="font-medium text-gray-900 truncate">{album.title}</h3>
@@ -61,12 +59,12 @@ export function AlbumCard({ album }: AlbumCardProps) {
             onClick={handlePlayNow}
             disabled={album.tracks.length === 0}
           >
-            <Play className="h-4 w-4 mr-1" />
-            Play
+            <Play className="h-4 w-4" />
+            <span className="hidden sm:inline ml-1">Play</span>
           </Button>
 
           <Button asChild variant="outline" className="flex-1 text-xs sm:text-sm px-2 sm:px-3" size="sm">
-            <Link href={`/albums/${album.id}`}>View More</Link>
+            <Link href={`/albums/${album.id}`}><span className="sm:hidden">More</span><span className="hidden sm:inline">View More</span></Link>
           </Button>
         </div>
       </div>
