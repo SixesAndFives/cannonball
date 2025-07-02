@@ -2,6 +2,22 @@ import { supabase } from '../lib/supabase'
 import { getFolders, getTracksFromB2 } from '../lib/b2-client'
 import type { Album, Track } from '../lib/types'
 
+// Normalize duration values that might be in milliseconds
+function normalizeDuration(duration: number | string | undefined): number {
+    if (!duration) return 300; // Default to 5 minutes if no duration
+    const value = Number(duration);
+    
+    // If it has many decimal places and is very precise (like 128128.39712667785)
+    // it's likely in milliseconds
+    if (value.toString().includes('.') && value.toString().split('.')[1].length > 3) {
+        return Math.round(value / 1000);
+    }
+    
+    // Otherwise, just round the value as-is
+    // This preserves actual long durations (like hour+ long songs)
+    return Math.round(value);
+}
+
 // Folders to exclude from album sync
 const EXCLUDED_FOLDERS = ['Images', 'images', 'thumbnails', 'gallery', 'JSON']
 
@@ -99,13 +115,30 @@ export async function syncAlbums(): Promise<void> {
 
       // Insert tracks
       for (const track of tracks) {
+        // Convert duration to integer seconds
+        const rawDuration = track.duration;
+        const durationInSeconds = typeof rawDuration === 'string' && String(rawDuration).includes('.') ?
+          Math.floor(Number(rawDuration) / 1000) :
+          Math.floor(Number(rawDuration || 300));
+
+        console.log(`Track ${track.title} duration:`, {
+          rawDuration,
+          type: typeof rawDuration,
+          durationInSeconds,
+          finalValue: durationInSeconds
+        });
+        console.log('=== TRACK BEFORE INSERT ===', {
+          title: track.title,
+          fullTrack: track
+        });
+
         const { error: insertTrackError } = await supabase
           .from('tracks')
           .insert({
             id: track.id,
             album_id: albumId,
             title: track.title,
-            duration: typeof track.duration === 'string' ? Math.round(Number(track.duration)) : track.duration,  // Ensure integer duration
+            duration: durationInSeconds,
             audio_url: track.audio_url,
             artist: track.artist,
             year: track.year,
