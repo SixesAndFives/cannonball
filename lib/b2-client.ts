@@ -209,7 +209,13 @@ async function fetchAndParseMetadata(url: string) {
   });
 
   try {
-    return await parseBuffer(response.data);
+    const metadata = await parseBuffer(response.data);
+    console.log('=== METADATA DURATION ===', {
+      url,
+      duration: metadata.format.duration,
+      type: typeof metadata.format.duration
+    });
+    return metadata;
   } catch (error) {
     console.error('Error parsing metadata with music-metadata:', error);
     
@@ -221,6 +227,11 @@ async function fetchAndParseMetadata(url: string) {
         const sampleLength = buffer.readUInt32LE(40);
         const sampleRate = buffer.readUInt32LE(24);
         const duration = sampleLength / sampleRate;
+        console.log('=== WAV FALLBACK DURATION ===', {
+          url,
+          duration,
+          type: typeof duration
+        });
         return {
           format: {
             duration,
@@ -249,7 +260,7 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
       tracks.push({
         id: `${file.fileName.split('/')[0].toLowerCase().replace(/\s+/g, '-')}-${file.fileName.match(/^\d+/)?.[0] || '0'}-${title.toLowerCase().replace(/\s+/g, '-')}`,
         title,
-        duration: metadata.format.duration ? Math.round(metadata.format.duration) : 0,
+        duration: metadata.format.duration ? parseInt(String(metadata.format.duration / 1000)) : 0,  // Convert ms to integer seconds
         audio_url: file.url,
         artist: metadata.common?.artist || 'Cannonball',
         album: metadata.common?.album || fileName.split('/')[0],
@@ -258,7 +269,7 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
         genre: metadata.common?.genre?.[0],
         comment: metadata.common?.comment?.[0]?.text,
         composer: metadata.common?.composer?.[0],
-        bitrate: metadata.format.bitrate,
+        bitrate: Math.round(metadata.format.bitrate || 0),
         sample_rate: metadata.format.sampleRate,
         channels: metadata.format.numberOfChannels,
         lossless: metadata.format.lossless
