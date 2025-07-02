@@ -1,6 +1,9 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { UserGrid } from '@/components/user-grid'
+import { useAuth } from '@/contexts/auth-context'
 import type { User } from '@/lib/types'
 
 interface HomeClientProps {
@@ -8,6 +11,18 @@ interface HomeClientProps {
 }
 
 export function HomeClient({ users }: HomeClientProps) {
+  const router = useRouter()
+  const { user } = useAuth()
+
+  useEffect(() => {
+    if (user) {
+      router.push('/albums')
+    }
+  }, [user, router])
+
+  // If user is logged in, don't render anything while redirecting
+  if (user) return null
+
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       <main className="container mx-auto px-4 py-12">

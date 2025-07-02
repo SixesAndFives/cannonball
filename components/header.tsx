@@ -3,15 +3,18 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/auth-context'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Menu } from 'lucide-react'
 
 export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
   const { user, setUser } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
 
+  // Mount effect
   useEffect(() => {
     console.log('=== Header Component Mount ===', {
       time: new Date().toISOString(),
@@ -24,7 +27,30 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
       } : null
     })
     setMounted(true)
+    setAuthChecked(true)
   }, [])
+
+  // Auth check effect
+  useEffect(() => {
+    if (!authChecked) return
+
+    // pathname from hook at top level
+    console.log('🔒 AUTH CHECK', {
+      time: new Date().toISOString(),
+      hasUser: !!user,
+      pathname,
+      shouldRedirect: !user && pathname !== '/',
+      authChecked
+    })
+
+    if (!user && pathname !== '/') {
+      console.log('🔒 REDIRECTING TO HOME', {
+        time: new Date().toISOString(),
+        from: pathname
+      })
+      router.replace('/')
+    }
+  }, [user, router, authChecked, pathname])
 
   useEffect(() => {
     console.log('=== Header User Update ===', {

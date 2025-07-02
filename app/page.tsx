@@ -14,9 +14,13 @@ async function getUsers() {
       nodeEnv: process.env.NODE_ENV
     })
     
-    // Use absolute URL for server-side calls, relative for client-side
-    const baseUrl = isServer ? 'https://www.cannonball.rocks' : ''
-    const url = `${baseUrl}/api/auth/users`
+    // Get the protocol and host from headers when server-side
+    const headersList = await headers()
+    const protocol = process.env.NODE_ENV === 'development' ? 'http:' : 'https:'
+    const host = headersList.get('host') || 'localhost:3000'
+    
+    // Construct full URL for server-side, relative for client-side
+    const url = isServer ? `${protocol}//${host}/api/auth/users` : '/api/auth/users'
     
     console.log('Making request to:', url)
     

@@ -74,14 +74,6 @@ async function normalizeAlbum(album: any): Promise<Album> {
         cover_image: album.cover_image
       };
 
-      console.log('=== Track URL Processed ===', {
-        time: new Date().toISOString(),
-        trackId: track.id,
-        rawUrl: track.audio_url,
-        normalizedUrl: normalizedTrack.audio_url,
-        stage: 'complete'
-      });
-
       return normalizedTrack;
     })),
     gallery: album.gallery || [],
@@ -122,7 +114,10 @@ export async function updateAlbum(id: string, updatedAlbum: Album): Promise<bool
 
 export async function getAllAlbums(): Promise<Album[]> {
   console.log('=== Getting all albums from Supabase ===', {
-    time: new Date().toISOString()
+    time: new Date().toISOString(),
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    stage: 'start'
   })
 
   const { data: albums, error } = await supabase
@@ -136,7 +131,8 @@ export async function getAllAlbums(): Promise<Album[]> {
       code: error.code,
       message: error.message,
       details: error.details,
-      time: new Date().toISOString()
+      time: new Date().toISOString(),
+      stage: 'supabase-error'
     })
     return []
   }
