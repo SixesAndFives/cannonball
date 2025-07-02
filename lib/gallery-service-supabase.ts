@@ -119,7 +119,12 @@ export async function uploadGalleryItem(
 
     if (fetchError) throw fetchError
 
-    const currentGallery = album?.gallery || []
+    // Ensure gallery is an array
+    let currentGallery = album?.gallery || []
+    if (!Array.isArray(currentGallery)) {
+      console.warn('Gallery was not an array, resetting to empty array')
+      currentGallery = []
+    }
     
     // Update album with new gallery item
     const { error: updateError } = await supabase
