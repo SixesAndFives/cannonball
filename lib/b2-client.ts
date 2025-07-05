@@ -226,18 +226,22 @@ async function fetchAndParseMetadata(url: string) {
       if (buffer.length >= 44) {
         const sampleLength = buffer.readUInt32LE(40);
         const sampleRate = buffer.readUInt32LE(24);
-        const duration = sampleLength / sampleRate;
+        const channels = buffer.readUInt16LE(22);
+        const duration = sampleLength / (sampleRate * channels);
         console.log('=== WAV FALLBACK DURATION ===', {
           url,
+          sampleLength,
+          sampleRate,
+          channels,
           duration,
           type: typeof duration
         });
         return {
           format: {
             duration,
-            bitrate: 1152000,
-            sampleRate: 48000,
-            numberOfChannels: 1,
+            bitrate: sampleRate * channels * 16, // 16 bits per sample
+            sampleRate,
+            numberOfChannels: channels,
             lossless: true
           },
           common: {}
@@ -260,7 +264,7 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
       tracks.push({
         id: `${file.fileName.split('/')[0].toLowerCase().replace(/\s+/g, '-')}-${file.fileName.match(/^\d+/)?.[0] || '0'}-${title.toLowerCase().replace(/\s+/g, '-')}`,
         title,
-        duration: metadata.format.duration ? parseInt(String(metadata.format.duration / 1000)) : 0,  // Convert ms to integer seconds
+        duration: metadata.format.duration ? Math.round(metadata.format.duration) : 300, // Keep duration in seconds
         audio_url: file.url,
         artist: metadata.common?.artist || 'Cannonball',
         album: metadata.common?.album || fileName.split('/')[0],
@@ -283,7 +287,7 @@ export async function formatTracks(files: { fileName: string, url: string }[]): 
       tracks.push({
         id: `${file.fileName.split('/')[0].toLowerCase().replace(/\s+/g, '-')}-${file.fileName.match(/^\d+/)?.[0] || '0'}-${title.toLowerCase().replace(/\s+/g, '-')}`,
         title,
-        duration: 0,
+        duration: 300, // Default duration for failed metadata parsing
         audio_url: file.url,
         artist: 'Cannonball',
         album: file.fileName.split('/')[0] || '',

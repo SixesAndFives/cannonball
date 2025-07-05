@@ -115,17 +115,12 @@ export async function syncAlbums(): Promise<void> {
 
       // Insert tracks
       for (const track of tracks) {
-        // Convert duration to integer seconds
-        const rawDuration = track.duration;
-        const durationInSeconds = typeof rawDuration === 'string' && String(rawDuration).includes('.') ?
-          Math.floor(Number(rawDuration) / 1000) :
-          Math.floor(Number(rawDuration || 300));
+        // Ensure duration is a valid number
+        const durationInSeconds = Math.round(track.duration || 300);
 
         console.log(`Track ${track.title} duration:`, {
-          rawDuration,
-          type: typeof rawDuration,
-          durationInSeconds,
-          finalValue: durationInSeconds
+          original: track.duration,
+          final: durationInSeconds
         });
         console.log('=== TRACK BEFORE INSERT ===', {
           title: track.title,
