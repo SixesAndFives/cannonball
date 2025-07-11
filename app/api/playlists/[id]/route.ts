@@ -45,7 +45,7 @@ export async function PATCH(
     const { id } = await context.params;
     const formData = await request.formData();
     const title = formData.get('title') as string;
-    const coverImage = formData.get('file') as File | null;
+    const coverImage = formData.get('cover_image') as File | null;
 
     let coverImagePath = undefined;
     if (coverImage) {

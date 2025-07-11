@@ -175,18 +175,17 @@ export default function PlaylistsPage() {
                       className="group relative bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow w-full block"
                     >
                       <div className="aspect-square relative overflow-hidden rounded-t-lg">
-                        {playlist.cover_image ? (
-                          <Image
-                            src={playlist.cover_image}
-                            alt={playlist.title}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <Music className={`${isMobile ? 'w-[70px] h-[70px]' : 'w-14 h-14'} text-gray-400`} />
-                          </div>
-                        )}
+                        <Image
+                          src={playlist.cover_image || '/images/playlists/EmptyCover.png'}
+                          alt={playlist.title}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            img.src = '/images/playlists/EmptyCover.png';
+                          }}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
                       </div>
                       <div className={`${isMobile ? 'p-5 h-[106px]' : 'p-4 h-[85px]'} flex flex-col justify-between overflow-hidden`}>
                         <div>
