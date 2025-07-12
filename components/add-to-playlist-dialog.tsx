@@ -35,9 +35,9 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
     try {
       const response = await fetch('/api/playlists')
       const data = await response.json()
-      // Filter playlists to only show the current user's
-      const userPlaylists = data.filter((p: Playlist) => p.user_id === user.id)
-      setPlaylists(userPlaylists)
+      // Show all playlists except favorites
+      const filteredPlaylists = data.filter((p: Playlist) => !p.title.toLowerCase().includes('favorites'))
+      setPlaylists(filteredPlaylists)
     } catch (error) {
       console.error('Error fetching playlists:', error)
       toast.error('Failed to load playlists')
