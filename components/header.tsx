@@ -118,7 +118,7 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
                           }}
                         />
                       </div>
-                      <span className="text-gray-600 hover:text-gray-900">{user.full_name}</span>
+                      <Link href="/dashboard" className="text-gray-600 hover:text-gray-900 cursor-pointer z-10 relative">{user.full_name}</Link>
                     </div>
                     <span className="text-gray-300">|</span>
                   </>
