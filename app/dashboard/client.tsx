@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Image from 'next/image'
 import { useState } from 'react'
 import { RecentComments } from '@/components/dashboard/recent-comments'
+import { RecentAlbums } from '@/components/dashboard/recent-albums'
+import { RecentGallery } from '@/components/dashboard/recent-gallery'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 
@@ -83,6 +85,24 @@ export function DashboardClient() {
               </Dialog>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Albums</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RecentAlbums />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Gallery Uploads</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RecentGallery />
         </CardContent>
       </Card>
 

@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Comment } from '@/lib/types'
+import type { Comment, Album, GalleryItem } from '@/lib/types'
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -18,6 +18,52 @@ interface CommentWithAlbum {
     title: string
     cover_image: string
   }
+}
+
+export async function getRecentGalleryItems(): Promise<GalleryItem[]> {
+  const { data: albums, error } = await supabase
+    .from('albums')
+    .select('id, gallery')
+    .not('gallery', 'eq', '[]')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching albums with gallery:', error)
+    return []
+  }
+
+  // Process and flatten gallery items from all albums
+  const allItems: GalleryItem[] = []
+  
+  albums?.forEach(album => {
+    const items = album.gallery as GalleryItem[]
+    items.forEach(item => {
+      allItems.push({
+        ...item,
+        album_id: album.id
+      })
+    })
+  })
+
+  // Sort by timestamp and take the 8 most recent
+  return allItems
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 8)
+}
+
+export async function getRecentAlbums(): Promise<Album[]> {
+  const { data: albums, error } = await supabase
+    .from('albums')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(8)
+
+  if (error) {
+    console.error('Error fetching recent albums:', error)
+    return []
+  }
+
+  return albums || []
 }
 
 export async function getRecentComments(): Promise<CommentWithAlbum[]> {
