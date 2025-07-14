@@ -1,3 +1,5 @@
+'use server'
+
 import { supabase } from '@/lib/supabase-client'
 
 export async function incrementTrackPlays(trackId: string): Promise<void> {
