@@ -57,26 +57,30 @@ export function RecentComments() {
             </Link>
           </div>
           <div className="flex-grow min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
-                  <Image
-                    src={comment.profileImage || '/images/default-avatar.png'}
-                    alt={comment.author}
-                    fill
-                    className="object-cover"
-                  />
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-2 min-w-0">
+                <div className="flex items-center gap-2">
+                  <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                    <Image
+                      src={comment.profileImage || '/images/default-avatar.png'}
+                      alt={comment.author}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="font-medium truncate">{comment.author}</span>
                 </div>
-                <span className="font-medium truncate">{comment.author}</span>
-                <span className="text-gray-400 text-sm">
-                  commented on
-                </span>
-                <Link 
-                  href={`/albums/${comment.album.id}`}
-                  className="text-blue-600 hover:text-blue-800 truncate"
-                >
-                  {comment.album.title}
-                </Link>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-gray-400 text-sm whitespace-nowrap">
+                    commented on
+                  </span>
+                  <Link 
+                    href={`/albums/${comment.album.id}`}
+                    className="text-blue-600 hover:text-blue-800 truncate"
+                  >
+                    {comment.album.title}
+                  </Link>
+                </div>
               </div>
               <span className="text-gray-400 text-sm flex-shrink-0">
                 {comment.timestamp ? 
