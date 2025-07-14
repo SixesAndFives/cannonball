@@ -144,7 +144,10 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                     </Button>
                   </div>
                 ) : (
-                  <span className="text-sm text-gray-900 break-words flex-1">{track.title}</span>
+                  <div className="flex items-center justify-between flex-1 gap-4">
+                    <span className="text-sm text-gray-900 break-words">{track.title}</span>
+                    <span className="text-sm text-blue-600 italic">Play Count: {track.plays ?? 0}</span>
+                  </div>
                 )}
               </div>
               <div className="flex items-center gap-2 justify-end pl-8">

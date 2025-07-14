@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
 import { FooterPlayer } from '@/components/footer-player'
 import { Track } from '@/lib/types'
+import { incrementTrackPlays } from '@/lib/services/track-service'
 
 interface PlayerContextType {
   currentTrack: {
@@ -44,6 +45,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       track_index
     })
     setPlaylist(newPlaylist)
+
+    // Increment play count
+    incrementTrackPlays(track.id)
   }
 
   const playNext = () => {

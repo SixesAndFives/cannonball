@@ -43,7 +43,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     className="object-cover"
                   />
                 </div>
-                <span className="text-gray-900 font-medium">{user.full_name}</span>
+                <Link href="/dashboard" onClick={onClose} className="text-gray-900 hover:text-blue-600 font-medium">
+                  {user.full_name}
+                </Link>
               </div>
             )}
 

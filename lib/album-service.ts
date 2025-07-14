@@ -71,7 +71,8 @@ async function normalizeAlbum(album: any): Promise<Album> {
         audio_url: await getAuthorizedUrl(track.audio_url),
         album_id: album.id,
         album_title: album.title,
-        cover_image: album.cover_image
+        cover_image: album.cover_image,
+        plays: track.plays || 0
       };
 
       return normalizedTrack;
@@ -86,12 +87,27 @@ export async function getAlbumById(id: string): Promise<Album | null> {
   try {
     const { data: album, error } = await supabase
       .from('albums')
-      .select('*, tracks(*)')
+      .select('*, tracks(*, plays)')
       .eq('id', id)
       .single()
 
     if (error || !album) return null
-    return normalizeAlbum(album)
+    
+    console.log('=== Raw Album Data ===', {
+      albumId: album.id,
+      sampleTrack: album.tracks?.[0],
+      allTracks: album.tracks
+    })
+    
+    const normalizedAlbum = await normalizeAlbum(album)
+    
+    console.log('=== Normalized Album Data ===', {
+      albumId: normalizedAlbum.id,
+      sampleTrack: normalizedAlbum.tracks?.[0],
+      allTracks: normalizedAlbum.tracks
+    })
+    
+    return normalizedAlbum
   } catch (error) {
     console.error('Error getting album:', error)
     return null
