@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { ArrowLeft, Upload, Trash2 } from 'lucide-react';
 import type { Playlist } from '@/lib/types';
+import { DraggableTrackList } from '@/components/playlist/draggable-track-list';
 
 export default function EditPlaylistPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -106,95 +107,141 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
       <div className="container mx-auto px-4 py-4">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <Link href={`/playlists/${id}`} className="text-gray-600 hover:text-gray-900">
-                <ArrowLeft className="w-5 h-5" />
-              </Link>
-              <h1 className="text-2xl font-semibold text-gray-900">Back To Playlist</h1>
-            </div>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleDelete}
-              className="gap-2"
-            >
-              <Trash2 className="h-4 w-4" />
-              {showDeleteConfirm ? 'Click again to confirm' : 'Delete Playlist'}
-            </Button>
+            <Link href="/playlists" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 group">
+              <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-0.5" />
+              <span className="text-lg font-medium">Back To Playlists</span>
+            </Link>
+            {!id.endsWith('-favorites') && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDelete}
+                className="gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                {showDeleteConfirm ? 'Click again to confirm' : 'Delete Playlist'}
+              </Button>
+            )}
           </div>
 
-          <form onSubmit={handleSave} className="space-y-6">
-            <div>
-              <Label htmlFor="title" className="font-bold">Playlist Title</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter a title for your playlist"
-                className="mt-1"
-              />
-            </div>
+          <div className="space-y-6">
+            <form onSubmit={handleSave}>
+              <div>
+                <Label htmlFor="title" className="font-bold">Playlist Title</Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter a title for your playlist"
+                  className="mt-1"
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="coverImage" className="font-bold">Cover Image</Label>
-              <div className="mt-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Current Cover Image */}
-                <div>
-                  <h3 className="text-sm text-gray-600 italic mb-2">Current Cover</h3>
-                  <div className="relative aspect-square w-48 overflow-hidden rounded-lg bg-gray-100">
-                    <Image
-                      src={coverPreview || playlist.cover_image || '/images/playlists/EmptyCover.png'}
-                      alt="Current cover"
-                      fill
-                      className="object-cover"
-                      onError={(e) => {
-                        if (e.target instanceof HTMLImageElement) {
-                          e.target.src = '/images/playlists/EmptyCover.png';
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Upload New Cover */}
-                <div>
-                  <h3 className="text-sm text-gray-600 italic mb-2">Upload New Cover</h3>
-                  <div
-                    className="relative flex items-center justify-center w-48 h-48 border-2 border-dashed rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
-                    onClick={() => document.getElementById('coverImage')?.click()}
-                  >
-                    <div className="text-center">
-                      <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-600">Click to upload</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Supports: JPG, PNG, GIF
-                        </p>
-                      </div>
-                      <input
-                        id="coverImage"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
+              <div className="mt-6">
+                <Label htmlFor="coverImage" className="font-bold">Cover Image</Label>
+                <div className="mt-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Current Cover Image */}
+                  <div>
+                    <h3 className="text-sm text-gray-600 italic mb-2">Current Cover</h3>
+                    <div className="relative aspect-square w-48 overflow-hidden rounded-lg bg-gray-100">
+                      <Image
+                        src={coverPreview || playlist.cover_image || '/images/playlists/EmptyCover.png'}
+                        alt="Current cover"
+                        fill
+                        className="object-cover"
+                        onError={(e) => {
+                          if (e.target instanceof HTMLImageElement) {
+                            e.target.src = '/images/playlists/EmptyCover.png';
+                          }
+                        }}
                       />
+                    </div>
+                  </div>
+
+                  {/* Upload New Cover */}
+                  <div>
+                    <h3 className="text-sm text-gray-600 italic mb-2">Upload New Cover</h3>
+                    <div
+                      className="relative flex items-center justify-center w-48 h-48 border-2 border-dashed rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
+                      onClick={() => document.getElementById('coverImage')?.click()}
+                    >
+                      <div className="text-center">
+                        <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-600">Click to upload</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Supports: JPG, PNG, GIF
+                          </p>
+                        </div>
+                        <input
+                          id="coverImage"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex justify-end gap-4">
-              <Link href={`/playlists/${id}`}>
-                <Button type="button" variant="outline">
-                  Cancel
+              <div className="flex justify-end gap-4 mt-6">
+                <Link href={`/playlists/${id}`}>
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                </Link>
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
-              </Link>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </Button>
+              </div>
+            </form>
+
+            <div className="mt-8">
+              <Label className="font-bold">Track Order</Label>
+              <div className="mt-2">
+                {playlist.tracks && playlist.tracks.length > 0 ? (
+                  <DraggableTrackList
+                    tracks={playlist.tracks}
+                    isEditing={true}
+                    onReorder={async (updates) => {
+                      try {
+                        const response = await fetch(`/api/playlists/${id}/reorder`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(updates),
+                        });
+
+                        if (!response.ok) {
+                          throw new Error('Failed to reorder tracks');
+                        }
+                        // Update local state
+                        setPlaylist(prev => {
+                          if (!prev) return null;
+                          const newTracks = [...prev.tracks];
+                          updates.forEach(update => {
+                            const track = newTracks.find(t => t.id === update.id);
+                            if (track) {
+                              track.position = update.position;
+                            }
+                          });
+                          newTracks.sort((a, b) => (a.position || 0) - (b.position || 0));
+                          return { ...prev, tracks: newTracks };
+                        });
+                      } catch (error) {
+                        toast.error('Failed to update track order');
+                      }
+                    }}
+                  />
+                ) : (
+                  <p className="text-gray-500 italic">No tracks in this playlist</p>
+                )}
+              </div>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

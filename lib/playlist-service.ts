@@ -36,16 +36,21 @@ export async function normalizePlaylist(playlist: any): Promise<Playlist> {
       const album = track.albums || {};
       console.log('normalizePlaylist - Track and Album:', { track, album });
       return {
-        id: track.id || '',
+        id: pt.id || '',              // Use playlist_track.id
+        track_id: track.id || '',      // Store original track.id
         title: track.title || 'Unknown Track',
         duration: typeof track.duration === 'number' ? track.duration.toString() : '0:00',
         audio_url: track.audio_url ? await getAuthorizedUrl(track.audio_url) : '',
         album_id: track.album_id || '',
         album_title: album.title || '',
-        cover_image: album.cover_image ? await getAuthorizedUrl(album.cover_image, 'cover') : ''
+        cover_image: album.cover_image ? await getAuthorizedUrl(album.cover_image, 'cover') : '',
+        position: pt.position || 0
       };
     })
   );
+  
+  // Sort tracks by position
+  normalizedTracks.sort((a, b) => (a.position || 0) - (b.position || 0));
   
   console.log('normalizePlaylist - Normalized tracks:', JSON.stringify(normalizedTracks, null, 2));
   
@@ -75,13 +80,14 @@ export async function getAllPlaylists(): Promise<Playlist[]> {
     .from('playlists')
     .select(`
       *,
-      playlist_tracks (*, 
-        tracks (*, 
-          albums (*)
+      playlist_tracks(id, track_id, position, 
+        tracks(id, title, duration, audio_url, album_id, 
+          albums(title, cover_image)
         )
       )
     `)
     .order('created_at', { ascending: false })
+    .order('position', { foreignTable: 'playlist_tracks', ascending: true })
 
   if (error) {
     console.error('getAllPlaylists - Error:', error);

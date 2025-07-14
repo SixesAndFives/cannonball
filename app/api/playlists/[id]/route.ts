@@ -16,6 +16,7 @@ export async function GET(
       .from('playlists')
       .select('*, playlist_tracks(*, tracks(*, albums(*)))')
       .eq('id', id)
+      .order('position', { foreignTable: 'playlist_tracks' })
       .single();
 
     if (error) throw error;
@@ -69,7 +70,8 @@ export async function PATCH(
         ...(coverImagePath && { cover_image: coverImagePath })
       })
       .eq('id', id)
-      .select()
+      .select('*, playlist_tracks!inner(*, tracks!inner(*, albums!inner(*)))')
+      .order('position', { foreignTable: 'playlist_tracks' })
       .single();
 
     if (error) throw error;

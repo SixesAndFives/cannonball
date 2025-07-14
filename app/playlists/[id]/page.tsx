@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState, use } from 'react';
+import { useAuth } from '@/contexts/auth-context';
+import { usePlayer } from '@/contexts/player-context';
 
 import { Button } from '@/components/ui/button';
 import { Music, Play, Trash2, ArrowLeft } from 'lucide-react';
@@ -9,7 +11,6 @@ import Link from 'next/link';
 import type { Album, Playlist, Track, PlaylistTrack } from '@/lib/types';
 import { toast } from 'sonner';
 import { formatDuration } from '@/lib/utils';
-import { usePlayer } from '@/contexts/player-context';
 
 export default function PlaylistPage(
   { params }: { params: Promise<{ id: string }> }
@@ -19,6 +20,7 @@ export default function PlaylistPage(
   const [albums, setAlbums] = useState<Record<string, Album>>({});
   const [isLoading, setIsLoading] = useState(true);
   const { playTrack: playInPlayer } = usePlayer();
+  const { user } = useAuth();
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,6 +30,11 @@ export default function PlaylistPage(
         const response = await fetch(`/api/playlists/${id}`);
         if (!response.ok) throw new Error('Failed to load playlist');
         const playlistData = await response.json();
+        
+        // Sort tracks by position before setting state
+        if (playlistData.tracks) {
+          playlistData.tracks.sort((a: any, b: any) => (a.position || 0) - (b.position || 0));
+        }
         setPlaylist(playlistData);
 
         // Load albums
@@ -91,11 +98,13 @@ export default function PlaylistPage(
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
               <h1 className="text-2xl font-bold">{playlist.title}</h1>
-              <Link href={`/playlists/${id}/edit`}>
-                <Button variant="outline" size="sm">
-                  Edit Playlist
-                </Button>
-              </Link>
+              {user?.id === playlist.user_id && (
+                <Link href={`/playlists/${id}/edit`}>
+                  <Button variant="outline" size="sm">
+                    Edit Playlist
+                  </Button>
+                </Link>
+              )}
             </div>
             <Link 
               href="/playlists" 
@@ -126,7 +135,9 @@ export default function PlaylistPage(
             <div>
               {playlist.tracks.length > 0 ? (
                 <div className="space-y-3">
-                  {playlist?.tracks.map((track, index) => {
+                  {[...playlist.tracks]
+                    .sort((a, b) => (a.position || 0) - (b.position || 0))
+                    .map((track, index) => {
                     return (
                       <div 
                         key={track.id}
@@ -154,8 +165,10 @@ export default function PlaylistPage(
                           <button
                             className="p-1.5 rounded-full hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
                             onClick={() => {
-                              // Get all playable tracks from the playlist
-                              const playableTracks = playlist.tracks.filter(t => t.audio_url);
+                              // Get all playable tracks from the playlist in sorted order
+                              const playableTracks = [...playlist.tracks]
+                                .sort((a, b) => (a.position || 0) - (b.position || 0))
+                                .filter(t => t.audio_url);
                               const trackIndex = playableTracks.findIndex(t => t.id === track.id);
 
                               // Play the track

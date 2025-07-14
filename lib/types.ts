@@ -58,14 +58,16 @@ export interface Comment {
 }
 
 export interface PlaylistTrack {
-  id: string;
+  id: string;           // playlist_track id
+  track_id: string;     // original track id
   title: string;
   duration: number;
-  audio_url?: string;
+  audio_url: string;
   album_id: string;
   album_title: string;
   cover_image?: string;
   added_at?: number;
+  position?: number;
 }
 
 export interface Playlist {
