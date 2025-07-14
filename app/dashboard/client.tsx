@@ -48,17 +48,14 @@ export function DashboardClient() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-6">
-            <div className="relative w-32 h-32">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-8">
+            <div className="relative w-32 h-32 border border-gray-200">
               <Image
                 src={user.profile_image || '/images/default-avatar.png'}
                 alt={user.full_name}
                 fill
-                className="object-cover rounded-full"
+                className="object-cover"
               />
             </div>
             <div>
