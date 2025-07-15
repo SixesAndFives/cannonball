@@ -305,14 +305,11 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                         className={cn(
                           "h-8",
                           current_track_index === index ? "w-20" : "w-8",
-                          "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          current_track_index === index ? "text-white bg-black hover:bg-black/90" : "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                         )}
                       >
                         {current_track_index === index ? (
-                          <>
-                            <Pause className="h-4 w-4 mr-2" />
-                            Pause
-                          </>
+                          "Playing"
                         ) : (
                           <Play className="h-4 w-4" />
                         )}
