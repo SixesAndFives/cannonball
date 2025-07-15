@@ -56,7 +56,9 @@ export async function normalizePlaylist(playlist: any): Promise<Playlist> {
   
   const normalizedPlaylist = {
     id: playlist.id || '',
-    title: playlist.title || '',
+    title: playlist.id?.endsWith('-favorites')
+      ? `${playlist.users?.full_name}'s Favorites`
+      : playlist.title || '',
     cover_image: playlist.cover_image || '',
     user_id: playlist.user_id || '',
     created_at: playlist.created_at ? new Date(playlist.created_at).getTime() : Date.now(),
@@ -80,6 +82,7 @@ export async function getAllPlaylists(): Promise<Playlist[]> {
     .from('playlists')
     .select(`
       *,
+      users(full_name),
       playlist_tracks(id, track_id, position, 
         tracks(id, title, duration, audio_url, album_id, 
           albums(title, cover_image)

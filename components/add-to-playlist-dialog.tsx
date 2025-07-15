@@ -11,12 +11,12 @@ import { useAuth } from '@/contexts/auth-context'
 import type { Track, Playlist } from '@/lib/types'
 
 interface AddToPlaylistDialogProps {
-  track: Track
-  isOpen: boolean
-  onClose: () => void
+  track: Track | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDialogProps) {
+export function AddToPlaylistDialog({ track, open, onOpenChange }: AddToPlaylistDialogProps) {
   const { user } = useAuth()
   const [playlists, setPlaylists] = useState<Playlist[]>([])
   const [loading, setLoading] = useState(true)
@@ -25,18 +25,24 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
   // toast is imported from sonner
 
   useEffect(() => {
-    if (isOpen) {
+    if (open) {
       fetchPlaylists()
     }
-  }, [isOpen])
+  }, [open])
 
   const fetchPlaylists = async () => {
     if (!user) return
     try {
       const response = await fetch('/api/playlists')
       const data = await response.json()
-      // Show all playlists except favorites
-      const filteredPlaylists = data.filter((p: Playlist) => !p.title.toLowerCase().includes('favorites'))
+      // Show all non-favorites playlists plus user's own favorites
+      const filteredPlaylists = data.filter((p: Playlist) => {
+        const isFavorites = p.id.endsWith('-favorites')
+        // If it's not a favorites playlist, show it
+        if (!isFavorites) return true
+        // If it is a favorites playlist, only show if it belongs to the current user
+        return p.user_id === user.id
+      })
       setPlaylists(filteredPlaylists)
     } catch (error) {
       console.error('Error fetching playlists:', error)
@@ -73,23 +79,24 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
       const newPlaylist = await createResponse.json()
 
       // Then add the track to the new playlist
-      const addTrackResponse = await fetch(`/api/playlists/${newPlaylist.id}/tracks`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ track })
-      })
+      if (track) {
+        const addTrackResponse = await fetch(`/api/playlists/${newPlaylist.id}/tracks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ track })
+        })
 
-      if (!addTrackResponse.ok) {
-        throw new Error('Failed to add track to playlist')
+        if (!addTrackResponse.ok) {
+          throw new Error('Failed to add track to playlist')
+        }
       }
 
       setPlaylists([...playlists, newPlaylist])
       setNewPlaylistTitle('')
-      
+      onOpenChange(false)
       toast.success(`Created playlist "${newPlaylistTitle}" and added track`)
-      onClose()
     } catch (error) {
       console.error('Error creating playlist:', error)
       toast.error('Failed to create playlist')
@@ -109,32 +116,40 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
   })
 
   const handleAddToPlaylist = async (playlistId: string) => {
+    if (!user || !track) return
+
     try {
-      const normalizedTrack = normalizeTrack(track)
-      console.log('Adding track to playlist:', { playlistId, track: normalizedTrack })
-      
       const response = await fetch(`/api/playlists/${playlistId}/tracks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ track: normalizedTrack }),
+        body: JSON.stringify({ track })
       })
 
+      const data = await response.json()
+      
       if (!response.ok) {
-        throw new Error('Failed to add track to playlist')
+        // Check for specific error about duplicate track
+        if (response.status === 400 && data.error === 'Track already exists in playlist') {
+          toast.error(`This track is already in the playlist`)
+          return
+        }
+        throw new Error(data.error || 'Failed to add track to playlist')
       }
 
-      toast.success(`Added "${track.title}" to playlist`)
-      onClose()
+      if (track) {
+        toast.success(`Added "${track.title}" to playlist`)
+      }
+      onOpenChange(false)
     } catch (error) {
       console.error('Error adding track to playlist:', error)
       toast.error('Failed to add track to playlist')
     }
   }
 
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+  return open ? (
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md mx-auto" aria-describedby="playlist-dialog-description">
         <DialogHeader>
           <DialogTitle>Add to Playlist</DialogTitle>
@@ -184,7 +199,12 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
                         img.src = '/images/playlists/EmptyCover.png'
                       }}
                     />
-                    <span>{playlist.title}</span>
+                    <span>
+                      {playlist.id.endsWith('-favorites')
+                        ? `${user?.full_name}'s Favorites`
+                        : playlist.title
+                      }
+                    </span>
                   </div>
                 </Button>
               ))
@@ -193,5 +213,5 @@ export function AddToPlaylistDialog({ track, isOpen, onClose }: AddToPlaylistDia
         </ScrollArea>
       </DialogContent>
     </Dialog>
-  )
+  ) : null
 }

@@ -42,11 +42,7 @@ interface TrackListProps {
   onReorder?: (updates: { id: string; position: number }[]) => Promise<void>
 }
 
-interface AddToPlaylistDialogProps {
-  track: Track | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+
 
 export interface TrackListRef {
   playTrack: (index: number, autoPlay?: boolean) => void
@@ -250,7 +246,10 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
                       ) : (
                         <div className="flex items-center justify-between flex-1 gap-4">
                           <span className="text-sm text-gray-900 break-words">{track.title}</span>
-                          <span className="text-sm text-blue-600 italic">Play Count: {track.plays ?? 0}</span>
+                          <div className="flex items-center gap-4">
+                            <span className="text-sm text-gray-600">{formatDuration(track.duration || 0)}</span>
+                            <span className="text-sm text-blue-600 italic">Play Count: {track.plays ?? 0}</span>
+                          </div>
                         </div>
                       )}
                     </div>
