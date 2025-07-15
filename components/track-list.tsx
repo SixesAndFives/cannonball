@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, forwardRef, useImperativeHandle } from "react"
+import { useState, forwardRef, useImperativeHandle, useEffect } from "react"
 import { updateTrackTitle } from "@/lib/track-client"
-import { Pencil, Play, Pause, Trash2, ListPlus, Heart } from "lucide-react"
+import { Pencil, Play, Pause, Trash2, ListPlus, Heart, GripVertical } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,6 +14,23 @@ import { ConfirmDialog } from "@/components/confirm-dialog"
 import { AddToPlaylistDialog } from "@/components/add-to-playlist-dialog"
 import { useFavorites } from "@/hooks/use-favorites"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface TrackListProps {
   tracks: Track[]
@@ -22,6 +39,13 @@ interface TrackListProps {
   on_delete_track: (trackId: string) => void
   on_play_track: (index: number | null) => void
   current_track_index: number | null
+  onReorder?: (updates: { id: string; position: number }[]) => Promise<void>
+}
+
+interface AddToPlaylistDialogProps {
+  track: Track | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
 export interface TrackListRef {
@@ -29,7 +53,7 @@ export interface TrackListRef {
 }
 
 export const TrackList = forwardRef<TrackListRef, TrackListProps>(function TrackList(
-  { tracks, album_id, on_update_track, on_delete_track, on_play_track, current_track_index },
+  { tracks, album_id, on_update_track, on_delete_track, on_play_track, current_track_index, onReorder },
   ref
 ) {
   const [editingTrackId, setEditingTrackId] = useState<string | null>(null)
@@ -37,6 +61,52 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
   const [deleteTrackId, setDeleteTrackId] = useState<string | null>(null)
   const [addToPlaylistTrack, setAddToPlaylistTrack] = useState<Track | null>(null)
   const { isInFavorites, toggleFavorite } = useFavorites(album_id)
+  const [items, setItems] = useState<Track[]>(tracks)
+  const itemIds = items.map(item => item.id)
+
+  useEffect(() => {
+    setItems(tracks)
+  }, [tracks])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 0,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    console.log('Drag end:', { active, over })
+
+    if (over && active.id !== over.id) {
+      const oldIndex = items.findIndex((item) => item.id === String(active.id))
+      const newIndex = items.findIndex((item) => item.id === String(over.id))
+
+      const newItems = arrayMove(items, oldIndex, newIndex)
+      setItems(newItems)
+
+      if (onReorder) {
+        const updates = newItems.map((item, index) => ({
+          id: item.id,
+          position: index,
+        }))
+
+        try {
+          await onReorder(updates)
+        } catch (error) {
+          console.error('Error reordering tracks:', error)
+          setItems(tracks) // Revert on error
+          toast.error('Failed to update track order')
+        }
+      }
+    }
+  }
 
   const handleDeleteClick = async (trackId: string) => {
     try {
@@ -116,132 +186,166 @@ export const TrackList = forwardRef<TrackListRef, TrackListProps>(function Track
   }
 
   return (
-    <div className="track-list space-y-4">
-      <div className="bg-white shadow rounded-lg divide-y">
-        {tracks.map((track, index) => (
-          <div
-            key={`${track.id}-${index}`}
-            className={cn(
-              "flex items-center justify-between p-4 hover:bg-gray-50",
-              current_track_index === index && "bg-gray-50"
-            )}
-          >
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-500 w-8 text-center">{index + 1}</span>
-                {editingTrackId === track.id ? (
-                  <div className="flex items-center gap-2 flex-1">
-                    <Input
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button size="sm" onClick={() => handleSave(track)}>
-                      Save
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between flex-1 gap-4">
-                    <span className="text-sm text-gray-900 break-words">{track.title}</span>
-                    <span className="text-sm text-blue-600 italic">Play Count: {track.plays ?? 0}</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2 justify-end pl-8">
-                {/* Admin actions - desktop only */}
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEditClick(track)}
-                    className="h-8 w-8 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                </div>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="track-list space-y-4">
+        <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+          <div className="bg-white shadow rounded-lg divide-y">
+            {items.map((track, index) => {
+              const {
+                attributes,
+                listeners,
+                setNodeRef,
+                transform,
+                transition,
+                isDragging,
+              } = useSortable({ 
+                id: track.id,
+                data: { track }
+              })
 
-                {/* Always visible actions */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setAddToPlaylistTrack(track)}
-                  className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              const style = {
+                transform: CSS.Transform.toString(transform),
+                transition,
+              }
+
+              return (
+                <div
+                  ref={setNodeRef}
+                  key={`${track.id}-${index}`}
+                  style={style}
+                  className={cn(
+                    "flex items-center justify-between p-4 hover:bg-gray-50 touch-none",
+                    current_track_index === index && "bg-gray-50",
+                    isDragging && "bg-accent"
+                  )}
                 >
-                  <ListPlus className="h-4 w-4" />
-                </Button>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
+                  <div className="flex flex-col gap-2 flex-1">
+                    <div className="flex items-center gap-4">
+                      <div
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-grab hover:text-accent-foreground touch-none select-none"
+                      >
+                        <GripVertical className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <span className="text-sm text-gray-500 w-8 text-center">{index + 1}</span>
+                      {editingTrackId === track.id ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <Input
+                            value={editedTitle}
+                            onChange={(e) => setEditedTitle(e.target.value)}
+                            className="flex-1"
+                          />
+                          <Button size="sm" onClick={() => handleSave(track)}>
+                            Save
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={handleCancel}>
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between flex-1 gap-4">
+                          <span className="text-sm text-gray-900 break-words">{track.title}</span>
+                          <span className="text-sm text-blue-600 italic">Play Count: {track.plays ?? 0}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 justify-end pl-8">
+                      {/* Admin actions - desktop only */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditClick(track)}
+                          className="h-8 w-8 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      {/* Always visible actions */}
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => {
-                          console.log('Heart clicked for track:', track)
-                          toggleFavorite(track)
-                        }}
-                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => setAddToPlaylistTrack(track)}
+                        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                       >
-                        <Heart className={cn(
-                          "h-4 w-4",
-                          isInFavorites(track) && "fill-current"
-                        )} />
+                        <ListPlus className="h-4 w-4" />
                       </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {isInFavorites(track) ? 'Remove from Favorites' : 'Add to Favorites'}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <Button
-                  variant={current_track_index === index ? "default" : "ghost"}
-                  size={current_track_index === index ? "default" : "icon"}
-                  onClick={() => handlePlayClick(index)}
-                  data-track-index={index}
-                  className={cn(
-                    "h-8",
-                    current_track_index === index ? "w-auto px-3" : "w-8",
-                    "md:h-auto md:w-auto md:px-4"
-                  )}
-                >
-                  {current_track_index === index ? (
-                    <>
-                      <span>Playing</span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-4 w-4 md:mr-2" />
-                      <span className="hidden md:inline">Play Track</span>
-                    </>
-                  )}
-                </Button>
-                <span className="text-sm text-gray-500 w-16 text-right">{formatDuration(typeof track.duration === 'string' ? parseFloat(track.duration) : track.duration || 0)}</span>
-              </div>
-            </div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                console.log('Heart clicked for track:', track)
+                                toggleFavorite(track)
+                              }}
+                              className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Heart className={cn(
+                                "h-4 w-4",
+                                isInFavorites(track) && "fill-current"
+                              )} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {isInFavorites(track) ? 'Remove from Favorites' : 'Add to Favorites'}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <Button
+                        variant={current_track_index === index ? "default" : "ghost"}
+                        size={current_track_index === index ? "default" : "icon"}
+                        onClick={() => handlePlayClick(index)}
+                        className={cn(
+                          "h-8",
+                          current_track_index === index ? "w-20" : "w-8",
+                          "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        )}
+                      >
+                        {current_track_index === index ? (
+                          <>
+                            <Pause className="h-4 w-4 mr-2" />
+                            Pause
+                          </>
+                        ) : (
+                          <Play className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
-        ))}
-      </div>
-      <ConfirmDialog
-        open={deleteTrackId !== null}
-        onOpenChange={(open) => !open && setDeleteTrackId(null)}
-        onConfirm={() => {
-          if (deleteTrackId) {
-            on_delete_track(deleteTrackId)
-            setDeleteTrackId(null)
-          }
-        }}
-        title="Delete Track"
-        description="Are you sure you want to delete this track? This action cannot be undone."
-      />
-      {addToPlaylistTrack && (
+        </SortableContext>
+
+        <ConfirmDialog
+          open={deleteTrackId !== null}
+          onOpenChange={() => setDeleteTrackId(null)}
+          title="Delete Track"
+          description="Are you sure you want to delete this track? This action cannot be undone."
+          onConfirm={() => {
+            if (deleteTrackId) {
+              handleDeleteClick(deleteTrackId)
+            }
+          }}
+        />
+
         <AddToPlaylistDialog
           track={addToPlaylistTrack}
-          isOpen={true}
-          onClose={() => setAddToPlaylistTrack(null)}
+          open={addToPlaylistTrack !== null}
+          onOpenChange={(open: boolean) => !open && setAddToPlaylistTrack(null)}
         />
-      )}
-    </div>
+      </div>
+    </DndContext>
   )
 })
+
+export default TrackList

@@ -30,7 +30,9 @@ export interface Track {
   channels?: number;
   cover_image?: string;
   lossless?: boolean;
+  created_at?: string;
   plays?: number;
+  position?: number;
 }
 
 export interface GalleryItem {

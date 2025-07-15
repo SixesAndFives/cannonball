@@ -9,14 +9,22 @@ export async function DELETE(
   console.log('==== DELETE ENDPOINT START ====');
   try {
     const { id: playlistId, trackId } = await params
-    console.log('Deleting track from playlist:', { playlistId, trackId })
+    
+    // Remove playlist ID prefix from track ID if it exists
+    const originalTrackId = trackId.includes('_') ? trackId.split('_')[1] : trackId
+    
+    console.log('Deleting track from playlist:', { 
+      playlistId, 
+      originalTrackId,
+      providedTrackId: trackId 
+    })
 
     // First check if the track exists
     const { data: existingTrack, error: findError } = await supabase
       .from('playlist_tracks')
       .select('*')
       .eq('playlist_id', playlistId)
-      .eq('track_id', trackId)
+      .eq('track_id', originalTrackId)
       .single()
 
     console.log('Find track result:', { existingTrack, findError })
@@ -45,7 +53,7 @@ export async function DELETE(
       .from('playlist_tracks')
       .delete()
       .eq('playlist_id', playlistId)
-      .eq('track_id', trackId)
+      .eq('track_id', originalTrackId)
     
     console.log('Supabase query:', {
       table: 'playlist_tracks',

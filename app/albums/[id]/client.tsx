@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useTransition, useEffect } from "react"
+import { useState, useTransition, useEffect, useRef } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FooterPlayer } from '@/components/footer-player'
-import { TrackList } from '@/components/track-list'
+import { TrackListDndWrapper } from "@/components/track-list-dnd-wrapper"
+import type { TrackListRef } from "@/components/track-list"
 import { usePlayer } from '@/contexts/player-context'
 import { AlbumGallery } from "@/components/album-gallery"
 import { useRouter } from 'next/navigation'
@@ -45,6 +46,67 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
   const [isPending, startTransition] = useTransition()
   const { playTrack, currentTrack } = usePlayer()
   const currentTrackIndex = currentTrack.track_index
+  const trackListRef = useRef<TrackListRef>(null)
+
+  const handlePlayTrack = (index: number | null) => {
+    if (!album || index === null) return;
+    const track = album.tracks[index]
+    if (track?.audio_url) {
+      const tracksWithAlbumInfo = album.tracks
+        .filter(t => t.audio_url)
+        .map(t => ({
+          ...t,
+          album_id: album.id,
+          album_title: album.title,
+          cover_image: album.cover_image
+        }))
+      playTrack(tracksWithAlbumInfo[index], index, tracksWithAlbumInfo)
+    }
+  }
+
+  const handleReorder = async (updates: { id: string; position: number }[]) => {
+    if (!album) return;
+    
+    console.log('=== Client Reorder Request ===');
+    console.log('Album ID:', album.id);
+    console.log('Updates:', updates);
+
+    try {
+      const response = await fetch(`/api/albums/${album.id}/reorder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update track order')
+      }
+
+      // Update local state
+      setAlbum(prev => {
+        if (!prev) return prev;
+
+        // Create a new array with updated positions
+        const updatedTracks = prev.tracks.map(track => {
+          const update = updates.find(u => u.id === track.id)
+          return update ? { ...track, position: update.position } : track
+        })
+
+        // Sort by position
+        updatedTracks.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+
+        return {
+          ...prev,
+          tracks: updatedTracks
+        }
+      })
+
+      toast({ title: 'Track order updated successfully' })
+    } catch (error) {
+      console.error('Error updating track order:', error)
+      toast({ title: 'Failed to update track order', variant: 'destructive' })
+    }
+  }
 
   const handleDeleteTrack = async (trackId: string) => {
     if (!album) return
@@ -184,32 +246,15 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
             </TabsList>
 
             <TabsContent value="tracks" className="space-y-4">
-              <TrackList
+              <TrackListDndWrapper
+                ref={trackListRef}
                 tracks={album.tracks}
                 album_id={album.id}
                 on_update_track={handleUpdateTrack}
                 on_delete_track={handleDeleteTrack}
-                on_play_track={(index: number | null) => {
-                  if (index === null) return;
-                  const track = album.tracks[index]
-                  if (track.audio_url) {
-                    const tracksWithAlbumInfo = album.tracks
-                      .filter(t => t.audio_url)
-                      .map(t => ({
-                        ...t,
-                        album_id: album.id,
-                        album_title: album.title,
-                        cover_image: album.cover_image
-                      }))
-
-                    playTrack(
-                      tracksWithAlbumInfo[index],
-                      index,
-                      tracksWithAlbumInfo
-                    )
-                  }
-                }}
-                current_track_index={currentTrack.album_id === album.id ? currentTrack.track_index : null}
+                on_play_track={handlePlayTrack}
+                current_track_index={currentTrackIndex}
+                onReorder={handleReorder}
               />
             </TabsContent>
 
