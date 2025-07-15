@@ -48,14 +48,18 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
     }
   };
 
+  const isFavorites = id.endsWith('-favorites');
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setIsSaving(true);
       const formData = new FormData();
-      formData.append('title', title);
-      if (coverImage) {
-        formData.append('cover_image', coverImage);
+      if (!isFavorites) {
+        formData.append('title', title);
+        if (coverImage) {
+          formData.append('cover_image', coverImage);
+        }
       }
 
       const response = await fetch(`/api/playlists/${id}`, {
@@ -124,69 +128,76 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
             )}
           </div>
 
-          <div className="space-y-6">
-            <form onSubmit={handleSave}>
-              <div>
-                <Label htmlFor="title" className="font-bold">Playlist Title</Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter a title for your playlist"
-                  className="mt-1"
-                />
+          {isFavorites ? (
+            <div className="space-y-6">
+              <div className="flex items-center gap-6">
+                {playlist.cover_image && (
+                  <Image
+                    src={playlist.cover_image}
+                    alt={playlist.title}
+                    width={160}
+                    height={160}
+                    className="rounded-lg shadow-md"
+                  />
+                )}
+                <h1 className="text-2xl font-bold">{playlist.title}</h1>
               </div>
+              <div className="flex justify-end">
+                <Link href={`/playlists/${id}`}>
+                  <Button variant="outline">Done</Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSave} className="space-y-8">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title</Label>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter playlist title"
+                  />
+                </div>
 
-              <div className="mt-6">
-                <Label htmlFor="coverImage" className="font-bold">Cover Image</Label>
-                <div className="mt-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Current Cover Image */}
-                  <div>
-                    <h3 className="text-sm text-gray-600 italic mb-2">Current Cover</h3>
-                    <div className="relative aspect-square w-48 overflow-hidden rounded-lg bg-gray-100">
+                <div className="space-y-2">
+                  <Label htmlFor="cover">Cover Image</Label>
+                  <div className="flex items-center gap-4">
+                    {coverPreview && (
                       <Image
-                        src={coverPreview || playlist.cover_image || '/images/playlists/EmptyCover.png'}
-                        alt="Current cover"
-                        fill
-                        className="object-cover"
-                        onError={(e) => {
-                          if (e.target instanceof HTMLImageElement) {
-                            e.target.src = '/images/playlists/EmptyCover.png';
-                          }
-                        }}
+                        src={coverPreview}
+                        alt="Cover preview"
+                        width={100}
+                        height={100}
+                        className="rounded-lg"
                       />
-                    </div>
-                  </div>
-
-                  {/* Upload New Cover */}
-                  <div>
-                    <h3 className="text-sm text-gray-600 italic mb-2">Upload New Cover</h3>
-                    <div
-                      className="relative flex items-center justify-center w-48 h-48 border-2 border-dashed rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
-                      onClick={() => document.getElementById('coverImage')?.click()}
-                    >
-                      <div className="text-center">
-                        <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-600">Click to upload</p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Supports: JPG, PNG, GIF
-                          </p>
-                        </div>
-                        <input
-                          id="coverImage"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="hidden"
-                        />
-                      </div>
+                    )}
+                    <div className="text-center">
+                      <Button
+                        variant="outline"
+                        onClick={() => document.getElementById('cover')?.click()}
+                        type="button"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Image
+                      </Button>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Supports: JPG, PNG, GIF
+                      </p>
+                      <input
+                        type="file"
+                        id="cover"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-4 mt-6">
+              <div className="flex justify-end gap-4">
                 <Link href={`/playlists/${id}`}>
                   <Button type="button" variant="outline">
                     Cancel
@@ -197,50 +208,48 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
                 </Button>
               </div>
             </form>
+          )}
 
-            <div className="mt-8">
-              <Label className="font-bold">Track Order</Label>
-              <div className="mt-2">
-                {playlist.tracks && playlist.tracks.length > 0 ? (
-                  <DraggableTrackList
-                    tracks={playlist.tracks}
-                    isEditing={true}
-                    onReorder={async (updates) => {
-                      try {
-                        const response = await fetch(`/api/playlists/${id}/reorder`, {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify(updates),
-                        });
-
-                        if (!response.ok) {
-                          throw new Error('Failed to reorder tracks');
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4">Track Order</h2>
+            {playlist.tracks && playlist.tracks.length > 0 ? (
+              <DraggableTrackList
+                tracks={playlist.tracks}
+                isEditing={true}
+                onReorder={async (updates) => {
+                  try {
+                    const response = await fetch(`/api/playlists/${id}/reorder`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify(updates),
+                    });
+                    if (!response.ok) throw new Error('Failed to update track order');
+                    
+                    // Update local state
+                    setPlaylist(prev => {
+                      if (!prev) return null;
+                      const newTracks = [...prev.tracks];
+                      updates.forEach(update => {
+                        const track = newTracks.find(t => t.id === update.id);
+                        if (track) {
+                          track.position = update.position;
                         }
-                        // Update local state
-                        setPlaylist(prev => {
-                          if (!prev) return null;
-                          const newTracks = [...prev.tracks];
-                          updates.forEach(update => {
-                            const track = newTracks.find(t => t.id === update.id);
-                            if (track) {
-                              track.position = update.position;
-                            }
-                          });
-                          newTracks.sort((a, b) => (a.position || 0) - (b.position || 0));
-                          return { ...prev, tracks: newTracks };
-                        });
-                      } catch (error) {
-                        toast.error('Failed to update track order');
-                      }
-                    }}
-                  />
-                ) : (
-                  <p className="text-gray-500 italic">No tracks in this playlist</p>
-                )}
-              </div>
-            </div>
+                      });
+                      newTracks.sort((a, b) => (a.position || 0) - (b.position || 0));
+                      return { ...prev, tracks: newTracks };
+                    });
+                    
+                    toast.success('Track order updated');
+                  } catch (error) {
+                    toast.error('Failed to update track order');
+                  }
+                }}
+              />
+            ) : (
+              <p className="text-gray-500">No tracks in playlist</p>
+            )}
           </div>
         </div>
       </div>
