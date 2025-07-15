@@ -126,7 +126,7 @@ export default function PlaylistsPage() {
                         {/* Add hover overlay */}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 z-10" />
                         {/* Edit button - only show for non-Favorites playlists */}
-                        {!playlist.title.includes('Favorites') && (
+                        {!playlist.id.endsWith('-favorites') && (
                           <button
                             onClick={(e) => {
                               e.preventDefault()
@@ -151,7 +151,12 @@ export default function PlaylistsPage() {
                         />
                       </div>
                       <div className="p-4 relative z-20">
-                        <h3 className="font-semibold text-gray-900 group-hover:text-gray-700">{playlist.title}</h3>
+                        <h3 className="font-semibold text-gray-900 group-hover:text-gray-700">
+                          {playlist.id.endsWith('-favorites')
+                            ? `${playlistUsers[playlist.user_id]?.full_name.split(' ')[0]}'s Favorites`
+                            : playlist.title
+                          }
+                        </h3>
                         <p className="text-sm text-gray-500 mt-1">
                           {playlist.tracks?.length || 0} tracks
                         </p>

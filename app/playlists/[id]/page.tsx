@@ -18,6 +18,7 @@ export default function PlaylistPage(
   const { id } = use(params);
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [albums, setAlbums] = useState<Record<string, Album>>({});
+  const [playlistUser, setPlaylistUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { playTrack: playInPlayer } = usePlayer();
   const { user } = useAuth();
@@ -36,6 +37,13 @@ export default function PlaylistPage(
           playlistData.tracks.sort((a: any, b: any) => (a.position || 0) - (b.position || 0));
         }
         setPlaylist(playlistData);
+
+        // Load playlist owner's info
+        const usersResponse = await fetch('/api/users');
+        if (!usersResponse.ok) throw new Error('Failed to load users');
+        const usersData = await usersResponse.json();
+        const playlistOwner = usersData.find((u: any) => u.id === playlistData.user_id);
+        setPlaylistUser(playlistOwner);
 
         // Load albums
         const albumsResponse = await fetch('/api/albums');
@@ -97,7 +105,12 @@ export default function PlaylistPage(
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold">{playlist.title}</h1>
+              <h1 className="text-2xl font-bold">
+                {playlist.id.endsWith('-favorites')
+                  ? `${playlistUser?.full_name.split(' ')[0]}'s Favorites`
+                  : playlist.title
+                }
+              </h1>
               {user?.id === playlist.user_id && (
                 <Link href={`/playlists/${id}/edit`}>
                   <Button variant="outline" size="sm">

@@ -16,6 +16,7 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
   const { id } = use(params);
   const router = useRouter();
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
+  const [playlistUser, setPlaylistUser] = useState<any>(null);
   const [title, setTitle] = useState('');
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string>('');
@@ -26,12 +27,19 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
     // Fetch playlist data
     fetch(`/api/playlists/${id}`)
       .then(res => res.json())
-      .then(data => {
+      .then(async data => {
         setPlaylist(data);
         setTitle(data.title);
         if (data.cover_image) {
           setCoverPreview(data.cover_image);
         }
+
+        // Load playlist owner's info
+        const usersResponse = await fetch('/api/users');
+        if (!usersResponse.ok) throw new Error('Failed to load users');
+        const usersData = await usersResponse.json();
+        const playlistOwner = usersData.find((u: any) => u.id === data.user_id);
+        setPlaylistUser(playlistOwner);
       })
       .catch(() => {
         toast.error('Failed to load playlist');
@@ -129,8 +137,8 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
           </div>
 
           {isFavorites ? (
-            <div className="space-y-6">
-              <div className="flex items-center gap-6">
+            <div className="space-y-8">
+              <div>
                 {playlist.cover_image && (
                   <Image
                     src={playlist.cover_image}
@@ -140,12 +148,6 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
                     className="rounded-lg shadow-md"
                   />
                 )}
-                <h1 className="text-2xl font-bold">{playlist.title}</h1>
-              </div>
-              <div className="flex justify-end">
-                <Link href={`/playlists/${id}`}>
-                  <Button variant="outline">Done</Button>
-                </Link>
               </div>
             </div>
           ) : (
@@ -211,7 +213,15 @@ export default function EditPlaylistPage({ params }: { params: Promise<{ id: str
           )}
 
           <div className="mt-8">
-            <h2 className="text-xl font-bold mb-4">Track Order</h2>
+            {isFavorites && (
+              <h1 className="text-2xl font-bold mb-2">
+                {playlist.id.endsWith('-favorites')
+                  ? `${playlistUser?.full_name.split(' ')[0]}'s Favorites`
+                  : playlist.title
+                }
+              </h1>
+            )}
+            <h2 className="text-base italic text-gray-600 mb-4">Track Order</h2>
             {playlist.tracks && playlist.tracks.length > 0 ? (
               <DraggableTrackList
                 tracks={playlist.tracks}
