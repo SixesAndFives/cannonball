@@ -37,7 +37,7 @@ export function PopularTracks({ onPlayTrack }: PopularTracksProps) {
   return (
     <div className="space-y-4">
       {tracks.map((track) => (
-        <div key={track.id} className="flex items-center gap-4 p-2 hover:bg-gray-50 rounded-lg group">
+        <div key={track.id} className="flex sm:items-center gap-4 p-2 hover:bg-gray-50 rounded-lg group">
           <div className="flex-shrink-0">
             <Link href={`/albums/${track.album_id}`}>
               <Image
@@ -50,17 +50,33 @@ export function PopularTracks({ onPlayTrack }: PopularTracksProps) {
             </Link>
           </div>
           <div className="flex-grow min-w-0">
-            <div className="flex items-baseline justify-between gap-2">
-              <div className="min-w-0">
+            <div className="sm:flex sm:items-baseline sm:justify-between sm:gap-2">
+              <div className="min-w-0 space-y-1 sm:space-y-0">
                 <h4 className="font-medium truncate">{track.title}</h4>
+                <div className="sm:hidden space-y-1">
+                  <div className="text-sm text-gray-500">{track.plays?.toLocaleString()} plays</div>
+                  {track.duration && (
+                    <div className="text-sm text-gray-500">{formatDuration(track.duration)}</div>
+                  )}
+                </div>
                 <Link 
                   href={`/albums/${track.album_id}`}
-                  className="text-sm text-gray-500 hover:text-gray-700 truncate block"
+                  className="text-sm text-gray-500 hover:text-gray-700 truncate block italic"
                 >
                   {track.album_title}
                 </Link>
+                {onPlayTrack && (
+                  <Button
+                    variant="ghost"
+                    className="sm:hidden mt-1 justify-start"
+                    onClick={() => onPlayTrack(track)}
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    Play Track
+                  </Button>
+                )}
               </div>
-              <div className="flex items-center gap-4 flex-shrink-0">
+              <div className="hidden sm:flex sm:items-center sm:gap-4 sm:flex-shrink-0">
                 <span className="text-sm text-gray-500">{track.plays?.toLocaleString()} plays</span>
                 {track.duration && (
                   <span className="text-sm text-gray-500">{formatDuration(track.duration)}</span>
@@ -72,7 +88,7 @@ export function PopularTracks({ onPlayTrack }: PopularTracksProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              className="hidden sm:inline-flex opacity-0 group-hover:opacity-100 transition-opacity"
               onClick={() => onPlayTrack(track)}
             >
               <Play className="h-4 w-4" />

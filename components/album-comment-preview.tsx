@@ -46,17 +46,28 @@ export function AlbumCommentPreview({ albumId, albumTitle, coverImage, comments 
           </Link>
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-4 mb-2">
-            <Link href={`/albums/${albumId}`} className="hover:underline">
-              <h3 className="text-lg font-semibold text-gray-900 truncate">{albumTitle}</h3>
-            </Link>
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/albums/${albumId}?tab=comments#comment-form`}>
-                Reply
+          <div className="sm:flex sm:items-center sm:justify-between sm:gap-4 mb-2">
+            <div className="space-y-2">
+              <Link href={`/albums/${albumId}`} className="hover:underline">
+                <h3 className="text-lg font-semibold text-gray-900 truncate">{albumTitle}</h3>
               </Link>
-            </Button>
+              <div className="sm:hidden">
+                <Button asChild variant="outline" size="sm" className="w-auto">
+                  <Link href={`/albums/${albumId}?tab=comments#comment-form`}>
+                    Reply
+                  </Link>
+                </Button>
+              </div>
+              <p className="text-sm text-gray-500">{comments.length} comments</p>
+            </div>
+            <div className="hidden sm:block">
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/albums/${albumId}?tab=comments#comment-form`}>
+                  Reply
+                </Link>
+              </Button>
+            </div>
           </div>
-          <p className="text-sm text-gray-500">{comments.length} comments</p>
         </div>
       </div>
 
