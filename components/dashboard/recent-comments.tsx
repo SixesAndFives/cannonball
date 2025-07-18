@@ -26,7 +26,7 @@ export function RecentComments() {
 
   useEffect(() => {
     async function loadComments() {
-      const recentComments = await getRecentComments()
+      const recentComments = await getRecentComments(10)
       setComments(recentComments)
       setLoading(false)
     }

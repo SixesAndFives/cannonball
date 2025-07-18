@@ -131,6 +131,10 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
                   Playlists
                 </Link>
                 <span className="text-gray-300">|</span>
+                <Link href="/comments" className="text-gray-600 hover:text-gray-900">
+                  Comments
+                </Link>
+                <span className="text-gray-300">|</span>
                 <Link href="/gallery" className="text-gray-600 hover:text-gray-900">
                   Gallery
                 </Link>

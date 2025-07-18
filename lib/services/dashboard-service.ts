@@ -66,7 +66,7 @@ export async function getRecentAlbums(): Promise<Album[]> {
   return albums || []
 }
 
-export async function getRecentComments(): Promise<CommentWithAlbum[]> {
+export async function getRecentComments(limit?: number): Promise<CommentWithAlbum[]> {
   console.log('Fetching albums with comments...')
   const { data: albums, error } = await supabase
     .from('albums')
@@ -106,8 +106,9 @@ export async function getRecentComments(): Promise<CommentWithAlbum[]> {
     })
   })
 
-  // Sort by timestamp and take the 10 most recent
-  return allComments
+  // Sort by timestamp and optionally limit results
+  const sortedComments = allComments
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-    .slice(0, 10)
+  
+  return limit ? sortedComments.slice(0, limit) : sortedComments
 }

@@ -127,7 +127,7 @@ export function CommentList({ album_id, comments, onCommentAdded, onCommentDelet
 
       {/* Add Comment Form */}
       {user ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form id="comment-form" onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-start gap-3">
             {user.profile_image && (
               <Image

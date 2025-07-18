@@ -8,11 +8,14 @@ import { useState } from 'react'
 import { RecentComments } from '@/components/dashboard/recent-comments'
 import { RecentAlbums } from '@/components/dashboard/recent-albums'
 import { RecentGallery } from '@/components/dashboard/recent-gallery'
+import { PopularTracks } from '@/components/dashboard/popular-tracks'
+import { usePlayer } from '@/contexts/player-context'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 
 export function DashboardClient() {
   const { user } = useAuth()
+  const { playTrack } = usePlayer()
   const [isUploading, setIsUploading] = useState(false)
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +85,15 @@ export function DashboardClient() {
               </Dialog>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Most Popular Tracks</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PopularTracks onPlayTrack={track => playTrack(track, 0, [track])} />
         </CardContent>
       </Card>
 

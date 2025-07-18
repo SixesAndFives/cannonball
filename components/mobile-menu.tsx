@@ -65,6 +65,13 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 Playlists
               </Link>
               <Link
+                href="/comments"
+                className="block text-gray-600 hover:text-gray-900"
+                onClick={onClose}
+              >
+                Comments
+              </Link>
+              <Link
                 href="/gallery"
                 className="block text-gray-600 hover:text-gray-900"
                 onClick={onClose}

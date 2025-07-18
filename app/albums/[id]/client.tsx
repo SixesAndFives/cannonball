@@ -48,6 +48,20 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
   const currentTrackIndex = currentTrack.track_index
   const trackListRef = useRef<TrackListRef>(null)
 
+  // Get initial tab from URL query parameter
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+  const initialTab = searchParams.get('tab') || 'tracks'
+
+  // Scroll to comment form if hash is present
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#comment-form') {
+      const commentForm = document.getElementById('comment-form')
+      if (commentForm) {
+        commentForm.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
+  }, [])
+
   const handlePlayTrack = (index: number | null) => {
     if (!album || index === null) return;
     const track = album.tracks[index]
@@ -232,7 +246,7 @@ export function AlbumDetailClient({ initial_album, users, current_user }: AlbumD
           </Button>
         </div>
         <div>
-          <Tabs defaultValue="tracks" className="w-full">
+          <Tabs defaultValue={initialTab} className="w-full">
             <TabsList className="w-full">
               <TabsTrigger value="tracks" className="flex-1">
                 Tracks
